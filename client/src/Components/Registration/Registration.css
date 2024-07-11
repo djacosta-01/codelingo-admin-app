@@ -1,0 +1,17 @@
+.registration-container {
+  display: flex;
+  background-color: red;
+}
+
+.registration-box {
+  display: flex;
+  background-color: rgb(71, 69, 66);
+}
+
+.form-group {
+  background-color: grey;
+}
+
+.button {
+  background-color: red;
+}
