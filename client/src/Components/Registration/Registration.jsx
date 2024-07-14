@@ -1,37 +1,51 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import "./Registration.css";
-import logoImage from "./../../assets/logo.png";
+import { useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import './Registration.css'
+// import logoImage from "./../../assets/logo.png";
+import { supabase } from '../../supabaseClient/supabaseClient'
 
-const API_ENDPOINT = "https://server-ivory-pi.vercel.app/api/register";
+// const API_ENDPOINT = 'https://server-ivory-pi.vercel.app/api/register'
 
 function Register() {
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  const navigate = useNavigate();
+    username: '',
+    email: '',
+    password: '',
+  })
+  const navigate = useNavigate()
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(API_ENDPOINT, formData);
-      if (response.data.success) {
-        console.log("Registration Success");
-        navigate("/login");
-      } else {
-        console.error("Registration Failed: ", response.data.message);
-      }
-    } catch (error) {
-      console.error("Registration failed:", error);
+  const handleSubmit = async e => {
+    e.preventDefault()
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: { username: formData.username },
+      },
+    })
+    if (error) alert('Error signing up: ' + error.message)
+    else {
+      alert('You have successfully signed up!')
+      // TODO: redirect to like an intro page so they can learn how to use the app and set up knowledge graph and their profile
+      navigate('/home')
     }
-  };
+    // try {
+    //   const response = await axios.post(API_ENDPOINT, formData)
+    //   if (response.data.success) {
+    //     console.log('Registration Success')
+    //     navigate('/login')
+    //   } else {
+    //     console.error('Registration Failed: ', response.data.message)
+    //   }
+    // } catch (error) {
+    //   console.error('Registration failed:', error)
+    // }
+  }
 
   return (
     <div className="registration-container">
@@ -47,13 +61,18 @@ function Register() {
           </div>
           <div className="form-group">
             <label htmlFor="password">Password:</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
           </div>
           <button type="submit">Register</button>
         </form>
       </div>
     </div>
-  );
+  )
 }
 
-export default Register;
+export default Register
