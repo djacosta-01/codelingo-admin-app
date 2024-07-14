@@ -65,14 +65,70 @@ function App() {
               </AuthenticatedRoute>
             }
           />
-          {/* <Route path="/class-performance" element={<StudentPerformance />}></Route>
-          <Route path="/setting" element={<Setting />}></Route>
-          <Route path="/lessons" element={<Lessons />}></Route>
-          <Route path="/add-lessons" element={<AddLessons />}></Route>
-          <Route path="/knowledge-graph" element={<EditKnowledgeGraph />}></Route>
-          <Route path="/roster" element={<Roster />}></Route>
-          <Route path="/class-settings" element={<ClassroomSettings />}></Route>
-          <Route path="/lesson" element={<Lesson />}></Route> */}
+          <Route
+            path="/lessons"
+            element={
+              <AuthenticatedRoute session={session}>
+                <Lessons />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/lesson"
+            element={
+              <AuthenticatedRoute session={session}>
+                <Lesson />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/add-lessons"
+            element={
+              <AuthenticatedRoute session={session}>
+                <AddLessons />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/class-performance"
+            element={
+              <AuthenticatedRoute session={session}>
+                <StudentPerformance />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/knowledge-graph"
+            element={
+              <AuthenticatedRoute session={session}>
+                <EditKnowledgeGraph />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/roster"
+            element={
+              <AuthenticatedRoute session={session}>
+                <Roster />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/class-settings"
+            element={
+              <AuthenticatedRoute session={session}>
+                <ClassroomSettings />
+              </AuthenticatedRoute>
+            }
+          ></Route>
+          <Route
+            path="/setting"
+            element={
+              <AuthenticatedRoute session={session}>
+                <Setting />
+              </AuthenticatedRoute>
+            }
+          ></Route>
         </Routes>
       </Router>
     </div>
