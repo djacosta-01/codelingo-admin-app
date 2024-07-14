@@ -1,6 +1,7 @@
 import { AppBar, Button, Tooltip, IconButton, Stack } from '@mui/material'
 import { Info, Menu, BugReport, AccountCircle } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import SignOut from '../SignOut.jsx' // this is just for testing purposes
 
 const NavbarWithMenu = () => {
   const navigate = useNavigate()
@@ -37,6 +38,9 @@ const NavbarWithMenu = () => {
                   <AccountCircle />
                 </IconButton>
               </Tooltip>
+            </div>
+            <div>
+              <SignOut />
             </div>
           </Stack>
         </Stack>

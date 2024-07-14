@@ -2,7 +2,7 @@ import React from 'react'
 import './Home.css'
 import NewClass from './NewClass.js'
 import { useState } from 'react'
-import Navbar from '../../NewNavbar.jsx'
+import Navbar from '../../Navbar.jsx'
 import { useNavigate } from 'react-router-dom'
 // import { handle } from "express/lib/application";
 

@@ -1,22 +1,20 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from './supabaseClient/supabaseClient.js'
 import Login from './Components/Login/Login.jsx'
-// import Dashboard from './Components/DashBoard/Dashboard.js'
 import Home from './Components/DashBoard/DashboardComponents/Home.tsx'
 import StudentPerformance from './Components/ClassPage/Pages/StudentPerformance.jsx'
 import Setting from './Components/DashBoard/DashboardComponents/Setting.js'
-// import Navbar from './Components/DashBoard/Navbar.jsx'
 import React from 'react'
-// import Sidebar from './Components/ClassPage/Sidebar.jsx'
 import Lessons from './Components/ClassPage/Lessons/Lessons.jsx'
 import AddLessons from './Components/ClassPage/Lessons/AddNewLesson/AddLessons.jsx'
 import EditKnowledgeGraph from './Components/ClassPage/KnowledgeGraph/EditKnowledgeGraph.jsx'
 import Roster from './Components/ClassPage/Pages/Roster.jsx'
 import ClassroomSettings from './Components/ClassPage/Pages/ClassroomSettings.jsx'
-
-// stuff using MUI
-import Navbar from './Components/NewNavbar.jsx'
+import Navbar from './Components/Navbar.jsx'
 import Lesson from './Components/ClassPage/Lessons/Lesson.jsx'
+
+import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 
 const items = [
   {
@@ -40,27 +38,41 @@ const handleSelectItem = (item: { id: string; title: string; backgroundImage: st
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
+  const [session, setSession] = useState(null)
+
+  // authenticating user
+  useEffect(() => {
+    const currentSession = supabase.auth.getSession()
+    setSession(currentSession)
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
+
   return (
     <div className="App">
       <Router>
-        {isAuthenticated ? <Navbar /> : ''}
+        {session ? <Navbar /> : ''}
         <Routes>
-          {/* <Route path="/" element={<Dashboard />}></Route> */}
-          <Route path="/" element={<Login setAuthenticated={setIsAuthenticated} />} />
+          <Route path="/" element={<Login />} />
           <Route
             path="/home"
-            element={<Home items={items} heading="My Classes" onSelectItem={handleSelectItem} />}
+            element={
+              <AuthenticatedRoute session={session}>
+                <Home items={items} heading="My Classes" onSelectItem={handleSelectItem} />
+              </AuthenticatedRoute>
+            }
           />
-          <Route path="/class-performance" element={<StudentPerformance />}></Route>
+          {/* <Route path="/class-performance" element={<StudentPerformance />}></Route>
           <Route path="/setting" element={<Setting />}></Route>
           <Route path="/lessons" element={<Lessons />}></Route>
           <Route path="/add-lessons" element={<AddLessons />}></Route>
           <Route path="/knowledge-graph" element={<EditKnowledgeGraph />}></Route>
           <Route path="/roster" element={<Roster />}></Route>
           <Route path="/class-settings" element={<ClassroomSettings />}></Route>
-          <Route path="/lesson" element={<Lesson />}></Route>
+          <Route path="/lesson" element={<Lesson />}></Route> */}
         </Routes>
       </Router>
     </div>
