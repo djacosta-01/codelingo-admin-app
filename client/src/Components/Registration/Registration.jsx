@@ -25,7 +25,7 @@ function Register() {
       email: formData.email,
       password: formData.password,
       options: {
-        data: { username: formData.username },
+        data: { displayName: formData.username },
       },
     })
     if (error) alert('Error signing up: ' + error.message)
