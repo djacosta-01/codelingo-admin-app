@@ -13,7 +13,6 @@ import Roster from './Components/ClassPage/Pages/Roster.jsx'
 import ClassroomSettings from './Components/ClassPage/Pages/ClassroomSettings.jsx'
 import Navbar from './Components/Navbar.jsx'
 import Lesson from './Components/ClassPage/Lessons/Lesson.jsx'
-
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 
 const items = [
@@ -34,7 +33,7 @@ const items = [
   },
 ]
 const handleSelectItem = (item: { id: string; title: string; backgroundImage: string }) => {
-  console.log(item)
+  console.log('item', item)
 }
 
 function App() {
@@ -54,7 +53,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        {session ? <Navbar /> : ''}
+        {!session ? '' : <Navbar />}
         <Routes>
           <Route path="/" element={<Login />} />
           <Route

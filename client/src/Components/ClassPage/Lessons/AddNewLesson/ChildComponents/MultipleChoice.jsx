@@ -20,7 +20,11 @@ const AnswerChoices = ({ answers, setAnswers }) => {
   const [correctAnswer, setCorrectAnswer] = useState(answerOne)
 
   useEffect(() => {
-    setAnswers({ ...answers, answerOne, answerTwo, answerThree, answerFour, correctAnswer })
+    setAnswers({
+      ...answers,
+      options: [answerOne, answerTwo, answerThree, answerFour],
+      correctAnswer,
+    })
   }, [correctAnswer, answerOne, answerTwo, answerThree, answerFour, answers, setAnswers])
 
   return (
@@ -80,10 +84,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   const [prompt, setPrompt] = useState('')
   const [codeSnippet, setCodeSnippet] = useState('')
   const [answers, setAnswers] = useState({
-    answerOne: '',
-    answerTwo: '',
-    answerThree: '',
-    answerFour: '',
+    options: [],
     correctAnswer: '',
   })
   const [topicsToDisplay, setTopicsToDisplay] = useState([])
@@ -95,7 +96,6 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     setQuestionData(prevData => [
       ...prevData,
       {
-        // questionNumber: enteredQuestions,
         questionType: 'Multiple Choice',
         prompt,
         codeSnippet,
@@ -106,10 +106,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     setPrompt('')
     setCodeSnippet('')
     setAnswers({
-      answerOne: '',
-      answerTwo: '',
-      answerThree: '',
-      answerFour: '',
+      options: [],
       correctAnswer: '',
     })
     setTopicsToDisplay([])
@@ -155,5 +152,4 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   )
 }
 
-// export { AnswerChoices }
 export default MultipleChoice

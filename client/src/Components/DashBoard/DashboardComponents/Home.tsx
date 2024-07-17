@@ -24,6 +24,13 @@ export default function Home({ items, heading, onSelectItem }: Props) {
     setIsNewClassActive(false) // Close the NewClass form after creation
   }
 
+  const navigateToLessonsPage = query => {
+    // console.log('Navigating to lessons for class:', query)
+    const className = query.toLowerCase().replace(/\s+/g, '')
+    // console.log('className:', className)
+    navigate(`/lessons?class=${className}`)
+  }
+
   return (
     <>
       {/* <Navbar /> */}
@@ -38,7 +45,8 @@ export default function Home({ items, heading, onSelectItem }: Props) {
             onClick={() => {
               // setSelectedIndex(index)
               // onSelectItem(item)
-              navigate('/lessons')
+              // navigate(`/lessons?query=${item.title}`)
+              navigateToLessonsPage(item.title)
             }}
             style={{ backgroundImage: `url(${item.backgroundImage})` }}
           >
