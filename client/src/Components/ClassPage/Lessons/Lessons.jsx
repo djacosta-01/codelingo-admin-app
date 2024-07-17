@@ -24,10 +24,10 @@ const Lessons = () => {
   }, [])
 
   const navigateToLessonPage = query => {
-    // const lessonName = query.toLowerCase().replace(' ', '-')
-    const lessonName = query.trim().toLowerCase().replace(/\s+/g, '-')
-    navigate(`/lesson?class=${className}&lesson=${lessonName}`)
+    navigate(`/lesson?class=${className}&lesson=${query}`)
   }
+
+  console.log('lessons')
   console.log(lessons)
 
   return (

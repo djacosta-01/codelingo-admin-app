@@ -4,6 +4,7 @@ import LessonStepper from './LessonStepper'
 import AddLessonStructure from './ChildComponents/AddLessonStructure'
 import AddLessonQuestions from './ChildComponents/AddLessonQuestions'
 
+// switch to Review Component later
 const Step3Test = () => {
   return (
     <>
@@ -12,9 +13,6 @@ const Step3Test = () => {
     </>
   )
 }
-
-// TODO: this is just a test component to show how to switch between steps
-// add the actual components for each step later
 
 const AddLessons = () => {
   const [activeStep, setActiveStep] = useState(1)
@@ -39,7 +37,6 @@ const AddLessons = () => {
               title={dataFromStepOne['lessonTitle']}
               topics={dataFromStepOne['selectedTopics']}
               setEnteredQuestions={setEnteredQuestions}
-              // prevQuestionData={dataFromStepTwo}
               setQuestionData={setdataFromStepTwo}
             />
           </>
@@ -54,11 +51,6 @@ const AddLessons = () => {
     <>
       {handlePageBasedOnStep(activeStep)}
       <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
-      {console.log('dataFromStepOne')}
-      {console.log(dataFromStepOne)}
-      {console.log('')}
-      {console.log('dataFromStepTwo')}
-      {console.log(dataFromStepTwo)}
     </>
   )
 }

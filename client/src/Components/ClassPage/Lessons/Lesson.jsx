@@ -9,18 +9,21 @@ const Lesson = () => {
   const location = useLocation()
   const queryParameters = new URLSearchParams(location.search)
   const lessonName = queryParameters.get('lesson')
-  // console.log(lessonName)
+  console.log(lessonName)
 
   useEffect(() => {
     // fetching lesson content from supabase
     const fetchLessonContent = async () => {
-      const response = await supabase.from('lessons').select('questions')
+      const response = await supabase
+        .from('lessons')
+        .select('questions')
+        .eq('lesson_name', lessonName)
       const data = await response.data
-      // hardcoding for now
+      console.log(data)
       setLessonContent(data[0].questions.lesson_questions)
     }
     fetchLessonContent()
-  }, [])
+  }, [lessonName])
   return (
     <Box id="lesson-container">
       {!lessonContent ? (
@@ -36,7 +39,7 @@ const Lesson = () => {
               {question.options.map((option, index) => {
                 return <div key={index}>{option}</div>
               })}
-              <h3>{question.answer}</h3>
+              <h3>Answer: ({question.answer})</h3>
             </div>
           )
         })
