@@ -82,7 +82,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
 
 const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQuestionFormat }) => {
   const [prompt, setPrompt] = useState('')
-  const [codeSnippet, setCodeSnippet] = useState('')
+  const [snippet, setsnippet] = useState('')
   const [answers, setAnswers] = useState({
     options: [],
     correctAnswer: '',
@@ -98,13 +98,14 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
       {
         questionType: 'Multiple Choice',
         prompt,
-        codeSnippet,
+        snippet,
         topicsCovered: topicsToDisplay,
-        answers,
+        options: answers.options,
+        answer: answers.correctAnswer,
       },
     ])
     setPrompt('')
-    setCodeSnippet('')
+    setsnippet('')
     setAnswers({
       options: [],
       correctAnswer: '',
@@ -131,8 +132,8 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
         <TextField
           id="code-snippet-input"
           label="Code Snippet"
-          value={codeSnippet}
-          onChange={event => setCodeSnippet(event.target.value)}
+          value={snippet}
+          onChange={event => setsnippet(event.target.value)}
           multiline
           rows={3}
           required

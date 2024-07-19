@@ -119,7 +119,7 @@ const SideMenu = ({ page }) => {
 
           {page === 'Lessons' ? (
             <>
-              <Tooltip title="Add Lesson">
+              <Tooltip title="Add Lesson" arrow>
                 <Fab variant="extended" color="white" onClick={() => navigate('/add-lessons')}>
                   <AddIcon />
                 </Fab>

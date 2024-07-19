@@ -9,7 +9,7 @@ const Lesson = () => {
   const location = useLocation()
   const queryParameters = new URLSearchParams(location.search)
   const lessonName = queryParameters.get('lesson')
-  console.log(lessonName)
+  // console.log(lessonName)
 
   useEffect(() => {
     // fetching lesson content from supabase
@@ -19,15 +19,20 @@ const Lesson = () => {
         .select('questions')
         .eq('lesson_name', lessonName)
       const data = await response.data
-      console.log(data)
-      setLessonContent(data[0].questions.lesson_questions)
+      // console.log('data')
+      // console.log(data[0].questions)
+      setLessonContent(data[0].questions)
     }
     fetchLessonContent()
   }, [lessonName])
+
+  // console.log('lesson content')
+  // console.log(lessonContent)
   return (
     <Box id="lesson-container">
+      <h1>{lessonName}</h1>
       {!lessonContent ? (
-        <h1>Loading Lesson...</h1>
+        <h1>Loading Content...</h1>
       ) : (
         lessonContent.map((question, index) => {
           return (

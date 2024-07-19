@@ -3,16 +3,7 @@ import { useState } from 'react'
 import LessonStepper from './LessonStepper'
 import AddLessonStructure from './ChildComponents/AddLessonStructure'
 import AddLessonQuestions from './ChildComponents/AddLessonQuestions'
-
-// switch to Review Component later
-const Step3Test = () => {
-  return (
-    <>
-      <h1>Step 3</h1>
-      <p>Review and confirm lesson page goes here</p>
-    </>
-  )
-}
+import ReviewLesson from './ChildComponents/ReviewLesson'
 
 const AddLessons = () => {
   const [activeStep, setActiveStep] = useState(1)
@@ -21,7 +12,7 @@ const AddLessons = () => {
     numQuestions: 1,
     selectedTopics: [],
   })
-  const [dataFromStepTwo, setdataFromStepTwo] = useState([{}])
+  const [dataFromStepTwo, setdataFromStepTwo] = useState([])
   const [enteredQuestions, setEnteredQuestions] = useState(0)
   // const [isStepOneComplete, setIsStepOneComplete] = useState(false)
 
@@ -42,7 +33,9 @@ const AddLessons = () => {
           </>
         )
       case 3:
-        return <Step3Test />
+        return (
+          <ReviewLesson lessonTitle={dataFromStepOne.lessonTitle} questions={dataFromStepTwo} />
+        )
       default:
         return <AddLessonStructure data={dataFromStepOne} setData={setdataFromStepOne} />
     }
@@ -51,6 +44,8 @@ const AddLessons = () => {
     <>
       {handlePageBasedOnStep(activeStep)}
       <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
+      {/* {console.log(dataFromStepOne)}
+      {console.log(dataFromStepTwo)} */}
     </>
   )
 }
