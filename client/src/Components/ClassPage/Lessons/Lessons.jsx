@@ -27,8 +27,8 @@ const Lessons = () => {
     navigate(`/lesson?class=${className}&lesson=${query}`)
   }
 
-  console.log('lessons')
-  console.log(lessons)
+  // console.log('lessons')
+  // console.log(lessons)
 
   return (
     <>

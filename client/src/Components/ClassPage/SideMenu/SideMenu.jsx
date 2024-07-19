@@ -97,7 +97,7 @@ const SideMenu = ({ page }) => {
   const handleMenuClose = () => setIsSideMenuOpen(false)
 
   const sideMenuItems = [
-    { text: 'Home', icon: <HomeIcon />, slug: '/home' },
+    { text: 'Home', icon: <HomeIcon />, slug: '/' },
     { text: 'Lessons', icon: <LessonsIcon />, slug: '/lessons' },
     { text: 'Knowledge Graph', icon: <KnowledgeGraphIcon />, slug: '/knowledge-graph' },
     { text: 'Roster', icon: <RosterIcon />, slug: '/roster' },

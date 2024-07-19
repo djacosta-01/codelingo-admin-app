@@ -55,13 +55,16 @@ function App() {
       <Router>
         {!session ? '' : <Navbar />}
         <Routes>
-          <Route path="/" element={<Login />} />
           <Route
-            path="/home"
+            path="/"
             element={
-              <AuthenticatedRoute session={session}>
-                <Home items={items} heading="My Classes" onSelectItem={handleSelectItem} />
-              </AuthenticatedRoute>
+              session ? (
+                <AuthenticatedRoute session={session}>
+                  <Home items={items} heading="My Classes" onSelectItem={handleSelectItem} />
+                </AuthenticatedRoute>
+              ) : (
+                <Login />
+              )
             }
           />
           <Route

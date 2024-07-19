@@ -1,49 +1,36 @@
-import { AppBar, Button, Tooltip, IconButton, Stack } from '@mui/material'
-import { Info, Menu, BugReport, AccountCircle } from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
-import SignOut from '../SignOut.jsx' // this is just for testing purposes
+import { AppBar, Box, Tooltip, Toolbar, IconButton } from '@mui/material'
+import { Info, BugReport, AccountCircle } from '@mui/icons-material'
+import { supabase } from '../supabaseClient/supabaseClient.js'
+
+const handleSignOut = async () => {
+  const { error } = await supabase.auth.signOut()
+  if (error) console.log('Error logging out:', error.message)
+}
 
 const NavbarWithMenu = () => {
-  const navigate = useNavigate()
-  //   const showSidebar = () => {
-  //     setIsVisible(!isVisible)
-  //   }
-
-  // TODO: add a box to make the app bar bigger and fix the alignment of the icons
   return (
     <>
       <AppBar position="static">
-        <Stack direction="row" justifyContent="space-between">
-          <Stack spacing={1} alignItems="flex-start">
-            <div onClick={() => navigate('/home')}>Site Name</div>
-          </Stack>
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
-            <div>
-              <Tooltip title="About">
-                <IconButton>
-                  <Info />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <div>
-              <Tooltip title="Report a Problem">
-                <IconButton>
-                  <BugReport />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <div>
-              <Tooltip title="Profile">
-                <IconButton>
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <div>
-              <SignOut />
-            </div>
-          </Stack>
-        </Stack>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>Codelingo</Box>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Tooltip title="About">
+              <IconButton sx={{ color: 'white' }}>
+                <Info />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Report a Problem">
+              <IconButton sx={{ color: 'white' }}>
+                <BugReport />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Sign Out">
+              <IconButton onClick={() => handleSignOut()} sx={{ color: 'white' }}>
+                <AccountCircle />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Toolbar>
       </AppBar>
     </>
   )
