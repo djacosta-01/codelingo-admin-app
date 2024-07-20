@@ -1,9 +1,10 @@
 import React from 'react'
-import SideMenu from '../SideMenu/SideMenu'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Paper, Fab } from '@mui/material'
 import { useState, useEffect } from 'react'
+import AddIcon from '@mui/icons-material/Add'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../supabaseClient/supabaseClient'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const Lessons = () => {
   const location = useLocation()
@@ -32,7 +33,7 @@ const Lessons = () => {
 
   return (
     <>
-      <SideMenu page="Lessons" />
+      <NavbarWithSideMenu displaySideMenu={true} className={className} />
       <Box
         id="lessons-container"
         sx={{
@@ -42,38 +43,66 @@ const Lessons = () => {
           backgroundColor: '#EAECE9',
           height: '100vh',
           padding: 7,
+          position: 'relative',
         }}
       >
-        {!lessons ? (
-          <div>Loading...</div>
-        ) : (
-          lessons.map((lesson, index) => {
-            return (
-              <Paper
-                key={index}
-                elevation={4}
-                sx={{
-                  width: '25ch',
-                  height: '20ch',
-                  margin: 5,
-                  padding: 1,
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: 3 }}
+        >
+          {!lessons ? (
+            <h1>Loading Lessons...</h1>
+          ) : (
+            lessons.map((lesson, index) => {
+              return (
+                <Paper
+                  key={index}
+                  elevation={4}
+                  sx={{
+                    width: '25ch',
+                    height: '20ch',
+                    margin: 5,
+                    padding: 1,
 
-                  '&:hover': {
-                    backgroundColor: '#EAECE9',
-                    cursor: 'pointer',
-                    outline: '1px solid black',
-                    transform: 'scale(1.05)',
-                    transition: 'all',
-                    transitionDuration: '0.3s',
-                  },
-                }}
-                onClick={() => navigateToLessonPage(lesson.lesson_name)}
-              >
-                {lesson.lesson_name}
-              </Paper>
-            )
-          })
-        )}
+                    '&:hover': {
+                      backgroundColor: '#EAECE9',
+                      cursor: 'pointer',
+                      outline: '1px solid black',
+                      transform: 'scale(1.05)',
+                      transition: 'all',
+                      transitionDuration: '0.3s',
+                    },
+                  }}
+                  onClick={() => navigateToLessonPage(lesson.lesson_name)}
+                >
+                  {lesson.lesson_name}
+                </Paper>
+              )
+            })
+          )}
+        </Box>
+        <Box
+          id="add-lesson-button"
+          sx={{
+            position: 'fixed',
+            bottom: 30,
+            right: 20,
+          }}
+        >
+          <Fab
+            variant="extended"
+            color="white"
+            onClick={() => navigate('/add-lessons')}
+            sx={{
+              backgroundColor: 'white',
+              color: '#2688FF',
+              '&:hover': {
+                backgroundColor: '#EAECE9',
+              },
+            }}
+          >
+            <AddIcon />
+          </Fab>
+        </Box>
       </Box>
     </>
   )

@@ -14,7 +14,7 @@ import ClassroomSettings from './Components/ClassPage/Pages/ClassroomSettings.js
 import Navbar from './Components/Navbar.jsx'
 import Lesson from './Components/ClassPage/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
-
+import NavbarWithSideMenu from './Components/ClassPage/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
 const items = [
   {
     id: 'cmsi-1010',
@@ -53,7 +53,6 @@ function App() {
   return (
     <div className="App">
       <Router>
-        {!session ? '' : <Navbar />}
         <Routes>
           <Route
             path="/"

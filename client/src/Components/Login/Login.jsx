@@ -45,7 +45,7 @@ const Login = () => {
               value={email}
               onChange={event => setEmail(event.target.value)}
               name="email"
-              autoComplete="email"
+              // autoComplete="current-email"
               placeholder="Email"
             />
             <label htmlFor="password">Password</label>
@@ -55,7 +55,7 @@ const Login = () => {
               value={password}
               onChange={event => setPassword(event.target.value)}
               name="password"
-              autoComplete="current-password"
+              autoComplete="off"
               placeholder="Password"
             />
             <button type="submit">Log In</button>

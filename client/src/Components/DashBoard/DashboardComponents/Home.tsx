@@ -4,6 +4,7 @@ import NewClass from './NewClass.js'
 import { useState } from 'react'
 import Navbar from '../../Navbar.jsx'
 import { useNavigate } from 'react-router-dom'
+import NavbarWithSideMenu from '../../ClassPage/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
 // import { handle } from "express/lib/application";
 
 interface Props {
@@ -33,7 +34,7 @@ export default function Home({ items, heading, onSelectItem }: Props) {
 
   return (
     <>
-      {/* <Navbar /> */}
+      <NavbarWithSideMenu displaySideMenu={false} />
       <h1>{heading}</h1>
       <div className="container">
         {items.map((item, index) => (

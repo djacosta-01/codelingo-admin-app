@@ -1,10 +1,10 @@
 import React from 'react'
-import SideMenu from '../SideMenu/SideMenu'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const StudentPerformance = () => {
   return (
     <div>
-      <SideMenu page="Student Performance" />
+      <NavbarWithSideMenu displaySideMenu={true} />
       <h1> Student Performance</h1>
     </div>
   )

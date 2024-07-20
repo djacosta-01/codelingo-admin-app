@@ -1,10 +1,10 @@
 import React from 'react'
-import SideMenu from '../SideMenu/SideMenu'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
 export default function ClassroomSettings() {
   return (
     <div className="classroomSettings">
-      <SideMenu page="Classroom Settings" />
+      <NavbarWithSideMenu displaySideMenu={true} />
       <h1> Classroom Settings </h1>
     </div>
   )

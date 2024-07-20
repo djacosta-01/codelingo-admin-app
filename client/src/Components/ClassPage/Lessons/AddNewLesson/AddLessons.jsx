@@ -4,6 +4,7 @@ import LessonStepper from './LessonStepper'
 import AddLessonStructure from './ChildComponents/AddLessonStructure'
 import AddLessonQuestions from './ChildComponents/AddLessonQuestions'
 import ReviewLesson from './ChildComponents/ReviewLesson'
+import NavbarWithSideMenu from '../../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const AddLessons = () => {
   const [activeStep, setActiveStep] = useState(1)
@@ -42,6 +43,7 @@ const AddLessons = () => {
   }
   return (
     <>
+      <NavbarWithSideMenu displaySideMenu={false} />
       {handlePageBasedOnStep(activeStep)}
       <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
       {/* {console.log(dataFromStepOne)}
