@@ -39,10 +39,9 @@ const Lesson = () => {
         id="lesson-container"
         sx={{
           display: 'flex',
-          flexWrap: 'wrap',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          backgroundColor: '#EAECE9',
+          // backgroundColor: '#EAECE9',
           height: '100vh',
           padding: 7,
         }}

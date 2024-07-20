@@ -40,6 +40,8 @@ function App() {
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
   const [session, setSession] = useState(null)
 
+  // TODO: have a className state to store the class name and pass it to the Lessons component
+
   // authenticating user
   useEffect(() => {
     const currentSession = supabase.auth.getSession()
