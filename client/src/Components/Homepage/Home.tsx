@@ -2,8 +2,8 @@ import React from 'react'
 import './Home.css'
 import NewClass from './NewClass.js'
 import { useState } from 'react'
-import Navbar from '../../Navbar.jsx'
 import { useNavigate } from 'react-router-dom'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu.jsx'
 // import { handle } from "express/lib/application";
 
 interface Props {
@@ -24,9 +24,16 @@ export default function Home({ items, heading, onSelectItem }: Props) {
     setIsNewClassActive(false) // Close the NewClass form after creation
   }
 
+  const navigateToLessonsPage = query => {
+    // console.log('Navigating to lessons for class:', query)
+    const className = query.toLowerCase().replace(/\s+/g, '')
+    // console.log('className:', className)
+    navigate(`/lessons?class=${className}`)
+  }
+
   return (
     <>
-      {/* <Navbar /> */}
+      <NavbarWithSideMenu displaySideMenu={false} />
       <h1>{heading}</h1>
       <div className="container">
         {items.map((item, index) => (
@@ -38,7 +45,8 @@ export default function Home({ items, heading, onSelectItem }: Props) {
             onClick={() => {
               // setSelectedIndex(index)
               // onSelectItem(item)
-              navigate('/lessons')
+              // navigate(`/lessons?query=${item.title}`)
+              navigateToLessonsPage(item.title)
             }}
             style={{ backgroundImage: `url(${item.backgroundImage})` }}
           >

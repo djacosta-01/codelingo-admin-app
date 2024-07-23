@@ -1,9 +1,9 @@
 import React from 'react'
-import SideMenu from '../SideMenu/SideMenu'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 export default function Roster() {
   return (
     <div className="roster">
-      <SideMenu page="Roster" />
+      <NavbarWithSideMenu displaySideMenu={true} />
       <h1>Roster</h1>
     </div>
   )

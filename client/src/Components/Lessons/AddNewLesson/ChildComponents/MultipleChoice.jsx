@@ -20,7 +20,11 @@ const AnswerChoices = ({ answers, setAnswers }) => {
   const [correctAnswer, setCorrectAnswer] = useState(answerOne)
 
   useEffect(() => {
-    setAnswers({ ...answers, answerOne, answerTwo, answerThree, answerFour, correctAnswer })
+    setAnswers({
+      ...answers,
+      options: [answerOne, answerTwo, answerThree, answerFour],
+      correctAnswer,
+    })
   }, [correctAnswer, answerOne, answerTwo, answerThree, answerFour, answers, setAnswers])
 
   return (
@@ -78,12 +82,9 @@ const AnswerChoices = ({ answers, setAnswers }) => {
 
 const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQuestionFormat }) => {
   const [prompt, setPrompt] = useState('')
-  const [codeSnippet, setCodeSnippet] = useState('')
+  const [snippet, setsnippet] = useState('')
   const [answers, setAnswers] = useState({
-    answerOne: '',
-    answerTwo: '',
-    answerThree: '',
-    answerFour: '',
+    options: [],
     correctAnswer: '',
   })
   const [topicsToDisplay, setTopicsToDisplay] = useState([])
@@ -95,21 +96,18 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     setQuestionData(prevData => [
       ...prevData,
       {
-        // questionNumber: enteredQuestions,
         questionType: 'Multiple Choice',
         prompt,
-        codeSnippet,
+        snippet,
         topicsCovered: topicsToDisplay,
-        answers,
+        options: answers.options,
+        answer: answers.correctAnswer,
       },
     ])
     setPrompt('')
-    setCodeSnippet('')
+    setsnippet('')
     setAnswers({
-      answerOne: '',
-      answerTwo: '',
-      answerThree: '',
-      answerFour: '',
+      options: [],
       correctAnswer: '',
     })
     setTopicsToDisplay([])
@@ -134,8 +132,8 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
         <TextField
           id="code-snippet-input"
           label="Code Snippet"
-          value={codeSnippet}
-          onChange={event => setCodeSnippet(event.target.value)}
+          value={snippet}
+          onChange={event => setsnippet(event.target.value)}
           multiline
           rows={3}
           required
@@ -155,5 +153,4 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   )
 }
 
-// export { AnswerChoices }
 export default MultipleChoice

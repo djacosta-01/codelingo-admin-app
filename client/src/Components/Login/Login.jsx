@@ -21,26 +21,9 @@ const Login = () => {
     if (error) alert('Error logging in: ' + error.message)
     else {
       setIsLoggedIn(true)
-      console.log('Login Success')
-      navigate('/home')
+      // console.log('Login Success')
+      navigate('/')
     }
-    // const username = event.target.username.value
-    // const password = event.target.password.value
-    // try {
-    //   const response = await apiCall(username, password)
-    //   if (response.data.success) {
-    //     setIsLoggedIn(true)
-    //     console.log('Login Success')
-    //     navigate('/home')
-    //   } else {
-    //     console.error('Login Failed: ', response.data.message)
-    //   }
-    // } catch (error) {
-    //   // FIXME: come back and fix this bc this is just for development
-    //   // setAuthenticated(true)
-    //   navigate('/home')
-    //   console.error('Login failed:', error)
-    // }
   }
 
   const toggleRegistration = () => {
@@ -62,6 +45,7 @@ const Login = () => {
               value={email}
               onChange={event => setEmail(event.target.value)}
               name="email"
+              // autoComplete="current-email"
               placeholder="Email"
             />
             <label htmlFor="password">Password</label>
@@ -71,6 +55,7 @@ const Login = () => {
               value={password}
               onChange={event => setPassword(event.target.value)}
               name="password"
+              autoComplete="off"
               placeholder="Password"
             />
             <button type="submit">Log In</button>

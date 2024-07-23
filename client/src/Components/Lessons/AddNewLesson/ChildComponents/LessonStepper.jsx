@@ -21,7 +21,7 @@ const LessonStepper = ({ activeStep, setActiveStep }) => {
         })}
       </Stepper>
       <Box sx={{ display: 'flex', flexDirection: 'row', p: 2 }}>
-        <Button variant="outlined" onClick={handleBackStep} disabled={activeStep === 0}>
+        <Button variant="outlined" onClick={handleBackStep} disabled={activeStep === 1}>
           Back
         </Button>
         <Box sx={{ flex: '1 1 auto' }} />

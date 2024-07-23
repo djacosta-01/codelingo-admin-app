@@ -3,7 +3,7 @@ import { Card, CardContent, Tooltip } from '@mui/material'
 import HelpIcon from '@mui/icons-material/Help'
 import { useState, useEffect } from 'react'
 import KnowledgeGraph from './Graph'
-import SideMenu from '../SideMenu/SideMenu'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const EditKnowledgeGraph = () => {
   const [input, setInput] = useState(
@@ -158,7 +158,7 @@ const EditKnowledgeGraph = () => {
         height: '90vh',
       }}
     >
-      <SideMenu page="Knowledge Graph" />
+      <NavbarWithSideMenu displaySideMenu={true} />
       <Box
         id="user-input"
         sx={{
