@@ -112,7 +112,7 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
     { text: 'Class Settings', icon: <SettingsIcon />, slug: '/class-settings' },
   ]
   return (
-    <>
+    <Box id="nav-and-sidemenu">
       <AppBar position="fixed" open={isSideMenuOpen}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box
@@ -198,7 +198,7 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
           </List>
         </Drawer>
       )}
-    </>
+    </Box>
   )
 }
 

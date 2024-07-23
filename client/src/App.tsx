@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { Box } from '@mui/material'
 import { supabase } from './supabaseClient/supabaseClient.js'
 import Login from './Components/Login/Login.jsx'
 import Home from './Components/Homepage/Home.tsx'
@@ -52,7 +53,7 @@ function App() {
   }, [])
 
   return (
-    <div className="App">
+    <Box className="App">
       <Router>
         <Routes>
           <Route
@@ -125,7 +126,7 @@ function App() {
           />
         </Routes>
       </Router>
-    </div>
+    </Box>
   )
 }
 
