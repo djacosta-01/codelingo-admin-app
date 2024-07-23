@@ -4,14 +4,12 @@ import { supabase } from './supabaseClient/supabaseClient.js'
 import Login from './Components/Login/Login.jsx'
 import Home from './Components/Homepage/Home.tsx'
 import StudentPerformance from './Components/StudentPages/StudentPerformance.jsx'
-import Setting from './Components/Homepage/Setting.js'
 import React from 'react'
 import Lessons from './Components/Lessons/Lessons.jsx'
 import AddLessons from './Components/Lessons/AddNewLesson/AddLessons.jsx'
 import EditKnowledgeGraph from './Components/KnowledgeGraph/EditKnowledgeGraph.jsx'
 import Roster from './Components/StudentPages/Roster.jsx'
 import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
-// import Navbar from './Components/Navbar.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import NavbarWithSideMenu from './Components/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
@@ -76,7 +74,7 @@ function App() {
                 <Lessons />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/lesson"
             element={
@@ -84,7 +82,7 @@ function App() {
                 <Lesson />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/add-lessons"
             element={
@@ -92,7 +90,7 @@ function App() {
                 <AddLessons />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/class-performance"
             element={
@@ -100,7 +98,7 @@ function App() {
                 <StudentPerformance />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/knowledge-graph"
             element={
@@ -108,7 +106,7 @@ function App() {
                 <EditKnowledgeGraph />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/roster"
             element={
@@ -116,7 +114,7 @@ function App() {
                 <Roster />
               </AuthenticatedRoute>
             }
-          ></Route>
+          />
           <Route
             path="/class-settings"
             element={
@@ -124,15 +122,7 @@ function App() {
                 <ClassroomSettings />
               </AuthenticatedRoute>
             }
-          ></Route>
-          <Route
-            path="/setting"
-            element={
-              <AuthenticatedRoute session={session}>
-                <Setting />
-              </AuthenticatedRoute>
-            }
-          ></Route>
+          />
         </Routes>
       </Router>
     </div>
