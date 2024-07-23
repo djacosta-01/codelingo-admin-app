@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import { useState } from 'react'
-import LessonStepper from './LessonStepper'
+import LessonStepper from './ChildComponents/LessonStepper'
 import AddLessonStructure from './ChildComponents/AddLessonStructure'
 import AddLessonQuestions from './ChildComponents/AddLessonQuestions'
 import ReviewLesson from './ChildComponents/ReviewLesson'

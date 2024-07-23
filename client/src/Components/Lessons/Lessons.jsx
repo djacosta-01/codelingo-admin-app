@@ -3,7 +3,7 @@ import { Box, Paper, Fab } from '@mui/material'
 import { useState, useEffect } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { supabase } from '../../../supabaseClient/supabaseClient'
+import { supabase } from '../../supabaseClient/supabaseClient'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const Lessons = () => {

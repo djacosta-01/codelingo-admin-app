@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
-import { supabase } from '../../../supabaseClient/supabaseClient'
+import { supabase } from '../../supabaseClient/supabaseClient'
 
 const Lesson = () => {
   const [lessonContent, setLessonContent] = useState(null)

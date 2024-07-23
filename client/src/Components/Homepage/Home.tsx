@@ -2,9 +2,8 @@ import React from 'react'
 import './Home.css'
 import NewClass from './NewClass.js'
 import { useState } from 'react'
-import Navbar from '../../Navbar.jsx'
 import { useNavigate } from 'react-router-dom'
-import NavbarWithSideMenu from '../../ClassPage/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu.jsx'
 // import { handle } from "express/lib/application";
 
 interface Props {

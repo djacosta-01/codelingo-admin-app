@@ -14,11 +14,11 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { IconButton, Box, Fab, Tooltip } from '@mui/material'
+import { IconButton, Box, Tooltip } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Info, BugReport, AccountCircle } from '@mui/icons-material'
-import { supabase } from '../../../supabaseClient/supabaseClient'
+import { Info, BugReport, Logout } from '@mui/icons-material'
+import { supabase } from '../../supabaseClient/supabaseClient'
 
 const drawerWidth = 240
 
@@ -89,7 +89,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })
   })
 )
 
-const NavbarWithSideMenu = ({ displaySideMenu, className }) => {
+const NavbarWithSideMenu = ({ displaySideMenu }) => {
   const theme = useTheme()
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
 
@@ -105,7 +105,7 @@ const NavbarWithSideMenu = ({ displaySideMenu, className }) => {
   // TODO: plug in class name passed in as prop to side menu from Home page
   const sideMenuItems = [
     { text: 'Home', icon: <HomeIcon />, slug: '/' },
-    { text: 'Lessons', icon: <LessonsIcon />, slug: `/lessons?class=${className}` },
+    { text: 'Lessons', icon: <LessonsIcon />, slug: '/lessons' },
     { text: 'Knowledge Graph', icon: <KnowledgeGraphIcon />, slug: '/knowledge-graph' },
     { text: 'Roster', icon: <RosterIcon />, slug: '/roster' },
     { text: 'Class Performance', icon: <ClassPerformanceIcon />, slug: '/class-performance' },
@@ -132,18 +132,28 @@ const NavbarWithSideMenu = ({ displaySideMenu, className }) => {
 
           <Box sx={{ display: 'flex' }}>
             <Tooltip title="About" arrow>
-              <IconButton sx={{ color: 'white' }}>
+              <IconButton
+                sx={{ color: 'white' }}
+                onClick={() => alert('About page in development...')}
+              >
                 <Info />
               </IconButton>
             </Tooltip>
             <Tooltip title="Report a Problem" arrow>
-              <IconButton sx={{ color: 'white' }}>
+              <IconButton
+                sx={{ color: 'white' }}
+                onClick={() =>
+                  alert(
+                    "Report a problem page in development...I guess you can say that's a problem (sorry, I'll see myself out)"
+                  )
+                }
+              >
                 <BugReport />
               </IconButton>
             </Tooltip>
             <Tooltip title="Sign Out" arrow>
               <IconButton onClick={() => handleSignOut()} sx={{ color: 'white' }}>
-                <AccountCircle />
+                <Logout />
               </IconButton>
             </Tooltip>
           </Box>
@@ -168,7 +178,9 @@ const NavbarWithSideMenu = ({ displaySideMenu, className }) => {
                     justifyContent: isSideMenuOpen ? 'initial' : 'center',
                     px: 2.5,
                   }}
-                  onClick={() => navigate(slug)}
+                  onClick={() => {
+                    navigate(slug)
+                  }}
                 >
                   <ListItemIcon
                     sx={{

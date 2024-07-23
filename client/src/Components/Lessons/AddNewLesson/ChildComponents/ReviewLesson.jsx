@@ -1,4 +1,4 @@
-import { supabase } from '../../../../../supabaseClient/supabaseClient'
+import { supabase } from '../../../../supabaseClient/supabaseClient'
 
 const ReviewLesson = ({ lessonTitle, questions }) => {
   const saveLessonToDatabase = async () => {
