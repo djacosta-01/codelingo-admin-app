@@ -4,7 +4,7 @@ import ReactFlow from 'reactflow'
 import 'reactflow/dist/style.css'
 import { formatNodes, formatEdges } from './scripts/graphMethods'
 
-const KnowledgeGraph = ({ parsedNodes, parsedEdges }) => {
+const KnowledgeGraph = ({ nodesInLevels }) => {
   const [nodes, setNodes] = useState(null)
   const [edges, setEdges] = useState(null)
   const [responseCode, setResponseCode] = useState(404)
@@ -18,8 +18,8 @@ const KnowledgeGraph = ({ parsedNodes, parsedEdges }) => {
         setResponseCode(response.status)
         const data = await response.json()
         // console.log(data)
-        setNodes(formatNodes(parsedNodes))
-        setEdges(formatEdges(parsedEdges))
+        setNodes(formatNodes(nodesInLevels))
+        setEdges(formatEdges(data['edges']))
         console.log('Success:', data)
       } catch (error) {
         console.error('error', error)
@@ -35,7 +35,6 @@ const KnowledgeGraph = ({ parsedNodes, parsedEdges }) => {
       ) : (
         <>
           <ReactFlow nodes={nodes} edges={edges} fitView />
-          {/* {nodesInLevels ? <ReactFlow nodes={nodes} edges={edges} fitView /> : <h1>Loading...</h1>} */}
         </>
       )}
     </div>

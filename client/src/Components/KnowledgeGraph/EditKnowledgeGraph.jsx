@@ -86,9 +86,7 @@ const EditKnowledgeGraph = () => {
           padding: 2,
         }}
       >
-        <h1> Will add interactive graph here</h1>
-
-        {/* <KnowledgeGraph parsedNodes={parsedNodes} parsedEdges={edgesFromInput} /> */}
+        <KnowledgeGraph nodesInLevels={parsedNodes ? parsedNodes : ''} />
       </Box>
     </Box>
   )
