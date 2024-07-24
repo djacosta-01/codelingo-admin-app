@@ -13,11 +13,11 @@ import CheckIcon from '@mui/icons-material/Check'
 import CheckboxSelect from './CheckBoxSelect'
 
 const AnswerChoices = ({ answers, setAnswers }) => {
-  const [answerOne, setAnswerOne] = useState('Answer 1')
-  const [answerTwo, setAnswerTwo] = useState('Answer 2')
-  const [answerThree, setAnswerThree] = useState('Answer 3')
-  const [answerFour, setAnswerFour] = useState('Answer 4')
-  const [correctAnswer, setCorrectAnswer] = useState(answerOne)
+  const [answerOne, setAnswerOne] = useState('')
+  const [answerTwo, setAnswerTwo] = useState('')
+  const [answerThree, setAnswerThree] = useState('')
+  const [answerFour, setAnswerFour] = useState('')
+  const [correctAnswer, setCorrectAnswer] = useState('')
 
   useEffect(() => {
     setAnswers({
@@ -92,6 +92,11 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   const saveQuestion = event => {
     event.preventDefault()
     // console.log('saving question')
+    // console.log(answers.correctAnswer)
+    if (answers.correctAnswer === '') {
+      alert('Please select a correct answer')
+      return
+    }
     setEnteredQuestions(prev => prev + 1)
     setQuestionData(prevData => [
       ...prevData,

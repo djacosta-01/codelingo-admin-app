@@ -104,7 +104,6 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
 
   // TODO: plug in class name passed in as prop to side menu from Home page
   const sideMenuItems = [
-    { text: 'Home', icon: <HomeIcon />, slug: '/' },
     { text: 'Lessons', icon: <LessonsIcon />, slug: '/lessons' },
     { text: 'Knowledge Graph', icon: <KnowledgeGraphIcon />, slug: '/knowledge-graph' },
     { text: 'Roster', icon: <RosterIcon />, slug: '/roster' },
@@ -127,7 +126,17 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
             ) : (
               ''
             )}
-            <h2>Codelingo</h2>
+            <Box
+              onClick={() => navigate('/')}
+              sx={{
+                '& :hover': {
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              <h2>Codelingo</h2>
+            </Box>
           </Box>
 
           <Box sx={{ display: 'flex' }}>
