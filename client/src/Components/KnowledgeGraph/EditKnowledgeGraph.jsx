@@ -1,4 +1,4 @@
-import { TextField, Box } from '@mui/material'
+import { TextField, Box, Button } from '@mui/material'
 import { useState, useEffect } from 'react'
 import KnowledgeGraph from './Graph'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
@@ -30,7 +30,7 @@ const EditKnowledgeGraph = () => {
           }),
         })
         const result = await response.json()
-        console.log('Success:', result)
+        // console.log('Success:', result)
       } catch (error) {
         console.error('error', error)
       }
@@ -75,7 +75,7 @@ const EditKnowledgeGraph = () => {
             multiline
             rows={8}
           />
-          <input type="submit" value="Update" />
+          <TextField type="submit" value="Update" />
         </form>
       </Box>
       <Box
@@ -86,7 +86,8 @@ const EditKnowledgeGraph = () => {
           padding: 2,
         }}
       >
-        <KnowledgeGraph nodesInLevels={parsedNodes ? parsedNodes : ''} />
+        <h1>Gonna replace this with interactive graph later</h1>
+        {/* <KnowledgeGraph nodesInLevels={parsedNodes ? parsedNodes : ''} /> */}
       </Box>
     </Box>
   )
