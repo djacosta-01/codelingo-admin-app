@@ -1,8 +1,11 @@
-import { Box } from '@mui/material'
+import { Box, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material'
 import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
+import ExpandIcon from '@mui/icons-material/ExpandMore'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 const Lesson = () => {
   const [lessonContent, setLessonContent] = useState(null)
@@ -20,55 +23,119 @@ const Lesson = () => {
         .from('lessons')
         .select('questions')
         .eq('lesson_name', lessonName)
-      const data = await response.data
+      const data = response.data
+      // console.log(data)
       if (data.length === 0) {
         setLoadingMessage('Lesson Not Found')
         return
       }
       setLessonContent(data[0].questions)
+      // console.log(lessonContent)
     }
     fetchLessonContent()
   }, [lessonName])
 
-  // console.log('lesson content')
-  // console.log(lessonContent)
+  const handleEditClick = event => {
+    alert('edit button clicked')
+    event.stopPropagation()
+    // navigate to edit page
+  }
+
+  const handleDeleteClick = event => {
+    alert('delete button clicked')
+    event.stopPropagation()
+    // delete lesson from database
+  }
   return (
-    <>
-      <NavbarWithSideMenu displaySideMenu={true} />
-      <Box
-        id="lesson-container"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          // backgroundColor: '#EAECE9',
-          height: '100vh',
-          padding: 7,
-        }}
-      >
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginTop: '64px',
+        marginLeft: '65px',
+      }}
+    >
+      <Box id="lesson-container">
+        <NavbarWithSideMenu displaySideMenu={true} />
         {!lessonContent ? (
           <h1>{loadingMessage}</h1>
         ) : (
-          <>
+          <Box
+            id="lesson-content"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
             <h1>{lessonName}</h1>
             {lessonContent.map((question, index) => {
               return (
-                <div key={index}>
-                  <h3>
-                    {question.questionType}: {question.prompt}
-                  </h3>
-                  <h3>{question.snippet}</h3>
-                  {question.options.map((option, index) => {
-                    return <div key={index}>{option}</div>
-                  })}
-                  <h3>Answer: ({question.answer})</h3>
-                </div>
+                <Accordion
+                  key={index}
+                  defaultExpanded={index === 0}
+                  sx={{
+                    width: 800,
+                    outline: '1px solid black',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <AccordionSummary
+                      sx={{
+                        '& :hover': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      ({question.questionType}) {question.prompt}
+                    </AccordionSummary>
+
+                    <Box
+                      id="buttons-container"
+                      sx={{
+                        '& #edit-question-button :hover': {
+                          color: '#2688FF',
+                        },
+                        '& #delete-question-button :hover': {
+                          color: 'red',
+                        },
+                      }}
+                    >
+                      <IconButton
+                        id="edit-question-button"
+                        onClick={event => handleEditClick(event)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        id="delete-question-button"
+                        onClick={event => handleDeleteClick(event)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <AccordionDetails>
+                    <h3>Snippet: {question.snippet}</h3>
+                    <h3>Answers: {question.options.join(', ')}</h3>
+                    <h3>Correct Answer: {question.answer}</h3>
+                    <h3>Topics: {question.topicsCovered.join(', ')}</h3>
+                  </AccordionDetails>
+                </Accordion>
               )
             })}
-          </>
+          </Box>
         )}
       </Box>
-    </>
+    </Box>
   )
 }
 

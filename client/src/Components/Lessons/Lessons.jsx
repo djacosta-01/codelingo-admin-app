@@ -57,10 +57,11 @@ const Lessons = () => {
                   height: '20ch',
                   margin: 5,
                   padding: 1,
+                  outline: '1px solid black',
                   '&:hover': {
                     backgroundColor: '#EAECE9',
                     cursor: 'pointer',
-                    outline: '1px solid black',
+
                     transform: 'scale(1.05)',
                     transition: 'all',
                     transitionDuration: '0.3s',
