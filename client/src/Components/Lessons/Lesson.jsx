@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
-import ExpandIcon from '@mui/icons-material/ExpandMore'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -79,6 +78,8 @@ const Lesson = () => {
                   defaultExpanded={index === 0}
                   sx={{
                     width: 800,
+                    // flexWrap: 'wrap',
+                    // flexGrow: 100,
                     outline: '1px solid black',
                   }}
                 >
