@@ -45,6 +45,7 @@ const Lesson = () => {
     event.stopPropagation()
     // delete lesson from database
   }
+
   return (
     <Box
       sx={{
@@ -78,27 +79,22 @@ const Lesson = () => {
                   defaultExpanded={index === 0}
                   sx={{
                     width: 800,
-                    // flexWrap: 'wrap',
-                    // flexGrow: 100,
                     outline: '1px solid black',
                   }}
                 >
                   <Box
+                    id="prompt-and-buttons"
                     sx={{
                       display: 'flex',
                       justifyContent: 'space-between',
+                      '& :hover': {
+                        textDecoration: 'underline',
+                      },
                     }}
                   >
-                    <AccordionSummary
-                      sx={{
-                        '& :hover': {
-                          textDecoration: 'underline',
-                        },
-                      }}
-                    >
+                    <AccordionSummary>
                       ({question.questionType}) {question.prompt}
                     </AccordionSummary>
-
                     <Box
                       id="buttons-container"
                       sx={{
@@ -112,13 +108,13 @@ const Lesson = () => {
                     >
                       <IconButton
                         id="edit-question-button"
-                        onClick={event => handleEditClick(event)}
+                        onClick={_event => handleEditClick(_event)}
                       >
                         <EditIcon />
                       </IconButton>
                       <IconButton
                         id="delete-question-button"
-                        onClick={event => handleDeleteClick(event)}
+                        onClick={_event => handleDeleteClick(_event)}
                       >
                         <DeleteIcon />
                       </IconButton>

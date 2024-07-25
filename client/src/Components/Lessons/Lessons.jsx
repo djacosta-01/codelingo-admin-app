@@ -84,7 +84,6 @@ const Lessons = () => {
         }}
       >
         <Fab
-          variant="extended"
           color="white"
           onClick={() => navigate('/add-lessons')}
           sx={{

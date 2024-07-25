@@ -87,7 +87,6 @@ const EditKnowledgeGraph = () => {
         }}
       >
         <h1>Gonna replace this with interactive graph later</h1>
-        {/* <KnowledgeGraph nodesInLevels={parsedNodes ? parsedNodes : ''} /> */}
       </Box>
     </Box>
   )
