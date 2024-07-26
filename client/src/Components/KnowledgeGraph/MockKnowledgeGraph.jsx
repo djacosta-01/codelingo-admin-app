@@ -7,7 +7,7 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ReactFlow from 'reactflow'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
@@ -39,9 +39,12 @@ const initialEdges = [
 ]
 
 const MockKnowledgeGraph = () => {
-  const [nodes, setNodes] = useState(initialNodes)
-  const [edges, setEdges] = useState(initialEdges)
-  const [open, setOpen] = useState(false)
+  const [nodes, setNodes] = useState([])
+  const [edges, setEdges] = useState([])
+  const [nodesForDisplay, setNodesForDisplay] = useState(initialNodes)
+  const [edgesForDisplay, setEdgesForDisplay] = useState(initialEdges)
+  const [open, setOpen] = useState(false) // dialog state
+  // input states
   const [nodeTopic, setNodeTopic] = useState('')
   const [targetNodes, setTargetNodes] = useState('')
 
@@ -49,26 +52,41 @@ const MockKnowledgeGraph = () => {
   const handleCloseDialog = () => {
     setOpen(false)
     setNodeTopic('')
+    setTargetNodes('')
   }
+
+  useEffect(() => {
+    setNodes(nodesForDisplay.map(nodeData => nodeData.id))
+    setEdges(edgesForDisplay.map(edgeData => [edgeData.source, edgeData.target]))
+  }, [nodesForDisplay, edgesForDisplay])
 
   const addDataToGraph = _event => {
     _event.preventDefault()
-    const newNode = {
-      id: nodeTopic,
-      type: 'default',
-      data: { label: nodeTopic },
-      position: { x: 375, y: 25 },
+    const regex = /\s+/g
+    const cleanedNodeTopic = nodeTopic.replace(regex, '')
+    if (nodes?.includes(cleanedNodeTopic)) {
+      alert('Node already exists')
+      return
     }
-    const targets = targetNodes.replace(/\s+/g, '').split(',')
+
+    const newNode = {
+      id: cleanedNodeTopic,
+      type: 'default',
+      data: { label: cleanedNodeTopic },
+      position: { x: 475, y: 125 },
+    }
+    const targets = targetNodes.replace(regex, '').split(',')
     const edgesToAdd = targets.map(target => ({
-      id: `${nodeTopic}-${target}`,
-      source: nodeTopic,
+      id: `${cleanedNodeTopic}-${target}`,
+      source: cleanedNodeTopic,
       target,
       animated: true,
     }))
-    console.log(edgesToAdd)
-    setNodes([...nodes, newNode])
-    setEdges([...edges, ...edgesToAdd])
+
+    setNodesForDisplay([...nodesForDisplay, newNode])
+    setEdgesForDisplay([...edgesForDisplay, ...edgesToAdd])
+
+    // resetting input states
     setNodeTopic('')
     setTargetNodes('')
   }
@@ -84,7 +102,7 @@ const MockKnowledgeGraph = () => {
           width: '95vw',
         }}
       >
-        <ReactFlow nodes={nodes} edges={edges} fitView />
+        <ReactFlow nodes={nodesForDisplay} edges={edgesForDisplay} fitView />
       </Box>
       <Box
         sx={{
@@ -110,7 +128,7 @@ const MockKnowledgeGraph = () => {
             />
             <TextField
               variant="standard"
-              label="Target(s)"
+              label="Target Node(s)"
               value={targetNodes}
               onChange={_event => setTargetNodes(_event.target.value)}
             />
@@ -127,8 +145,6 @@ const MockKnowledgeGraph = () => {
           </form>
         </DialogContent>
       </Dialog>
-      {nodeTopic}
-      {targetNodes}
     </>
   )
 }

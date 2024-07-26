@@ -37,7 +37,6 @@ const AddLessonStructure = ({ data, setData }) => {
     <Box
       id="lesson-structure-form-container"
       sx={{
-        // position: 'static',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
