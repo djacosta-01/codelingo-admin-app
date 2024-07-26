@@ -88,8 +88,10 @@ const Lessons = () => {
           onClick={() => navigate('/add-lessons')}
           sx={{
             backgroundColor: 'white',
+
             color: '#2688FF',
             '&:hover': {
+              outline: '1px solid black',
               backgroundColor: '#EAECE9',
             },
           }}

@@ -57,37 +57,6 @@ const EditKnowledgeGraph = () => {
       }}
     >
       <NavbarWithSideMenu displaySideMenu={true} />
-      <Box
-        id="user-input"
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          padding: 2,
-        }}
-      >
-        <HelperCard />
-        <form id="graph-input" onSubmit={submitForm}>
-          <TextField
-            label="Knowledge Graph"
-            value={input}
-            onChange={event => setInput(event.target.value)}
-            multiline
-            rows={8}
-          />
-          <TextField type="submit" value="Update" />
-        </form>
-      </Box>
-      <Box
-        id="knowledge-graph"
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          padding: 2,
-        }}
-      >
-        <h1>Gonna replace this with interactive graph later</h1>
-      </Box>
     </Box>
   )
 }

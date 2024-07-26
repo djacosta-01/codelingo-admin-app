@@ -14,6 +14,7 @@ import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import NavbarWithSideMenu from './Components/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
+import MockKnowledgeGraph from './Components/KnowledgeGraph/MockKnowledgeGraph.jsx'
 
 const items = [
   {
@@ -124,6 +125,7 @@ function App() {
               </AuthenticatedRoute>
             }
           />
+          <Route path="/mock-knowledge-graph" element={<MockKnowledgeGraph />} />
         </Routes>
       </Router>
     </Box>
