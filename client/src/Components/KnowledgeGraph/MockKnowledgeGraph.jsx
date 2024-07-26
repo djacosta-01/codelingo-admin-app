@@ -1,42 +1,8 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-} from '@mui/material'
-import { useState, useEffect } from 'react'
-import ReactFlow from 'reactflow'
+import { Box, Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { useState, useEffect, useCallback } from 'react'
+import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
-
-const initialNodes = [
-  {
-    id: 'Input',
-    type: 'input',
-    data: { label: 'Input Node' },
-    position: { x: 250, y: 25 },
-  },
-
-  {
-    id: 'Default',
-    // you can also pass a React component as a label
-    data: { label: <div>Default Node</div> },
-    position: { x: 100, y: 125 },
-  },
-  {
-    id: 'Output',
-    type: 'output',
-    data: { label: 'Output Node' },
-    position: { x: 250, y: 250 },
-  },
-]
-
-const initialEdges = [
-  { id: 'e1-2', source: 'Input', target: 'Default', animated: true },
-  { id: 'e2-3', source: 'Default', target: 'Output', animated: true },
-]
+import { initialEdges, initialNodes } from './scripts/initialMockValues'
 
 const MockKnowledgeGraph = () => {
   const [nodes, setNodes] = useState([])
@@ -48,6 +14,7 @@ const MockKnowledgeGraph = () => {
   const [nodeTopic, setNodeTopic] = useState('')
   const [targetNodes, setTargetNodes] = useState('')
 
+  // Dialog functions
   const handleOpenDialog = () => setOpen(true)
   const handleCloseDialog = () => {
     setOpen(false)
@@ -55,9 +22,24 @@ const MockKnowledgeGraph = () => {
     setTargetNodes('')
   }
 
+  /* source: https://reactflow.dev/learn/concepts/core-concepts */
+  const onNodesChange = useCallback(
+    changes => setNodesForDisplay(nds => applyNodeChanges(changes, nds)),
+    [setNodesForDisplay]
+  )
+  const onEdgesChange = useCallback(
+    changes => setEdgesForDisplay(eds => applyEdgeChanges(changes, eds)),
+    [setEdgesForDisplay]
+  )
+  // handles edge connection
+  const onConnect = useCallback(
+    connection => setEdgesForDisplay(eds => addEdge({ ...connection, animated: true }, eds)),
+    [setEdgesForDisplay]
+  )
+
   useEffect(() => {
     setNodes(nodesForDisplay.map(nodeData => nodeData.id))
-    setEdges(edgesForDisplay.map(edgeData => [edgeData.source, edgeData.target]))
+    setEdges(edgesForDisplay.map(edgeData => [edgeData?.source, edgeData?.target]))
   }, [nodesForDisplay, edgesForDisplay])
 
   const addDataToGraph = _event => {
@@ -76,15 +58,32 @@ const MockKnowledgeGraph = () => {
       position: { x: 475, y: 125 },
     }
     const targets = targetNodes.replace(regex, '').split(',')
-    const edgesToAdd = targets.map(target => ({
-      id: `${cleanedNodeTopic}-${target}`,
-      source: cleanedNodeTopic,
-      target,
-      animated: true,
-    }))
 
-    setNodesForDisplay([...nodesForDisplay, newNode])
-    setEdgesForDisplay([...edgesForDisplay, ...edgesToAdd])
+    // TODO: see if this is a better solution for checking if options input is valid
+    // probably make a validation method?
+    let invalidInput = false
+    const edgesToAdd = targets.map(target => {
+      if (!nodes?.includes(target) || target === cleanedNodeTopic) {
+        alert('Target node does not exist or is the same as the source node')
+        invalidInput = true
+        return
+      }
+      // console.log('HELLO')
+      return {
+        id: `${cleanedNodeTopic}-${target}`,
+        source: cleanedNodeTopic,
+        target,
+        animated: true,
+      }
+    })
+
+    // console.log(edgesToAdd)
+    // console.log(nodes)
+    // console.log(edges)
+    if (!invalidInput) {
+      setNodesForDisplay([...nodesForDisplay, newNode])
+      setEdgesForDisplay([...edgesForDisplay, ...edgesToAdd])
+    }
 
     // resetting input states
     setNodeTopic('')
@@ -102,7 +101,14 @@ const MockKnowledgeGraph = () => {
           width: '95vw',
         }}
       >
-        <ReactFlow nodes={nodesForDisplay} edges={edgesForDisplay} fitView />
+        <ReactFlow
+          nodes={nodesForDisplay}
+          edges={edgesForDisplay}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+        />
       </Box>
       <Box
         sx={{

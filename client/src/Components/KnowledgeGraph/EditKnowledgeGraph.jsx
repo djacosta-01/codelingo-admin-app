@@ -2,7 +2,7 @@ import { TextField, Box, Button } from '@mui/material'
 import { useState, useEffect } from 'react'
 import KnowledgeGraph from './Graph'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
-import HelperCard from './scripts/HelperCard'
+import HelperCard from './HelperCard'
 
 import { nodesAtEachLevel, parseInput } from './scripts/graphMethods'
 
