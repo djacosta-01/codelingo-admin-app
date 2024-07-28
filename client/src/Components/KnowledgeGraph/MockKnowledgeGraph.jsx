@@ -2,17 +2,46 @@ import { Box, Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui
 import { useState, useEffect, useCallback } from 'react'
 import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
-import { initialEdges, initialNodes } from './scripts/initialMockValues'
+import {
+  initialEdges,
+  initialNodes,
+  formatNodeData,
+  formatEdgeData,
+} from './scripts/initialMockValues'
+
+// FOR TESTING
+const initializeGraph = async () => {
+  // console.log('initializing graph')
+  try {
+    const response = await fetch('http://localhost:5000/store-kg', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nodes: initialNodes,
+        edges: initialEdges,
+        class_name: 'CS-101',
+        graph_name: 'class_avg_kg',
+      }),
+    })
+    const data = await response.json()
+  } catch (error) {
+    console.error(error)
+  }
+}
+initializeGraph()
 
 const MockKnowledgeGraph = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
-  const [nodesForDisplay, setNodesForDisplay] = useState(initialNodes)
-  const [edgesForDisplay, setEdgesForDisplay] = useState(initialEdges)
+  const [nodesForReactFlow, setNodesForReactFlow] = useState()
+  const [edgesForReactFlow, setEdgesForReactFlow] = useState()
   const [open, setOpen] = useState(false) // dialog state
   // input states
   const [nodeTopic, setNodeTopic] = useState('')
   const [targetNodes, setTargetNodes] = useState('')
+  const [fetchTrigger, setFetchTrigger] = useState(0)
 
   // Dialog functions
   const handleOpenDialog = () => setOpen(true)
@@ -24,67 +53,75 @@ const MockKnowledgeGraph = () => {
 
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onNodesChange = useCallback(
-    changes => setNodesForDisplay(nds => applyNodeChanges(changes, nds)),
-    [setNodesForDisplay]
+    changes => setNodesForReactFlow(nds => applyNodeChanges(changes, nds)),
+    [setNodesForReactFlow]
   )
+
   const onEdgesChange = useCallback(
-    changes => setEdgesForDisplay(eds => applyEdgeChanges(changes, eds)),
-    [setEdgesForDisplay]
+    changes => setEdgesForReactFlow(eds => applyEdgeChanges(changes, eds)),
+    [setEdgesForReactFlow]
   )
   // handles edge connection
   const onConnect = useCallback(
-    connection => setEdgesForDisplay(eds => addEdge({ ...connection, animated: true }, eds)),
-    [setEdgesForDisplay]
+    connection => setEdgesForReactFlow(eds => addEdge({ ...connection, animated: true }, eds)),
+    [setEdgesForReactFlow]
   )
 
+  // move this to scripts folder later??
+  const checkIfValid = useCallback(async edgesToAdd => {
+    const response = await fetch('http://localhost:5000/classes/CS-101/update-class-graph', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        edges: edgesToAdd,
+      }),
+    })
+    const { cycleFormed, message } = await response.json()
+    // TODO: fix this because rn cycles formed is always true
+    if (cycleFormed ?? true) {
+      console.log('in if block')
+      alert(message)
+    }
+    setFetchTrigger(prev => prev + 1)
+    // console.log(data)
+  }, [])
+
   useEffect(() => {
-    setNodes(nodesForDisplay.map(nodeData => nodeData.id))
-    setEdges(edgesForDisplay.map(edgeData => [edgeData?.source, edgeData?.target]))
-  }, [nodesForDisplay, edgesForDisplay])
+    const fetchGraphData = async () => {
+      // console.log('fetching graph data')
+      const response = await fetch('http://localhost:5000/classes/CS-101/class-graph')
+      const data = await response.json()
+      // console.log(data)
+      setNodes(data['nodes'])
+      setEdges(data['edges'])
+    }
+    fetchGraphData()
+  }, [fetchTrigger])
+
+  useEffect(() => {
+    // console.log('setting nodes and edges for react flow')
+    setNodesForReactFlow(formatNodeData(nodes))
+    setEdgesForReactFlow(formatEdgeData(edges))
+  }, [nodes, edges])
 
   const addDataToGraph = _event => {
     _event.preventDefault()
     const regex = /\s+/g
     const cleanedNodeTopic = nodeTopic.replace(regex, '')
-    if (nodes?.includes(cleanedNodeTopic)) {
-      alert('Node already exists')
+    if (nodes.includes(cleanedNodeTopic)) {
+      alert(`${cleanedNodeTopic} already exists in your graph`)
       return
     }
-
-    const newNode = {
-      id: cleanedNodeTopic,
-      type: 'default',
-      data: { label: cleanedNodeTopic },
-      position: { x: 475, y: 125 },
-    }
-    const targets = targetNodes.replace(regex, '').split(',')
-
-    // TODO: see if this is a better solution for checking if options input is valid
-    // probably make a validation method?
-    let invalidInput = false
-    const edgesToAdd = targets.map(target => {
-      if (!nodes?.includes(target) || target === cleanedNodeTopic) {
-        alert('Target node does not exist or is the same as the source node')
-        invalidInput = true
-        return
-      }
-      // console.log('HELLO')
-      return {
-        id: `${cleanedNodeTopic}-${target}`,
-        source: cleanedNodeTopic,
-        target,
-        animated: true,
-      }
-    })
-
-    // console.log(edgesToAdd)
-    // console.log(nodes)
-    // console.log(edges)
-    if (!invalidInput) {
-      setNodesForDisplay([...nodesForDisplay, newNode])
-      setEdgesForDisplay([...edgesForDisplay, ...edgesToAdd])
-    }
-
+    const edgesToAdd = targetNodes
+      .replace(regex, '')
+      .split(',')
+      .map(target => {
+        return [cleanedNodeTopic, target]
+      })
+    console.log(edgesToAdd)
+    checkIfValid(edgesToAdd)
     // resetting input states
     setNodeTopic('')
     setTargetNodes('')
@@ -102,8 +139,8 @@ const MockKnowledgeGraph = () => {
         }}
       >
         <ReactFlow
-          nodes={nodesForDisplay}
-          edges={edgesForDisplay}
+          nodes={nodesForReactFlow}
+          edges={edgesForReactFlow}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}

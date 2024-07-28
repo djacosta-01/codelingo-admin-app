@@ -18,7 +18,7 @@ const Lessons = () => {
   useEffect(() => {
     const fetchLessons = async () => {
       const response = await supabase.from('lessons').select('lesson_name')
-      const data = await response.data
+      const data = response.data
       setLessons(data)
     }
     fetchLessons()
