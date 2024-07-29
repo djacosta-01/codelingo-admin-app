@@ -1,13 +1,9 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { useState, useEffect, useCallback } from 'react'
-import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflow'
+import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges, Controls } from 'reactflow'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
-import {
-  reactFlowInitialNodes,
-  reactFlowInitialEdges,
-  initialNodes,
-} from './scripts/initialMockValues'
+import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
 
 const MockKnowledgeGraph = () => {
   const [nodes, setNodes] = useState([])
@@ -122,22 +118,29 @@ const MockKnowledgeGraph = () => {
   //   setEdgesForReactFlow(formatEdgeData(edges))
   // }, [nodes, edges])
 
-  // form validation
+  // form submission
   const addDataToGraph = _event => {
     _event.preventDefault()
     const regex = /\s+/g
     const cleanedNodeTopic = nodeTopic.replace(regex, '')
-    alert(`Will try to add ${cleanedNodeTopic} to the graph after`)
-    // if (nodes.includes(cleanedNodeTopic)) {
-    //   alert(`${cleanedNodeTopic} already exists in your graph`)
-    //   return
-    // }
-    // const edgesToAdd = targetNodes
-    //   .replace(regex, '')
-    //   .split(',')
-    //   .map(target => {
-    //     return [cleanedNodeTopic, target]
-    //   })
+    if (nodes.includes(cleanedNodeTopic)) {
+      alert(`${cleanedNodeTopic} already exists in your graph`)
+      return
+    }
+    const newNodes = formatNodeData([cleanedNodeTopic])
+    const edgesToAdd = targetNodes
+      .replace(regex, '')
+      .split(',')
+      .map(target => {
+        return [cleanedNodeTopic, target]
+      })
+    const newEdges = formatEdgeData(edgesToAdd)
+    setReactFlowData(prev => ({
+      ...prev,
+      reactFlowNodes: [...prev.reactFlowNodes, ...newNodes],
+      reactFlowEdges: [...prev.reactFlowEdges, ...newEdges],
+    }))
+    // console.log(newEdges)
     // console.log(edgesToAdd)
     // checkIfValid(edgesToAdd)
     // resetting input states
@@ -150,30 +153,32 @@ const MockKnowledgeGraph = () => {
       <NavbarWithSideMenu displaySideMenu={true} />
       <Box
         sx={{
+          display: 'flex',
+          justifyContent: 'center',
           marginTop: '64px',
           marginLeft: '65px',
           height: '90vh',
           width: '95vw',
         }}
       >
-        {/* <ReactFlow
-          nodes={testNodes}
-          edges={testEdges}
-          onNodesChange={onNodesChange}
-          // onEdgesChange={onEdgesChange}
-          // onConnect={onConnect}
-          fitView
-        /> */}
-        <ReactFlow
-          nodes={reactFlowData.reactFlowNodes}
-          edges={reactFlowData.reactFlowEdges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-        />
+        {reactFlowData.reactFlowNodes.length !== 0 && reactFlowData.reactFlowEdges.length !== 0 ? (
+          <>
+            <ReactFlow
+              nodes={reactFlowData.reactFlowNodes}
+              edges={reactFlowData.reactFlowEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              fitView
+            >
+              <Controls />
+            </ReactFlow>
+          </>
+        ) : (
+          <h1>Loading Graph...</h1>
+        )}
       </Box>
-      {/* <Box
+      <Box
         sx={{
           position: 'fixed',
           bottom: 30,
@@ -183,7 +188,7 @@ const MockKnowledgeGraph = () => {
         <Button variant="contained" size="large" onClick={() => handleOpenDialog()}>
           Add
         </Button>
-      </Box> */}
+      </Box>
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Adding Node</DialogTitle>
         <DialogContent>
