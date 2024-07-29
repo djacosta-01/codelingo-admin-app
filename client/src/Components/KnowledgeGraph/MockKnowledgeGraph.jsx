@@ -4,17 +4,15 @@ import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges } from 'reactflo
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
 import {
-  // initialEdges,
-  // initialNodes,
-  formatNodeData,
-  formatEdgeData,
+  reactFlowInitialNodes,
+  reactFlowInitialEdges,
+  initialNodes,
 } from './scripts/initialMockValues'
 
 const MockKnowledgeGraph = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
-  const [nodesForReactFlow, setNodesForReactFlow] = useState()
-  const [edgesForReactFlow, setEdgesForReactFlow] = useState()
+  const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
   const [open, setOpen] = useState(false) // dialog state
   // input states
   const [nodeTopic, setNodeTopic] = useState('')
@@ -29,36 +27,69 @@ const MockKnowledgeGraph = () => {
     setTargetNodes('')
   }
 
+  // fetching graph data
+  useEffect(() => {
+    const fetchGraphData = async () => {
+      // console.log('fetching graph data')
+      const response = await supabase.from('knowledge_graph').select('*')
+      // console.log('response')
+      // console.log(response.data)
+      const { nodes, edges } = response.data[0]
+      const reactFlowData = response.data[0].react_flow_data
+      // console.log('nodes')
+      // console.log(nodes)
+      // console.log('edges')
+      // console.log(edges)
+      // console.log('reactFlowData')
+      // console.log(reactFlowData)
+      setNodes(nodes)
+      setEdges(edges)
+      setReactFlowData(prev => ({
+        ...prev,
+        reactFlowNodes: reactFlowData[0].reactFlowNodes,
+        reactFlowEdges: reactFlowData[0].reactFlowEdges,
+      }))
+    }
+    fetchGraphData()
+  }, [])
+
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onNodesChange = useCallback(
     changes => {
-      // console.log('onNodesChange')
-      // console.log(changes)
-      setNodesForReactFlow(nds => applyNodeChanges(changes, nds))
+      setReactFlowData(prev => {
+        return {
+          ...prev,
+          reactFlowNodes: applyNodeChanges(changes, prev.reactFlowNodes),
+        }
+      })
     },
-    [setNodesForReactFlow]
+    [setReactFlowData]
   )
 
   const onEdgesChange = useCallback(
     changes => {
       // console.log('onEdgesChange')
       // console.log(changes)
-      setEdgesForReactFlow(eds => applyEdgeChanges(changes, eds))
+      setReactFlowData(prev => {
+        return {
+          ...prev,
+          reactFlowEdges: applyEdgeChanges(changes, prev.reactFlowEdges),
+        }
+      })
     },
-    [setEdgesForReactFlow]
+    [setReactFlowData]
   )
   // handles edge connection
   const onConnect = useCallback(
     connection => {
-      console.log('onConnect')
-      console.log(connection)
-      const { source, target } = connection
-      const valid = checkIfValid([[source, target]])
-      console.log('valid check')
-      console.log(valid)
-      if (valid) setEdgesForReactFlow(eds => addEdge({ ...connection, animated: true }, eds))
+      setReactFlowData(prev => {
+        return {
+          ...prev,
+          reactFlowEdges: addEdge({ ...connection, animated: true }, prev.reactFlowEdges),
+        }
+      })
     },
-    [setEdgesForReactFlow]
+    [setReactFlowData]
   )
 
   // checking if edge connections are valid
@@ -84,43 +115,31 @@ const MockKnowledgeGraph = () => {
     // console.log(data)
   }, [])
 
-  // fetching graph data
-  useEffect(() => {
-    const fetchGraphData = async () => {
-      // console.log('fetching graph data')
-      const response = await fetch('http://localhost:5000/classes/CS-101/class-graph')
-      const data = await response.json()
-      // console.log(data)
-      setNodes(data['nodes'])
-      setEdges(data['edges'])
-    }
-    fetchGraphData()
-  }, [fetchTrigger])
-
   // setting nodes and edges for react flow
-  useEffect(() => {
-    // console.log('setting nodes and edges for react flow')
-    setNodesForReactFlow(formatNodeData(nodes))
-    setEdgesForReactFlow(formatEdgeData(edges))
-  }, [nodes, edges])
+  // useEffect(() => {
+  //   // console.log('setting nodes and edges for react flow')
+  //   setNodesForReactFlow(formatNodeData(nodes))
+  //   setEdgesForReactFlow(formatEdgeData(edges))
+  // }, [nodes, edges])
 
   // form validation
   const addDataToGraph = _event => {
     _event.preventDefault()
     const regex = /\s+/g
     const cleanedNodeTopic = nodeTopic.replace(regex, '')
-    if (nodes.includes(cleanedNodeTopic)) {
-      alert(`${cleanedNodeTopic} already exists in your graph`)
-      return
-    }
-    const edgesToAdd = targetNodes
-      .replace(regex, '')
-      .split(',')
-      .map(target => {
-        return [cleanedNodeTopic, target]
-      })
-    console.log(edgesToAdd)
-    checkIfValid(edgesToAdd)
+    alert(`Will try to add ${cleanedNodeTopic} to the graph after`)
+    // if (nodes.includes(cleanedNodeTopic)) {
+    //   alert(`${cleanedNodeTopic} already exists in your graph`)
+    //   return
+    // }
+    // const edgesToAdd = targetNodes
+    //   .replace(regex, '')
+    //   .split(',')
+    //   .map(target => {
+    //     return [cleanedNodeTopic, target]
+    //   })
+    // console.log(edgesToAdd)
+    // checkIfValid(edgesToAdd)
     // resetting input states
     setNodeTopic('')
     setTargetNodes('')
@@ -137,16 +156,24 @@ const MockKnowledgeGraph = () => {
           width: '95vw',
         }}
       >
+        {/* <ReactFlow
+          nodes={testNodes}
+          edges={testEdges}
+          onNodesChange={onNodesChange}
+          // onEdgesChange={onEdgesChange}
+          // onConnect={onConnect}
+          fitView
+        /> */}
         <ReactFlow
-          nodes={nodesForReactFlow}
-          edges={edgesForReactFlow}
+          nodes={reactFlowData.reactFlowNodes}
+          edges={reactFlowData.reactFlowEdges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView
         />
       </Box>
-      <Box
+      {/* <Box
         sx={{
           position: 'fixed',
           bottom: 30,
@@ -156,7 +183,7 @@ const MockKnowledgeGraph = () => {
         <Button variant="contained" size="large" onClick={() => handleOpenDialog()}>
           Add
         </Button>
-      </Box>
+      </Box> */}
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Adding Node</DialogTitle>
         <DialogContent>
