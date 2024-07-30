@@ -37,6 +37,7 @@ const KnowledgeGraph = () => {
   const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
 
   const saveGraphData = async () => {
+    // TODO: use upsert instead of update
     const { data, error } = await supabase.from('knowledge_graph').update({
       nodes,
       edges,
@@ -50,7 +51,6 @@ const KnowledgeGraph = () => {
     if (error) {
       console.error('Error saving graph data: ', error)
     } else {
-      console.log('Graph data saved successfully: ', data)
       alert('Graph data saved successfully')
     }
   }
