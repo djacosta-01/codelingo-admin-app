@@ -138,13 +138,15 @@ const KnowledgeGraph = () => {
     }
     const cleanedParents = inputState.parentNodes.replace(regex, '') // readd split
     const cleanedTargets = inputState.targetNodes.replace(regex, '') // readd split
-    if (!nodes.includes(cleanedParents) || !nodes.includes(cleanedTargets)) {
-      if (cleanedParents !== '' || cleanedTargets !== '') {
-        alert('Parent or target nodes do not exist in your graph')
-        return
-      }
+
+    // TODO: maybe add logic for when user wants to add a single node without parent or child nodes
+    // should probably handle this in the backend
+    if (cleanedParents === '' && cleanedTargets === '') {
+      alert(
+        'Your node should have at least one parent or child node. Otherwise, it is an isolated node which is not allowed'
+      )
+      return
     }
-    console.log(cleanedParents)
     const edgesToAdd = inputState.targetNodes
       .replace(regex, '')
       .split(',')
@@ -156,7 +158,6 @@ const KnowledgeGraph = () => {
         // return [cleanedNodeTopic, target]
       })
 
-    console.log(edgesToAdd)
     const newNodes = formatNodeData(cleanedNodeTopic.split(','))
     const newEdges = formatEdgeData(edgesToAdd)
     setReactFlowData(prev => ({
