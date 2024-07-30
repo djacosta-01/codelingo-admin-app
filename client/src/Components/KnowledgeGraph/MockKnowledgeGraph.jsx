@@ -106,7 +106,7 @@ const MockKnowledgeGraph = () => {
   )
 
   // checking if edge connections from input are valid
-  const checkIfValid = useCallback(async edgesToAdd => {}, [])
+  const checkForCycles = useCallback(async edgesToAdd => {}, [])
 
   /**
    * ----------------------------------------------
@@ -120,22 +120,6 @@ const MockKnowledgeGraph = () => {
     setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
 
-  // fetching graph data
-  useEffect(() => {
-    const fetchGraphData = async () => {
-      const response = await supabase.from('knowledge_graph').select('*')
-      const { nodes, edges, react_flow_data } = response.data[0]
-      setNodes(nodes)
-      setEdges(edges)
-      setReactFlowData(prev => ({
-        ...prev,
-        reactFlowNodes: react_flow_data[0].reactFlowNodes,
-        reactFlowEdges: react_flow_data[0].reactFlowEdges,
-      }))
-    }
-    fetchGraphData()
-  }, [])
-
   /**
    * ----------------------------------------------
    * Form submission function
@@ -143,19 +127,35 @@ const MockKnowledgeGraph = () => {
    * */
   const addDataToGraph = _event => {
     _event.preventDefault()
+    // TODO: add logic for when user wants to add multiple nodes w/either multiple parent or children at once
     const regex = /\s+/g
     const cleanedNodeTopic = inputState.nodeTopic.replace(regex, '')
     if (nodes.includes(cleanedNodeTopic)) {
       alert(`${cleanedNodeTopic} already exists in your graph`)
       return
     }
-    const newNodes = formatNodeData([cleanedNodeTopic])
+    const cleanedParents = inputState.parentNodes.replace(regex, '') // readd split
+    const cleanedTargets = inputState.targetNodes.replace(regex, '') // readd split
+    if (!nodes.includes(cleanedParents) || !nodes.includes(cleanedTargets)) {
+      if (cleanedParents !== '' && cleanedTargets !== '') {
+        alert('Parent or target nodes do not exist in your graph')
+        return
+      }
+    }
+    console.log(cleanedParents)
     const edgesToAdd = inputState.targetNodes
       .replace(regex, '')
       .split(',')
-      .map(target => {
-        return [cleanedNodeTopic, target]
+      .flatMap(target => {
+        return [
+          [cleanedParents, cleanedNodeTopic],
+          [cleanedNodeTopic, target],
+        ]
+        // return [cleanedNodeTopic, target]
       })
+
+    console.log(edgesToAdd)
+    const newNodes = formatNodeData(cleanedNodeTopic.split(','))
     const newEdges = formatEdgeData(edgesToAdd)
     setReactFlowData(prev => ({
       ...prev,
@@ -168,6 +168,33 @@ const MockKnowledgeGraph = () => {
     // resetting input states
     setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
+
+  /**
+   * ----------------------------------------------
+   *Fetching graph data from supabase
+   * ----------------------------------------------
+   * */
+  const [loadingMessage, setLoadingMessage] = useState(
+    'Loading graph data. This may take a few seconds...'
+  )
+  useEffect(() => {
+    const fetchGraphData = async () => {
+      const { data, error } = await supabase.from('knowledge_graph').select('*')
+      if (error) {
+        setLoadingMessage("We couldn't find your knowledge graph")
+        return
+      }
+      const { nodes, edges, react_flow_data } = data[0]
+      setNodes(nodes)
+      setEdges(edges)
+      setReactFlowData(prev => ({
+        ...prev,
+        reactFlowNodes: react_flow_data[0].reactFlowNodes,
+        reactFlowEdges: react_flow_data[0].reactFlowEdges,
+      }))
+    }
+    fetchGraphData()
+  }, [])
 
   return (
     <>
@@ -192,12 +219,12 @@ const MockKnowledgeGraph = () => {
               onConnect={onConnect}
               fitView
             >
-              {/* <Background gap={16} />
-              <Controls /> */}
+              <Background gap={16} />
+              <Controls />
             </ReactFlow>
           </>
         ) : (
-          <h1>Loading Graph...</h1>
+          <h1>{loadingMessage}</h1>
         )}
       </Box>
       <Box
