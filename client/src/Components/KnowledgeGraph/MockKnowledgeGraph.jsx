@@ -137,7 +137,7 @@ const MockKnowledgeGraph = () => {
     const cleanedParents = inputState.parentNodes.replace(regex, '') // readd split
     const cleanedTargets = inputState.targetNodes.replace(regex, '') // readd split
     if (!nodes.includes(cleanedParents) || !nodes.includes(cleanedTargets)) {
-      if (cleanedParents !== '' && cleanedTargets !== '') {
+      if (cleanedParents !== '' || cleanedTargets !== '') {
         alert('Parent or target nodes do not exist in your graph')
         return
       }
