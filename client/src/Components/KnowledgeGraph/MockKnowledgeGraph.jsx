@@ -13,17 +13,27 @@ import { supabase } from '../../supabaseClient/supabaseClient'
 import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
 
 const MockKnowledgeGraph = () => {
-  const [nodes, setNodes] = useState([])
-  const [edges, setEdges] = useState([])
-  const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
-
-  // input states and functions
+  /**
+   * ----------------------------------------------
+   * Input states and functions
+   * ----------------------------------------------
+   * */
   const [inputState, setInputState] = useState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   const handleInputChange = _event =>
     setInputState({
       ...inputState,
       [_event.target.name]: _event.target.value,
     })
+
+  /**
+   * ----------------------------------------------
+   * Graph data states and functions
+   * ----------------------------------------------
+   * */
+  const [nodes, setNodes] = useState([])
+  const [edges, setEdges] = useState([])
+  const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
+
   const saveGraphData = async () => {
     const { data, error } = await supabase.from('knowledge_graph').update({
       nodes,
@@ -42,30 +52,6 @@ const MockKnowledgeGraph = () => {
       alert('Graph data saved successfully')
     }
   }
-
-  // Dialog state and functions
-  const [open, setOpen] = useState(false)
-  const handleOpenDialog = () => setOpen(true)
-  const handleCloseDialog = () => {
-    setOpen(false)
-    setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
-  }
-
-  // fetching graph data
-  useEffect(() => {
-    const fetchGraphData = async () => {
-      const response = await supabase.from('knowledge_graph').select('*')
-      const { nodes, edges, react_flow_data } = response.data[0]
-      setNodes(nodes)
-      setEdges(edges)
-      setReactFlowData(prev => ({
-        ...prev,
-        reactFlowNodes: react_flow_data[0].reactFlowNodes,
-        reactFlowEdges: react_flow_data[0].reactFlowEdges,
-      }))
-    }
-    fetchGraphData()
-  }, [])
 
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onNodesChange = useCallback(
@@ -122,7 +108,39 @@ const MockKnowledgeGraph = () => {
   // checking if edge connections from input are valid
   const checkIfValid = useCallback(async edgesToAdd => {}, [])
 
-  // form submission
+  /**
+   * ----------------------------------------------
+   * Dialog state and functions
+   * ----------------------------------------------
+   * */
+  const [open, setOpen] = useState(false)
+  const handleOpenDialog = () => setOpen(true)
+  const handleCloseDialog = () => {
+    setOpen(false)
+    setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
+  }
+
+  // fetching graph data
+  useEffect(() => {
+    const fetchGraphData = async () => {
+      const response = await supabase.from('knowledge_graph').select('*')
+      const { nodes, edges, react_flow_data } = response.data[0]
+      setNodes(nodes)
+      setEdges(edges)
+      setReactFlowData(prev => ({
+        ...prev,
+        reactFlowNodes: react_flow_data[0].reactFlowNodes,
+        reactFlowEdges: react_flow_data[0].reactFlowEdges,
+      }))
+    }
+    fetchGraphData()
+  }, [])
+
+  /**
+   * ----------------------------------------------
+   * Form submission function
+   * ----------------------------------------------
+   * */
   const addDataToGraph = _event => {
     _event.preventDefault()
     const regex = /\s+/g
@@ -139,16 +157,14 @@ const MockKnowledgeGraph = () => {
         return [cleanedNodeTopic, target]
       })
     const newEdges = formatEdgeData(edgesToAdd)
-
-    // adding nodes and edges to the graph
     setReactFlowData(prev => ({
       ...prev,
       reactFlowNodes: [...prev.reactFlowNodes, ...newNodes],
       reactFlowEdges: [...prev.reactFlowEdges, ...newEdges],
     }))
-
     setNodes([...nodes, cleanedNodeTopic])
     setEdges([...edges, ...edgesToAdd])
+
     // resetting input states
     setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
@@ -158,7 +174,6 @@ const MockKnowledgeGraph = () => {
       <NavbarWithSideMenu displaySideMenu={true} />
       <Box
         sx={{
-          // backgroundColor: 'coral',
           display: 'flex',
           justifyContent: 'center',
           marginTop: '64px',
