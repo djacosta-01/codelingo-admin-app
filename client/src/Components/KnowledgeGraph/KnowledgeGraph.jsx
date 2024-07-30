@@ -7,13 +7,14 @@ import {
   applyNodeChanges,
   Controls,
   Background,
-} from 'reactflow'
+} from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import { supabase } from '../../supabaseClient/supabaseClient'
 import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import HelperCard from './HelperCard'
 
-const MockKnowledgeGraph = () => {
+const KnowledgeGraph = () => {
   /**
    * ----------------------------------------------
    * Input states and functions
@@ -299,4 +300,4 @@ const MockKnowledgeGraph = () => {
   )
 }
 
-export default MockKnowledgeGraph
+export default KnowledgeGraph

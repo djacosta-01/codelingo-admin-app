@@ -54,7 +54,7 @@ const HelperCard = () => {
               flexDirection: 'column',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: 1,
+              // gap: 1,
               margin: 1,
               padding: 0,
               flexWrap: 'wrap',
