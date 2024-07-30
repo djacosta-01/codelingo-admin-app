@@ -1,57 +1,102 @@
-import { Box, Card, CardContent, IconButton, Tooltip } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
+import { Card, CardContent, IconButton, Tooltip, Typography } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import HelpIcon from '@mui/icons-material/Help'
+import { keyframes } from '@mui/material'
+
+const slideIn = keyframes`
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  `
+
+const slideOut = keyframes`
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+      `
 
 const HelperCard = () => {
+  const [isVisible, setIsVisible] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+
+  const handleCardToggle = () => {
+    if (isHelpOpen) {
+      setIsHelpOpen(false)
+      setTimeout(() => setIsVisible(false), 300) // Delay unmounting by 300ms to allow slideOut animation
+    } else {
+      setIsVisible(true)
+      setIsHelpOpen(true) // Slight delay to ensure visibility state is updated
+    }
+  }
 
   return (
     <>
-      {isHelpOpen ? (
-        <Card variant="outlined" sx={{ backgroundColor: '#EAECE9' }}>
-          <Box
-            id="help-container"
+      {isVisible ? (
+        <Card
+          id="helper-card"
+          sx={{
+            animation: `${isHelpOpen ? slideIn : slideOut} 0.3s ease-in-out`,
+            width: '18rem',
+            position: 'relative',
+            outline: '1px solid black',
+          }}
+        >
+          <CardContent
             sx={{
               display: 'flex',
-              justifyContent: 'flex-start',
-              '& > :not(style)': {
-                m: 0,
-                // padding: 1,
-                width: '40ch',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 1,
+              margin: 1,
+              padding: 0,
+              flexWrap: 'wrap',
+              '& #close-button': {
+                margin: 0,
+                padding: 0,
+                alignSelf: 'flex-start',
               },
             }}
           >
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <IconButton onClick={() => setIsHelpOpen(!isHelpOpen)}>X</IconButton>
-                <h2>How to Input Your Knowledge Graph</h2>
-              </Box>
-
-              <h3>Input Format:</h3>
+            <IconButton id="close-button" onClick={handleCardToggle}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+              Inputting your Knowledge Graph
+            </Typography>
+            <Typography>
+              A valid knowledge graph input should satisfy the following conditions:
               <ol>
-                <li>
-                  Levels: Indicate each level using '== Level X ==', where X is the level number.
-                </li>
-                <li>
-                  {`Nodes and Relationships: Specify relationships between nodes using '-->'
-                      symbol.`}
-                </li>
+                <li>No duplicate nodes</li>
+                <li>No cyles between nodes</li>
               </ol>
-              <h3>Steps to Input Your Knowledge Graph</h3>
-              <ol>
-                <li>Start with Level 1: List nodes and their relationships within each level.</li>
+            </Typography>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+              Controls:
+            </Typography>
+            <Typography>
+              <ul>
+                <li>Add Node(s): Click "Add" button and enter relevant information</li>
                 <li>
-                  Continue with Subsequent Levels: Define nodes and their relationships for each
-                  subsequent level.
+                  Creating Edge(s): Enter edge info when adding a node or click edge source and drag
+                  to desired node
                 </li>
-                <li>Ensure there are no cycles within your knowledge graph</li>
-              </ol>
-            </CardContent>
-          </Box>
+                <li>Move Node(s): Click and drag node(s)</li>
+                <li>Delete Node(s)/Edge(s): Click node or edge and press backspace</li>
+              </ul>
+            </Typography>
+          </CardContent>
         </Card>
       ) : (
         <Tooltip title="Help" arrow>
-          <IconButton onClick={() => setIsHelpOpen(!isHelpOpen)}>
+          <IconButton onClick={handleCardToggle}>
             <HelpIcon id="help-button" color="info" />
           </IconButton>
         </Tooltip>

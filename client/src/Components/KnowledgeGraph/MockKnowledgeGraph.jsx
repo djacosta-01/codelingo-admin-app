@@ -8,9 +8,10 @@ import {
   Controls,
   Background,
 } from 'reactflow'
-import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
 import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
+import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
+import HelperCard from './HelperCard'
 
 const MockKnowledgeGraph = () => {
   /**
@@ -199,10 +200,9 @@ const MockKnowledgeGraph = () => {
   return (
     <>
       <NavbarWithSideMenu displaySideMenu={true} />
+
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
           marginTop: '64px',
           marginLeft: '65px',
           height: '90vh',
@@ -227,6 +227,18 @@ const MockKnowledgeGraph = () => {
           <h1>{loadingMessage}</h1>
         )}
       </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'fixed',
+          top: 70,
+          left: 65,
+          // zIndex: 100,
+        }}
+      >
+        <HelperCard />
+      </Box>
       <Box
         sx={{
           display: 'flex',
@@ -243,6 +255,7 @@ const MockKnowledgeGraph = () => {
           Save
         </Button>
       </Box>
+
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Adding Node</DialogTitle>
         <DialogContent>
