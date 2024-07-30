@@ -24,6 +24,24 @@ const MockKnowledgeGraph = () => {
       ...inputState,
       [_event.target.name]: _event.target.value,
     })
+  const saveGraphData = async () => {
+    const { data, error } = await supabase.from('knowledge_graph').update({
+      nodes,
+      edges,
+      react_flow_data: [
+        {
+          reactFlowNodes: reactFlowData.reactFlowNodes,
+          reactFlowEdges: reactFlowData.reactFlowEdges,
+        },
+      ],
+    })
+    if (error) {
+      console.error('Error saving graph data: ', error)
+    } else {
+      console.log('Graph data saved successfully: ', data)
+      alert('Graph data saved successfully')
+    }
+  }
 
   // Dialog state and functions
   const [open, setOpen] = useState(false)
@@ -169,13 +187,18 @@ const MockKnowledgeGraph = () => {
       </Box>
       <Box
         sx={{
+          display: 'flex',
+          gap: 2,
           position: 'fixed',
           bottom: 30,
           right: 20,
         }}
       >
-        <Button variant="contained" size="large" onClick={() => handleOpenDialog()}>
+        <Button variant="contained" onClick={handleOpenDialog}>
           Add
+        </Button>
+        <Button variant="contained" color="success" onClick={saveGraphData}>
+          Save
         </Button>
       </Box>
       <Dialog open={open} onClose={handleCloseDialog}>
