@@ -8,12 +8,11 @@ import StudentPerformance from './Components/StudentPages/StudentPerformance.jsx
 import React from 'react'
 import Lessons from './Components/Lessons/Lessons.jsx'
 import AddLessons from './Components/Lessons/AddNewLesson/AddLessons.jsx'
-import EditKnowledgeGraph from './Components/KnowledgeGraph/EditKnowledgeGraph.jsx'
 import Roster from './Components/StudentPages/Roster.jsx'
 import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
-import NavbarWithSideMenu from './Components/NavbarAndSideMenu/NavbarWithSideMenu.jsx'
+import KnowledgeGraph from './Components/KnowledgeGraph/KnowledgeGraph.jsx'
 
 const items = [
   {
@@ -104,7 +103,7 @@ function App() {
             path="/knowledge-graph"
             element={
               <AuthenticatedRoute session={session}>
-                <EditKnowledgeGraph />
+                <KnowledgeGraph />
               </AuthenticatedRoute>
             }
           />

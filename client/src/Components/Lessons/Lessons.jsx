@@ -18,7 +18,7 @@ const Lessons = () => {
   useEffect(() => {
     const fetchLessons = async () => {
       const response = await supabase.from('lessons').select('lesson_name')
-      const data = await response.data
+      const data = response.data
       setLessons(data)
     }
     fetchLessons()
@@ -88,8 +88,10 @@ const Lessons = () => {
           onClick={() => navigate('/add-lessons')}
           sx={{
             backgroundColor: 'white',
+
             color: '#2688FF',
             '&:hover': {
+              outline: '1px solid black',
               backgroundColor: '#EAECE9',
             },
           }}

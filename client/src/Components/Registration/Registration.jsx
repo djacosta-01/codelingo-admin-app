@@ -5,8 +5,6 @@ import './Registration.css'
 // import logoImage from "./../../assets/logo.png";
 import { supabase } from '../../supabaseClient/supabaseClient'
 
-// const API_ENDPOINT = 'https://server-ivory-pi.vercel.app/api/register'
-
 function Register() {
   const [formData, setFormData] = useState({
     username: '',
@@ -34,17 +32,6 @@ function Register() {
       // TODO: redirect to like an intro page so they can learn how to use the app and set up knowledge graph and their profile
       navigate('/home')
     }
-    // try {
-    //   const response = await axios.post(API_ENDPOINT, formData)
-    //   if (response.data.success) {
-    //     console.log('Registration Success')
-    //     navigate('/login')
-    //   } else {
-    //     console.error('Registration Failed: ', response.data.message)
-    //   }
-    // } catch (error) {
-    //   console.error('Registration failed:', error)
-    // }
   }
 
   return (
