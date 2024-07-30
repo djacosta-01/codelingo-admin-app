@@ -1,6 +1,13 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { useState, useEffect, useCallback } from 'react'
-import { ReactFlow, addEdge, applyEdgeChanges, applyNodeChanges, Controls } from 'reactflow'
+import {
+  ReactFlow,
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Controls,
+  Background,
+} from 'reactflow'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
 import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
@@ -9,41 +16,34 @@ const MockKnowledgeGraph = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
   const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
-  const [open, setOpen] = useState(false) // dialog state
-  // input states
-  const [nodeTopic, setNodeTopic] = useState('')
-  const [targetNodes, setTargetNodes] = useState('')
-  const [fetchTrigger, setFetchTrigger] = useState(0)
 
-  // Dialog functions
+  // input states and functions
+  const [inputState, setInputState] = useState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
+  const handleInputChange = _event =>
+    setInputState({
+      ...inputState,
+      [_event.target.name]: _event.target.value,
+    })
+
+  // Dialog state and functions
+  const [open, setOpen] = useState(false)
   const handleOpenDialog = () => setOpen(true)
   const handleCloseDialog = () => {
     setOpen(false)
-    setNodeTopic('')
-    setTargetNodes('')
+    setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
 
   // fetching graph data
   useEffect(() => {
     const fetchGraphData = async () => {
-      // console.log('fetching graph data')
       const response = await supabase.from('knowledge_graph').select('*')
-      // console.log('response')
-      // console.log(response.data)
-      const { nodes, edges } = response.data[0]
-      const reactFlowData = response.data[0].react_flow_data
-      // console.log('nodes')
-      // console.log(nodes)
-      // console.log('edges')
-      // console.log(edges)
-      // console.log('reactFlowData')
-      // console.log(reactFlowData)
+      const { nodes, edges, react_flow_data } = response.data[0]
       setNodes(nodes)
       setEdges(edges)
       setReactFlowData(prev => ({
         ...prev,
-        reactFlowNodes: reactFlowData[0].reactFlowNodes,
-        reactFlowEdges: reactFlowData[0].reactFlowEdges,
+        reactFlowNodes: react_flow_data[0].reactFlowNodes,
+        reactFlowEdges: react_flow_data[0].reactFlowEdges,
       }))
     }
     fetchGraphData()
@@ -52,6 +52,11 @@ const MockKnowledgeGraph = () => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onNodesChange = useCallback(
     changes => {
+      changes.forEach(change => {
+        if (change.type === 'remove') {
+          setNodes(prev => prev.filter(node => node !== change.id))
+        }
+      })
       setReactFlowData(prev => {
         return {
           ...prev,
@@ -64,8 +69,15 @@ const MockKnowledgeGraph = () => {
 
   const onEdgesChange = useCallback(
     changes => {
-      // console.log('onEdgesChange')
-      // console.log(changes)
+      changes.forEach(change => {
+        if (change.type !== 'remove') {
+          return
+        }
+        const edgeToRemove = change.id.split('-')
+        return setEdges(prev =>
+          prev.filter(edge => edge[0] !== edgeToRemove[0] || edge[1] !== edgeToRemove[1])
+        )
+      })
       setReactFlowData(prev => {
         return {
           ...prev,
@@ -75,6 +87,7 @@ const MockKnowledgeGraph = () => {
     },
     [setReactFlowData]
   )
+
   // handles edge connection
   const onConnect = useCallback(
     connection => {
@@ -88,64 +101,38 @@ const MockKnowledgeGraph = () => {
     [setReactFlowData]
   )
 
-  // checking if edge connections are valid
-  // move this to scripts folder later??
-  const checkIfValid = useCallback(async edgesToAdd => {
-    const response = await fetch('http://localhost:5000/classes/CS-101/update-class-graph', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        edges: edgesToAdd,
-      }),
-    })
-    const { cycleFormed, message } = await response.json()
-    // TODO: fix this because rn cycles formed is always true
-    if (cycleFormed ?? true) {
-      console.log('in if block')
-      alert(message)
-    }
-    setFetchTrigger(prev => prev + 1)
-    return cycleFormed
-    // console.log(data)
-  }, [])
-
-  // setting nodes and edges for react flow
-  // useEffect(() => {
-  //   // console.log('setting nodes and edges for react flow')
-  //   setNodesForReactFlow(formatNodeData(nodes))
-  //   setEdgesForReactFlow(formatEdgeData(edges))
-  // }, [nodes, edges])
+  // checking if edge connections from input are valid
+  const checkIfValid = useCallback(async edgesToAdd => {}, [])
 
   // form submission
   const addDataToGraph = _event => {
     _event.preventDefault()
     const regex = /\s+/g
-    const cleanedNodeTopic = nodeTopic.replace(regex, '')
+    const cleanedNodeTopic = inputState.nodeTopic.replace(regex, '')
     if (nodes.includes(cleanedNodeTopic)) {
       alert(`${cleanedNodeTopic} already exists in your graph`)
       return
     }
     const newNodes = formatNodeData([cleanedNodeTopic])
-    const edgesToAdd = targetNodes
+    const edgesToAdd = inputState.targetNodes
       .replace(regex, '')
       .split(',')
       .map(target => {
         return [cleanedNodeTopic, target]
       })
     const newEdges = formatEdgeData(edgesToAdd)
+
+    // adding nodes and edges to the graph
     setReactFlowData(prev => ({
       ...prev,
       reactFlowNodes: [...prev.reactFlowNodes, ...newNodes],
       reactFlowEdges: [...prev.reactFlowEdges, ...newEdges],
     }))
-    // console.log(newEdges)
-    // console.log(edgesToAdd)
-    // checkIfValid(edgesToAdd)
+
+    setNodes([...nodes, cleanedNodeTopic])
+    setEdges([...edges, ...edgesToAdd])
     // resetting input states
-    setNodeTopic('')
-    setTargetNodes('')
+    setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
 
   return (
@@ -153,15 +140,16 @@ const MockKnowledgeGraph = () => {
       <NavbarWithSideMenu displaySideMenu={true} />
       <Box
         sx={{
+          // backgroundColor: 'coral',
           display: 'flex',
           justifyContent: 'center',
           marginTop: '64px',
           marginLeft: '65px',
           height: '90vh',
-          width: '95vw',
+          width: '100%',
         }}
       >
-        {reactFlowData.reactFlowNodes.length !== 0 && reactFlowData.reactFlowEdges.length !== 0 ? (
+        {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
           <>
             <ReactFlow
               nodes={reactFlowData.reactFlowNodes}
@@ -171,7 +159,8 @@ const MockKnowledgeGraph = () => {
               onConnect={onConnect}
               fitView
             >
-              <Controls />
+              {/* <Background gap={16} />
+              <Controls /> */}
             </ReactFlow>
           </>
         ) : (
@@ -194,17 +183,26 @@ const MockKnowledgeGraph = () => {
         <DialogContent>
           <form onSubmit={addDataToGraph}>
             <TextField
+              variant="standard"
+              name="parentNodes"
+              label="Parent Node(s)"
+              value={inputState.parentNodes}
+              onChange={handleInputChange}
+            />
+            <TextField
               required
               variant="standard"
-              label="Node Topic"
-              value={nodeTopic}
-              onChange={_event => setNodeTopic(_event.target.value)}
+              name={'nodeTopic'}
+              label="Node Name"
+              value={inputState.nodeTopic}
+              onChange={handleInputChange}
             />
             <TextField
               variant="standard"
-              label="Target Node(s)"
-              value={targetNodes}
-              onChange={_event => setTargetNodes(_event.target.value)}
+              name="targetNodes"
+              label="Child Node(s)"
+              value={inputState.targetNodes}
+              onChange={handleInputChange}
             />
             <Box
               id="dialog-buttons"
