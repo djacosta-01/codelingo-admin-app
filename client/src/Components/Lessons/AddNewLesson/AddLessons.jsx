@@ -1,9 +1,9 @@
 import { Box } from '@mui/material'
 import { useState } from 'react'
-import LessonStepper from './ChildComponents/LessonStepper'
-import AddLessonStructure from './ChildComponents/AddLessonStructure'
-import AddLessonQuestions from './ChildComponents/AddLessonQuestions'
-import ReviewLesson from './ChildComponents/ReviewLesson'
+import LessonStepper from './LessonStepper/LessonStepper'
+import AddLessonStructure from './LessonStepper/Steps/AddLessonStructure'
+import AddLessonQuestions from './LessonStepper/Steps/AddLessonQuestions'
+import ReviewLesson from './LessonStepper/Steps/ReviewLesson'
 import NavbarWithSideMenu from '../../NavbarAndSideMenu/NavbarWithSideMenu'
 
 const AddLessons = () => {

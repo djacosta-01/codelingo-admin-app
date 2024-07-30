@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, TextField, MenuItem, Button } from '@mui/material'
-import CheckboxSelect from './CheckBoxSelect'
+import CheckboxSelect from '../../CheckBoxSelect'
 
 const AddLessonStructure = ({ data, setData }) => {
   const [lessonTitle, setLessonTitle] = useState(data['lessonTitle'])

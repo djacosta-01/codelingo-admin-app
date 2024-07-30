@@ -1,6 +1,6 @@
 import { Box, TextField, MenuItem } from '@mui/material'
 import { useState } from 'react'
-import MultipleChoice from './MultipleChoice'
+import MultipleChoice from '../../QuestionTypes/MultipleChoice'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 

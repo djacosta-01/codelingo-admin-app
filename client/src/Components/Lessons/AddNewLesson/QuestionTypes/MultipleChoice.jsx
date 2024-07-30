@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import CheckIcon from '@mui/icons-material/Check'
-import CheckboxSelect from './CheckBoxSelect'
+import CheckboxSelect from '../CheckBoxSelect'
 
 const AnswerChoices = ({ answers, setAnswers }) => {
   const [answerOne, setAnswerOne] = useState('')
