@@ -10,7 +10,7 @@ const AddLessons = () => {
   const [activeStep, setActiveStep] = useState(1)
   const [dataFromStepOne, setdataFromStepOne] = useState({
     lessonTitle: '',
-    numQuestions: 1,
+    numQuestions: 0,
     selectedTopics: [],
   })
   const [dataFromStepTwo, setdataFromStepTwo] = useState([])

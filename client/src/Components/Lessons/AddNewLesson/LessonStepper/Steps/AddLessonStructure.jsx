@@ -34,7 +34,7 @@ const AddLessonStructure = ({ data, setData }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 20,
+        gap: 10,
       }}
     >
       <h1> Lesson Structure</h1>
@@ -42,19 +42,35 @@ const AddLessonStructure = ({ data, setData }) => {
         id="add-lesson-structure-form"
         sx={{
           padding: 5,
-          // outline: '1px dashed black',
         }}
       >
         <form onSubmit={submitForm}>
           <TextField
             id="lesson-title-input"
             label="Lesson Title"
+            margin="dense"
             variant="standard"
             value={lessonTitle}
             onChange={event => setLessonTitle(event.target.value)}
             required
           />
-
+          <TextField
+            select
+            id="num-questions-input"
+            label="Number of Questions"
+            value={numQuestions}
+            onChange={event => setNumQuestions(event.target.value)}
+            required
+          >
+            <MenuItem value={0}>Custom</MenuItem>
+            {[...Array.from({ length: 10 }, (v, i) => i + 1)].map((number, index) => {
+              return (
+                <MenuItem key={index} value={number}>
+                  {number}
+                </MenuItem>
+              )
+            })}
+          </TextField>
           <CheckboxSelect
             topics={mockTopics}
             topicsPreviouslySelected={data['selectedTopics']}

@@ -39,7 +39,6 @@ const Lessons = () => {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
-          backgroundColor: 'blue',
           alignItems: 'flex-start',
           padding: 7,
         }}
