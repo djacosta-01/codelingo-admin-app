@@ -10,7 +10,7 @@ const LessonStepper = ({ activeStep, setActiveStep }) => {
   const handleNextStep = () => setActiveStep(prevActiveStep => prevActiveStep + 1)
   const handleBackStep = () => setActiveStep(prevActiveStep => prevActiveStep - 1)
   return (
-    <>
+    <Box id="stepper-container">
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => {
           return (
@@ -20,7 +20,7 @@ const LessonStepper = ({ activeStep, setActiveStep }) => {
           )
         })}
       </Stepper>
-      <Box sx={{ display: 'flex', flexDirection: 'row', p: 2 }}>
+      <Box id="step-buttons" sx={{ display: 'flex', flexDirection: 'row', p: 2 }}>
         <Button variant="outlined" onClick={handleBackStep} disabled={activeStep === 1}>
           Back
         </Button>
@@ -44,7 +44,7 @@ const LessonStepper = ({ activeStep, setActiveStep }) => {
           </>
         )}
       </Box>
-    </>
+    </Box>
   )
 }
 

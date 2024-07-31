@@ -24,7 +24,7 @@ const AddLessons = () => {
           <h2>All questions entered</h2>
         ) : (
           <>
-            <div>{`Questions entered: ${enteredQuestions}/${dataFromStepOne.numQuestions}`}</div>
+            {/* <div>{`Questions entered: ${enteredQuestions}/${dataFromStepOne.numQuestions}`}</div> */}
             <AddLessonQuestions
               title={dataFromStepOne['lessonTitle']}
               topics={dataFromStepOne['selectedTopics']}
@@ -44,10 +44,20 @@ const AddLessons = () => {
   return (
     <>
       <NavbarWithSideMenu displaySideMenu={false} />
-      {handlePageBasedOnStep(activeStep)}
-      <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
-      {/* {console.log(dataFromStepOne)}
-      {console.log(dataFromStepTwo)} */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          // // alignItems: 'center',
+          marginTop: '64px',
+          // backgroundColor: 'coral',
+          minHeight: '90vh',
+        }}
+      >
+        {handlePageBasedOnStep(activeStep)}
+        <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
+      </Box>
     </>
   )
 }
