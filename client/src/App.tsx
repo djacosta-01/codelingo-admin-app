@@ -92,6 +92,14 @@ function App() {
             }
           />
           <Route
+            path="/add-lessons/:lessonName"
+            element={
+              <AuthenticatedRoute session={session}>
+                <AddLessons />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
             path="/class-performance"
             element={
               <AuthenticatedRoute session={session}>

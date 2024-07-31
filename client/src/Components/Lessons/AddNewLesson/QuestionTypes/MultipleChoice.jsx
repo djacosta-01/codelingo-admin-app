@@ -117,8 +117,6 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     })
     setTopicsToDisplay([])
     resetQuestionFormat('')
-    // console.log('question data:')
-    // console.log(prevData)
   }
 
   return (

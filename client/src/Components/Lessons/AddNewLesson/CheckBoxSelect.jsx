@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
+import { FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
 import { useState, useEffect } from 'react'
 
 const CheckboxSelect = ({ topics, topicsPreviouslySelected, setTopicsToDisplay }) => {
@@ -11,10 +11,10 @@ const CheckboxSelect = ({ topics, topicsPreviouslySelected, setTopicsToDisplay }
 
   const [topicMappings, setTopicMappings] = useState(mappings())
 
-  useEffect(() => {
-    const selectedTopics = Object.keys(topicMappings).filter(topic => topicMappings[topic])
-    setTopicsToDisplay(selectedTopics)
-  }, [topicMappings])
+  // useEffect(() => {
+  //   const selectedTopics = Object.keys(topicMappings).filter(topic => topicMappings[topic])
+  //   setTopicsToDisplay(selectedTopics)
+  // }, [topicMappings, setTopicMappings, setTopicsToDisplay])
 
   const handleTopicChange = event => {
     const { name, checked } = event.target
@@ -33,7 +33,7 @@ const CheckboxSelect = ({ topics, topicsPreviouslySelected, setTopicsToDisplay }
         multiple
         displayEmpty
         value={Object.keys(topicMappings).filter(topic => topicMappings[topic])}
-        renderValue={selected => (selected.length === 0 ? 'Select topics' : selected.join(', '))}
+        renderValue={selected => (selected.length === 0 ? 'Select Topics' : selected.join(', '))}
       >
         <MenuItem disabled value="">
           <em>Select topics</em>

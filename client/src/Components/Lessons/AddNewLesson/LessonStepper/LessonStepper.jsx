@@ -5,8 +5,6 @@ import { Stepper, Step, StepLabel, Button, Box } from '@mui/material'
 const steps = ['Lesson Structure', 'Lesson Questions', 'Review Lesson']
 
 const LessonStepper = ({ activeStep, setActiveStep }) => {
-  //   const [activeStep, setActiveStep] = useState(0)
-
   const handleNextStep = () => setActiveStep(prevActiveStep => prevActiveStep + 1)
   const handleBackStep = () => setActiveStep(prevActiveStep => prevActiveStep - 1)
   return (

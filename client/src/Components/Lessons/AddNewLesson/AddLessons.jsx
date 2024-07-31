@@ -1,21 +1,54 @@
 import { Box } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { supabase } from '../../../supabaseClient/supabaseClient'
 import LessonStepper from './LessonStepper/LessonStepper'
 import AddLessonStructure from './LessonStepper/Steps/AddLessonStructure'
 import AddLessonQuestions from './LessonStepper/Steps/AddLessonQuestions'
 import ReviewLesson from './LessonStepper/Steps/ReviewLesson'
 import NavbarWithSideMenu from '../../NavbarAndSideMenu/NavbarWithSideMenu'
-
 const AddLessons = () => {
+  const { lessonName } = useParams()
   const [activeStep, setActiveStep] = useState(1)
+  const [lessonData, setLessonData] = useState({
+    lessonID: null,
+    lessonName: lessonName ? lessonName : '',
+    lessonQuestions: [],
+  })
+
+  useEffect(() => {
+    const fetchLessonIfExists = async () => {
+      if (!lessonName) {
+        const { data, error } = await supabase.from('lessons').select('lesson_id')
+        setLessonData(prev => ({
+          ...prev,
+          lessonID: data[data.length - 1].lesson_id + 1,
+        }))
+      } else {
+        const { data, error } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('lesson_name', lessonName)
+        if (error) console.error('Error fetching lesson: ', error)
+        else {
+          setLessonData(prev => ({
+            ...prev,
+            lessonID: data[data.length - 1].lesson_id + 1,
+            lessonQuestions: data[0].questions,
+          }))
+        }
+      }
+    }
+    fetchLessonIfExists()
+  }, [])
+
   const [dataFromStepOne, setdataFromStepOne] = useState({
     lessonTitle: '',
-    numQuestions: 0,
     selectedTopics: [],
   })
   const [dataFromStepTwo, setdataFromStepTwo] = useState([])
   const [enteredQuestions, setEnteredQuestions] = useState(0)
-  // const [isStepOneComplete, setIsStepOneComplete] = useState(false)
+  const [isStepOneComplete, setIsStepOneComplete] = useState(false)
 
   const handlePageBasedOnStep = step => {
     switch (step) {
@@ -23,15 +56,12 @@ const AddLessons = () => {
         return enteredQuestions === dataFromStepOne.numQuestions ? (
           <h2>All questions entered</h2>
         ) : (
-          <>
-            {/* <div>{`Questions entered: ${enteredQuestions}/${dataFromStepOne.numQuestions}`}</div> */}
-            <AddLessonQuestions
-              title={dataFromStepOne['lessonTitle']}
-              topics={dataFromStepOne['selectedTopics']}
-              setEnteredQuestions={setEnteredQuestions}
-              setQuestionData={setdataFromStepTwo}
-            />
-          </>
+          <AddLessonQuestions
+            title={dataFromStepOne['lessonTitle']}
+            topics={dataFromStepOne['selectedTopics']}
+            setEnteredQuestions={setEnteredQuestions}
+            setQuestionData={setdataFromStepTwo}
+          />
         )
       case 3:
         return (
@@ -45,19 +75,30 @@ const AddLessons = () => {
     <>
       <NavbarWithSideMenu displaySideMenu={false} />
       <Box
+        id="TEST"
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          // // alignItems: 'center',
-          marginTop: '64px',
-          // backgroundColor: 'coral',
-          minHeight: '90vh',
+          minHeight: '100vh',
         }}
       >
-        {handlePageBasedOnStep(activeStep)}
+        <Box
+          id="BLAH"
+          sx={{
+            display: 'flex',
+            flex: 1,
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            // backgroundColor: 'pink',
+          }}
+        >
+          {handlePageBasedOnStep(activeStep)}
+        </Box>
+
         <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
       </Box>
+      {console.log(lessonData)}
     </>
   )
 }
