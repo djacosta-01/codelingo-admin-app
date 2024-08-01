@@ -76,7 +76,7 @@ function App() {
             }
           />
           <Route
-            path="/lesson"
+            path="/lesson/:lessonName"
             element={
               <AuthenticatedRoute session={session}>
                 <Lesson />

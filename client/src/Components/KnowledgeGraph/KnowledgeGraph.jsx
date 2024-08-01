@@ -222,7 +222,16 @@ const KnowledgeGraph = () => {
               fitView
             >
               <Background gap={16} />
+              {/* <Box
+                sx={{
+                  position: 'fixed',
+                  bottom: 30,
+                  left: 20,
+                  zIndex: 100,
+                }}
+              > */}
               <Controls />
+              {/* </Box> */}
             </ReactFlow>
           </>
         ) : (
@@ -236,7 +245,6 @@ const KnowledgeGraph = () => {
           position: 'fixed',
           top: 70,
           left: 65,
-          // zIndex: 100,
         }}
       >
         <HelperCard />

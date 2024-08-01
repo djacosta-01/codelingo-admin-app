@@ -1,5 +1,5 @@
 import { Box, Accordion, AccordionDetails, AccordionSummary, IconButton } from '@mui/material'
-import { useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import { supabase } from '../../supabaseClient/supabaseClient'
@@ -9,11 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 const Lesson = () => {
   const [lessonContent, setLessonContent] = useState(null)
   const [loadingMessage, setLoadingMessage] = useState('Loading Content...')
-  // can either have useEffect hook to fetch lessons or pass lessons as props
-  const location = useLocation()
-  const queryParameters = new URLSearchParams(location.search)
-  const lessonName = queryParameters.get('lesson')
-  // console.log(lessonName)
+  const { lessonName } = useParams()
 
   useEffect(() => {
     // fetching lesson content from supabase
