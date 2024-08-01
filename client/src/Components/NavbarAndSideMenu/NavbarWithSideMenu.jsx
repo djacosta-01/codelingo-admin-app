@@ -1,5 +1,4 @@
 import { Menu, ChevronLeft } from '@mui/icons-material'
-import HomeIcon from '@mui/icons-material/Home'
 import LessonsIcon from '@mui/icons-material/MenuBook'
 import KnowledgeGraphIcon from '@mui/icons-material/Workspaces'
 import RosterIcon from '@mui/icons-material/Groups'
@@ -16,7 +15,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { IconButton, Box, Tooltip } from '@mui/material'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { Info, BugReport, Logout } from '@mui/icons-material'
 import { supabase } from '../../supabaseClient/supabaseClient'
 
@@ -89,7 +88,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })
   })
 )
 
-const NavbarWithSideMenu = ({ displaySideMenu }) => {
+const NavbarWithSideMenu = ({ className, displaySideMenu }) => {
   const theme = useTheme()
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
 
@@ -102,16 +101,30 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
     if (error) console.log('Error logging out:', error.message)
   }
 
-  // TODO: plug in class name passed in as prop to side menu from Home page
+  // TODO: fix routes of other side menu items
   const sideMenuItems = [
-    { text: 'Lessons', icon: <LessonsIcon />, slug: '/lessons' },
-    { text: 'Knowledge Graph', icon: <KnowledgeGraphIcon />, slug: '/knowledge-graph' },
-    { text: 'Roster', icon: <RosterIcon />, slug: '/roster' },
-    { text: 'Class Performance', icon: <ClassPerformanceIcon />, slug: '/class-performance' },
-    { text: 'Class Settings', icon: <SettingsIcon />, slug: '/class-settings' },
+    { text: 'Lessons', icon: <LessonsIcon />, slug: `/classes/${className}/lessons` },
+    {
+      text: 'Knowledge Graph',
+      icon: <KnowledgeGraphIcon />,
+      slug: `/classes/${className}/knowledge-graph`,
+    },
+    { text: 'Roster', icon: <RosterIcon />, slug: `/classes/${className}/roster` },
+    {
+      text: 'Class Performance',
+      icon: <ClassPerformanceIcon />,
+      slug: `/classes/${className}/class-performance`,
+    },
+    {
+      text: 'Class Settings',
+      icon: <SettingsIcon />,
+      slug: `/classes/${className}/class-settings`,
+    },
   ]
+
   return (
     <Box id="nav-and-sidemenu">
+      {/* Navbar */}
       <AppBar position="fixed" open={isSideMenuOpen}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box
@@ -169,6 +182,7 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
         </Toolbar>
       </AppBar>
 
+      {/* SideMenu */}
       {!displaySideMenu ? (
         ''
       ) : (
@@ -187,9 +201,7 @@ const NavbarWithSideMenu = ({ displaySideMenu }) => {
                     justifyContent: isSideMenuOpen ? 'initial' : 'center',
                     px: 2.5,
                   }}
-                  onClick={() => {
-                    navigate(slug)
-                  }}
+                  onClick={() => navigate(slug)}
                 >
                   <ListItemIcon
                     sx={{

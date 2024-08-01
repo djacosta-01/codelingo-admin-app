@@ -9,7 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 const Lesson = () => {
   const [lessonContent, setLessonContent] = useState(null)
   const [loadingMessage, setLoadingMessage] = useState('Loading Content...')
-  const { lessonName } = useParams()
+  const { className, lessonName } = useParams()
 
   useEffect(() => {
     // fetching lesson content from supabase
@@ -53,7 +53,7 @@ const Lesson = () => {
       }}
     >
       <Box id="lesson-container">
-        <NavbarWithSideMenu displaySideMenu={true} />
+        <NavbarWithSideMenu className={className} displaySideMenu={true} />
         {!lessonContent ? (
           <h1>{loadingMessage}</h1>
         ) : (

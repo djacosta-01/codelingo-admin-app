@@ -24,11 +24,9 @@ export default function Home({ items, heading, onSelectItem }: Props) {
     setIsNewClassActive(false) // Close the NewClass form after creation
   }
 
-  const navigateToLessonsPage = query => {
-    // console.log('Navigating to lessons for class:', query)
-    const className = query.toLowerCase().replace(/\s+/g, '')
-    // console.log('className:', className)
-    navigate(`/lessons?class=${className}`)
+  const navigateToLessonsPage = (className: string) => {
+    // className = className.toLowerCase().replace(/\s+/g, '')
+    navigate(`/classes/${className}/lessons`)
   }
 
   return (

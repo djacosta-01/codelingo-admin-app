@@ -6,7 +6,8 @@ import AddIcon from '@mui/icons-material/Add'
 import DraftLessonIcon from '@mui/icons-material/EditNote'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 
-const CompletedLessons = ({ completed, navigateTo }) => {
+const CompletedLessons = ({ className, completed, navigateTo }) => {
+  const baseUrl = `/classes/${className}/lessons/lesson`
   return (
     <Box
       id="completed-lessons"
@@ -36,7 +37,7 @@ const CompletedLessons = ({ completed, navigateTo }) => {
                 transitionDuration: '0.3s',
               },
             }}
-            onClick={() => navigateTo(`/lesson/${lesson}`)}
+            onClick={() => navigateTo(`${baseUrl}/${lesson}`)}
           >
             {lesson}
           </Paper>
@@ -46,7 +47,7 @@ const CompletedLessons = ({ completed, navigateTo }) => {
   )
 }
 
-const DraftLessons = ({ drafts, navigateTo }) => {
+const DraftLessons = ({ className, drafts, navigateTo }) => {
   return (
     <Box
       id="draft-lessons"
@@ -75,7 +76,7 @@ const DraftLessons = ({ drafts, navigateTo }) => {
               transitionDuration: '0.3s',
             },
           }}
-          onClick={() => navigateTo('/add-lessons')}
+          onClick={() => navigateTo(`/classes/${className}/add-lessons`)}
         >
           {lesson}
         </Paper>
@@ -85,11 +86,12 @@ const DraftLessons = ({ drafts, navigateTo }) => {
 }
 
 const Lessons = () => {
+  const navigate = useNavigate()
+  const { className } = useParams()
   const [lessons, setLessons] = useState({
     completed: [],
     drafts: [],
   })
-  const navigate = useNavigate()
 
   // fetching lessons from supabase
   useEffect(() => {
@@ -119,7 +121,7 @@ const Lessons = () => {
 
   return (
     <>
-      <NavbarWithSideMenu displaySideMenu={true} />
+      <NavbarWithSideMenu className={className} displaySideMenu={true} />
       <Box
         sx={{
           marginTop: '64px',
@@ -131,7 +133,11 @@ const Lessons = () => {
           minHeight: '90vh',
         }}
       >
-        <CompletedLessons completed={lessons.completed} navigateTo={navigate} />
+        <CompletedLessons
+          className={className}
+          completed={lessons.completed}
+          navigateTo={navigate}
+        />
         {lessons.drafts.length === 0 ? (
           // To keep the number of children constant
           // sorry for the hacky solution :/
@@ -141,7 +147,7 @@ const Lessons = () => {
             <Divider>
               <Chip icon={<DraftLessonIcon />} label="Drafts" />
             </Divider>
-            <DraftLessons drafts={lessons.drafts} navigateTo={navigate} />
+            <DraftLessons className={className} drafts={lessons.drafts} navigateTo={navigate} />
           </>
         )}
       </Box>
@@ -155,7 +161,7 @@ const Lessons = () => {
       >
         <Fab
           color="white"
-          onClick={() => navigate('/add-lessons')}
+          onClick={() => navigate(`/classes/${className}/add-lessons`)}
           sx={{
             backgroundColor: 'white',
             color: '#2688FF',

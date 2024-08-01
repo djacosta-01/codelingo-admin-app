@@ -9,12 +9,14 @@ import {
   Background,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { useParams } from 'react-router-dom'
 import { supabase } from '../../supabaseClient/supabaseClient'
 import { formatNodeData, formatEdgeData } from './scripts/initialMockValues'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
 import HelperCard from './HelperCard'
 
 const KnowledgeGraph = () => {
+  const { className } = useParams()
   /**
    * ----------------------------------------------
    * Input states and functions
@@ -198,11 +200,9 @@ const KnowledgeGraph = () => {
     }
     fetchGraphData()
   }, [])
-
   return (
     <>
-      <NavbarWithSideMenu displaySideMenu={true} />
-
+      <NavbarWithSideMenu className={className} displaySideMenu={true} />
       <Box
         sx={{
           marginTop: '64px',
