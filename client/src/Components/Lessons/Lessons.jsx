@@ -14,6 +14,7 @@ const CompletedLessons = ({ className, completed, navigateTo }) => {
       sx={{
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'flex-start',
         flexWrap: 'wrap',
       }}
     >
@@ -53,7 +54,7 @@ const DraftLessons = ({ className, drafts, navigateTo }) => {
       id="draft-lessons"
       sx={{
         display: 'flex',
-        // flex: 1,
+        flex: 1,
         justifyContent: 'center',
         flexWrap: 'wrap',
       }}
