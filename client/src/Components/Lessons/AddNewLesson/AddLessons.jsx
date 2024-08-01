@@ -13,6 +13,8 @@ const AddLessons = () => {
   const [lessonData, setLessonData] = useState({
     lessonID: null,
     lessonName: lessonName ? lessonName : '',
+    isDraft: true,
+    lessonTopics: [],
     lessonQuestions: [],
   })
 
@@ -34,6 +36,8 @@ const AddLessons = () => {
           setLessonData(prev => ({
             ...prev,
             lessonID: data[data.length - 1].lesson_id + 1,
+            isDraft: false,
+            lessonTopics: data[0].lesson_topics,
             lessonQuestions: data[0].questions,
           }))
         }
