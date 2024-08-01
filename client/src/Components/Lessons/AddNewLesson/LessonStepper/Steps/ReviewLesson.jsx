@@ -9,7 +9,9 @@ const ReviewLesson = ({ lessonTitle, questions }) => {
   }
   return (
     <>
-      {questions.map((question, index) => {
+      <h1>Review Lesson Under Construction...</h1>
+      <h2>{lessonTitle}</h2>
+      {/* {questions.map((question, index) => {
         return (
           <div key={index}>
             <h1>{lessonTitle}</h1>
@@ -24,8 +26,8 @@ const ReviewLesson = ({ lessonTitle, questions }) => {
             <p>{question.answer}</p>
           </div>
         )
-      })}
-      <button onClick={() => saveLessonToDatabase()}>Add Lesson</button>
+      })} */}
+      {/* <button onClick={() => saveLessonToDatabase()}>Add Lesson</button> */}
     </>
   )
 }

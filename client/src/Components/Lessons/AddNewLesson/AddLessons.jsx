@@ -22,6 +22,10 @@ const AddLessons = () => {
     const fetchLessonIfExists = async () => {
       if (!lessonName) {
         const { data, error } = await supabase.from('lessons').select('lesson_id')
+        if (error) {
+          console.error('Error fetching lesson: ', error)
+          return
+        }
         setLessonData(prev => ({
           ...prev,
           lessonID: data[data.length - 1].lesson_id + 1,
@@ -31,25 +35,26 @@ const AddLessons = () => {
           .from('lessons')
           .select('*')
           .eq('lesson_name', lessonName)
-        if (error) console.error('Error fetching lesson: ', error)
-        else {
-          setLessonData(prev => ({
-            ...prev,
-            lessonID: data[data.length - 1].lesson_id + 1,
-            isDraft: false,
-            lessonTopics: data[0].lesson_topics,
-            lessonQuestions: data[0].questions,
-          }))
+        if (error) {
+          console.error('Error fetching lesson: ', error)
+          return
         }
+        setLessonData(prev => ({
+          ...prev,
+          lessonID: data[data.length - 1].lesson_id,
+          isDraft: false,
+          lessonTopics: data[0].lesson_topics,
+          lessonQuestions: data[0].questions,
+        }))
       }
     }
     fetchLessonIfExists()
   }, [])
 
-  const [dataFromStepOne, setdataFromStepOne] = useState({
-    lessonTitle: '',
-    selectedTopics: [],
-  })
+  // const [dataFromStepOne, setdataFromStepOne] = useState({
+  //   lessonTitle: '',
+  //   selectedTopics: [],
+  // })
   const [dataFromStepTwo, setdataFromStepTwo] = useState([])
   const [enteredQuestions, setEnteredQuestions] = useState(0)
   const [isStepOneComplete, setIsStepOneComplete] = useState(false)
@@ -57,22 +62,21 @@ const AddLessons = () => {
   const handlePageBasedOnStep = step => {
     switch (step) {
       case 2:
-        return enteredQuestions === dataFromStepOne.numQuestions ? (
-          <h2>All questions entered</h2>
-        ) : (
-          <AddLessonQuestions
-            title={dataFromStepOne['lessonTitle']}
-            topics={dataFromStepOne['selectedTopics']}
-            setEnteredQuestions={setEnteredQuestions}
-            setQuestionData={setdataFromStepTwo}
-          />
-        )
+        return <h1>Under Construction...</h1>
+      // return enteredQuestions === dataFromStepOne.numQuestions ? (
+      //   <h2>All questions entered</h2>
+      // ) : (
+      //   <AddLessonQuestions
+      //     title={dataFromStepOne['lessonTitle']}
+      //     topics={dataFromStepOne['selectedTopics']}
+      //     setEnteredQuestions={setEnteredQuestions}
+      //     setQuestionData={setdataFromStepTwo}
+      //   />
+      // )
       case 3:
-        return (
-          <ReviewLesson lessonTitle={dataFromStepOne.lessonTitle} questions={dataFromStepTwo} />
-        )
+        return <ReviewLesson lessonTitle={lessonData.lessonName} questions={dataFromStepTwo} />
       default:
-        return <AddLessonStructure data={dataFromStepOne} setData={setdataFromStepOne} />
+        return <AddLessonStructure data={lessonData} setData={setLessonData} />
     }
   }
   return (

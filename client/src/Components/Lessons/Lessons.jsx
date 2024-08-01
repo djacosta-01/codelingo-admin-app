@@ -36,6 +36,8 @@ const CompletedLessons = ({ className, completed, navigateTo }) => {
                 transform: 'scale(1.05)',
                 transition: 'all',
                 transitionDuration: '0.3s',
+                fontWeight: 'bold',
+                textDecoration: 'underline',
               },
             }}
             onClick={() => navigateTo(`${baseUrl}/${lesson}`)}
@@ -69,15 +71,17 @@ const DraftLessons = ({ className, drafts, navigateTo }) => {
             height: '20ch',
             margin: 5,
             padding: 1,
-            outline: '1px solid black',
+            outline: '2px dashed red',
             '&:hover': {
               cursor: 'pointer',
               transform: 'scale(1.05)',
               transition: 'all',
               transitionDuration: '0.3s',
+              fontWeight: 'bold',
+              textDecoration: 'underline',
             },
           }}
-          onClick={() => navigateTo(`/classes/${className}/add-lessons`)}
+          onClick={() => navigateTo(`/classes/${className}/add-lessons/${lesson}`)}
         >
           {lesson}
         </Paper>
@@ -105,7 +109,7 @@ const Lessons = () => {
       if (data.length === 0) {
         return
       }
-      data.map(lesson => {
+      data.map(lesson =>
         setLessons(prev => ({
           ...prev,
           completed: lesson.is_draft
@@ -115,7 +119,7 @@ const Lessons = () => {
             ? Array.from(new Set([...prev.drafts, lesson.lesson_name]))
             : prev.drafts,
         }))
-      })
+      )
     }
     fetchLessons()
   }, [])
@@ -157,7 +161,7 @@ const Lessons = () => {
         sx={{
           position: 'fixed',
           bottom: 30,
-          right: 20,
+          right: 30,
         }}
       >
         <Fab
@@ -167,7 +171,6 @@ const Lessons = () => {
             backgroundColor: 'white',
             color: '#2688FF',
             '&:hover': {
-              outline: '1px solid black',
               backgroundColor: '#EAECE9',
             },
           }}

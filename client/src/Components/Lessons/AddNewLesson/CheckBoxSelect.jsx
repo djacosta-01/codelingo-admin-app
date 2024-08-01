@@ -11,10 +11,10 @@ const CheckboxSelect = ({ topics, topicsPreviouslySelected, setTopicsToDisplay }
 
   const [topicMappings, setTopicMappings] = useState(mappings())
 
-  // useEffect(() => {
-  //   const selectedTopics = Object.keys(topicMappings).filter(topic => topicMappings[topic])
-  //   setTopicsToDisplay(selectedTopics)
-  // }, [topicMappings, setTopicMappings, setTopicsToDisplay])
+  useEffect(() => {
+    const selectedTopics = Object.keys(topicMappings).filter(topic => topicMappings[topic])
+    setTopicsToDisplay(selectedTopics)
+  }, [topicMappings, setTopicMappings, setTopicsToDisplay])
 
   const handleTopicChange = event => {
     const { name, checked } = event.target
