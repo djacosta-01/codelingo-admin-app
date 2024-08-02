@@ -74,7 +74,6 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
           Save
         </Button>
       </form>
-      {lessonTopics.join(',')}
     </>
   )
 }

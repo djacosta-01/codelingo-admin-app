@@ -1,5 +1,4 @@
 import { Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
-import { useState } from 'react'
 
 const CheckboxSelect = ({ topicsFromGraph, lessonTopics, setLessonTopics }) => {
   return (

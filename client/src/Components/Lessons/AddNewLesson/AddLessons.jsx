@@ -90,6 +90,7 @@ const AddLessons = () => {
           sx={{
             display: 'flex',
             flex: 1,
+            marginTop: '64px',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',

@@ -7,10 +7,13 @@ import {
   FormLabel,
   RadioGroup,
   Radio,
+  FormControlLabel,
+  MenuItem,
+  Checkbox,
+  Select,
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import CheckIcon from '@mui/icons-material/Check'
-import CheckboxSelect from '../CheckBoxSelect'
 
 const AnswerChoices = ({ answers, setAnswers }) => {
   const [answerOne, setAnswerOne] = useState('')
@@ -28,55 +31,57 @@ const AnswerChoices = ({ answers, setAnswers }) => {
   }, [correctAnswer, answerOne, answerTwo, answerThree, answerFour, answers, setAnswers])
 
   return (
-    <FormControl>
-      <FormLabel>Answer Choices</FormLabel>
-      <RadioGroup
-        id="answer-choices-radio-group"
-        value={correctAnswer}
-        onChange={event => setCorrectAnswer(event.target.value)}
-      >
-        <Box>
-          <Radio value={answerOne} />
-          <TextField
-            required
-            id="choice-1-input"
-            label="Answer 1"
-            value={answerOne}
-            onChange={event => setAnswerOne(event.target.value)}
-          />
-        </Box>
-        <Box>
-          <Radio value={answerTwo} />
-          <TextField
-            required
-            id="choice-2-input"
-            label="Answer 2"
-            value={answerTwo}
-            onChange={event => setAnswerTwo(event.target.value)}
-          />
-        </Box>
-        <Box>
-          <Radio value={answerThree} />
-          <TextField
-            required
-            id="choice-3-input"
-            label="Answer 3"
-            value={answerThree}
-            onChange={event => setAnswerThree(event.target.value)}
-          />
-        </Box>
-        <Box>
-          <Radio value={answerFour} />
-          <TextField
-            required
-            id="choice-4-input"
-            label="Answer 4"
-            value={answerFour}
-            onChange={event => setAnswerFour(event.target.value)}
-          />
-        </Box>
-      </RadioGroup>
-    </FormControl>
+    <Box sx={{ backgroundColor: 'pink', display: 'flex', alignItems: 'flex-end' }}>
+      <FormControl>
+        <FormLabel>Answer Choices</FormLabel>
+        <RadioGroup
+          id="answer-choices-radio-group"
+          value={correctAnswer}
+          onChange={event => setCorrectAnswer(event.target.value)}
+        >
+          <Box>
+            <Radio required value={answerOne} />
+            <TextField
+              required
+              id="choice-1-input"
+              label="Answer 1"
+              value={answerOne}
+              onChange={event => setAnswerOne(event.target.value)}
+            />
+          </Box>
+          <Box>
+            <Radio required value={answerTwo} />
+            <TextField
+              required
+              id="choice-2-input"
+              label="Answer 2"
+              value={answerTwo}
+              onChange={event => setAnswerTwo(event.target.value)}
+            />
+          </Box>
+          <Box>
+            <Radio required value={answerThree} />
+            <TextField
+              required
+              id="choice-3-input"
+              label="Answer 3"
+              value={answerThree}
+              onChange={event => setAnswerThree(event.target.value)}
+            />
+          </Box>
+          <Box>
+            <Radio required value={answerFour} />
+            <TextField
+              required
+              id="choice-4-input"
+              label="Answer 4"
+              value={answerFour}
+              onChange={event => setAnswerFour(event.target.value)}
+            ></TextField>
+          </Box>
+        </RadioGroup>
+      </FormControl>
+    </Box>
   )
 }
 
@@ -118,7 +123,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     // setTopicsToDisplay([])
     // resetQuestionFormat('')
   }
-
+  const [questionTopics, setQuestionTopics] = useState([])
   return (
     <>
       <form onSubmit={saveQuestion}>
@@ -142,7 +147,46 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           required
           fullWidth
         />
-        {/* <CheckboxSelect topics={topics} setTopicsToDisplay={setTopicsToDisplay} /> */}
+
+        <Select
+          required
+          id="relevant-topics-for-question-select"
+          multiple
+          displayEmpty
+          value={questionTopics}
+          renderValue={selected => (selected.length === 0 ? 'Select topics' : selected.join(', '))}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <MenuItem>
+              <em>Select topics</em>
+            </MenuItem>
+            {topics.map((topic, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={questionTopics.includes(topic)}
+                    onChange={_event => {
+                      if (questionTopics.includes(topic)) {
+                        setQuestionTopics(prev => prev.filter(id => id !== topic))
+                      } else {
+                        setQuestionTopics(prev => [...prev, topic])
+                      }
+                    }}
+                    name={topic}
+                  />
+                }
+                label={topic}
+              />
+            ))}
+          </Box>
+        </Select>
         <AnswerChoices answers={answers} setAnswers={setAnswers} />
         <Box>
           <Tooltip title="Save Question" arrow>

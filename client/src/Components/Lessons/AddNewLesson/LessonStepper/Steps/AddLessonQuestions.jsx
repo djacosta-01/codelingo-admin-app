@@ -43,18 +43,21 @@ const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLesso
   }
   return (
     <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '& > :not(style)': {
-          m: 1,
-          width: '50ch',
-        },
-      }}
+      sx={
+        {
+          // minHeight: '90vh',
+          // display: 'flex',
+          // flexDirection: 'column',
+          // justifyContent: 'center',
+          // alignItems: 'center',
+          // gap: 1,
+          // '& > :not(style)': {
+          //   m: 1,
+          //   width: '50ch',
+          // },
+        }
+      }
     >
-      <h1>{title}</h1>
       <TextField
         select
         label="Question Format"
