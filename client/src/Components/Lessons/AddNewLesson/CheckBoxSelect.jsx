@@ -1,8 +1,7 @@
 import { Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-const CheckboxSelect = ({ topics, topicsPreviouslySelected }) => {
-  const [selectValues, setSelectValues] = useState(topicsPreviouslySelected)
+const CheckboxSelect = ({ topicsFromGraph, lessonTopics, setLessonTopics }) => {
   return (
     <>
       <Select
@@ -10,7 +9,7 @@ const CheckboxSelect = ({ topics, topicsPreviouslySelected }) => {
         id="relevant-topics-for-question-select"
         multiple
         displayEmpty
-        value={selectValues}
+        value={lessonTopics}
         renderValue={selected => (selected.length === 0 ? 'Select topics' : selected.join(', '))}
       >
         <Box
@@ -23,17 +22,17 @@ const CheckboxSelect = ({ topics, topicsPreviouslySelected }) => {
           <MenuItem>
             <em>Select topics</em>
           </MenuItem>
-          {topics.map((topic, index) => (
+          {topicsFromGraph.map((topic, index) => (
             <FormControlLabel
               key={index}
               control={
                 <Checkbox
-                  checked={selectValues.includes(topic)}
+                  checked={lessonTopics.includes(topic)}
                   onChange={_event => {
-                    if (selectValues.includes(topic)) {
-                      setSelectValues(prev => prev.filter(id => id !== topic))
+                    if (lessonTopics.includes(topic)) {
+                      setLessonTopics(prev => prev.filter(id => id !== topic))
                     } else {
-                      setSelectValues(prev => [...prev, topic])
+                      setLessonTopics(prev => [...prev, topic])
                     }
                   }}
                   name={topic}

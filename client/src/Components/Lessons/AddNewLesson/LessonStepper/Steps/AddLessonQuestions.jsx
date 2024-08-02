@@ -4,7 +4,7 @@ import MultipleChoice from '../../QuestionTypes/MultipleChoice'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 
-const AddLessonQuestions = ({ title, topics, setEnteredQuestions, setQuestionData }) => {
+const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLessonData }) => {
   const [questionFormat, setQuestionFormat] = useState('')
   const handlePageBasedOnQuestionFormat = format => {
     switch (format) {
@@ -12,8 +12,8 @@ const AddLessonQuestions = ({ title, topics, setEnteredQuestions, setQuestionDat
         return (
           <MultipleChoice
             setEnteredQuestions={setEnteredQuestions}
-            topics={topics}
-            setQuestionData={setQuestionData}
+            topics={lessonTopics}
+            setQuestionData={setLessonData}
             resetQuestionFormat={setQuestionFormat}
           />
         )
@@ -68,6 +68,7 @@ const AddLessonQuestions = ({ title, topics, setEnteredQuestions, setQuestionDat
         ))}
       </TextField>
       {handlePageBasedOnQuestionFormat(questionFormat)}
+      {}
     </Box>
   )
 }

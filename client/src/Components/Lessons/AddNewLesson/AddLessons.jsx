@@ -1,5 +1,5 @@
 import { Avatar, Box, Skeleton } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, act } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../../../supabaseClient/supabaseClient'
 import LessonStepper from './LessonStepper/LessonStepper'
@@ -33,6 +33,11 @@ const AddLessons = () => {
           console.error('Error fetching lesson: ', error)
           return
         }
+        console.log('in use effect')
+        // console.log('step', activeStep)
+        // console.log(data)
+        // console.log('lesson name')
+        // console.log(lessonName)
         setLessonData({
           isDraft: data[0].is_draft,
           lessonName: data[0].lesson_name,
@@ -43,12 +48,8 @@ const AddLessons = () => {
       }
     }
     fetchLessonIfExists()
-  }, [])
+  }, [activeStep, lessonName])
 
-  // const [dataFromStepOne, setdataFromStepOne] = useState({
-  //   lessonTitle: '',
-  //   selectedTopics: [],
-  // })
   const [dataFromStepTwo, setdataFromStepTwo] = useState([])
   const [enteredQuestions, setEnteredQuestions] = useState(0)
   const [isStepOneComplete, setIsStepOneComplete] = useState(false)
@@ -56,21 +57,20 @@ const AddLessons = () => {
   const handlePageBasedOnStep = step => {
     switch (step) {
       case 2:
-        return <h1>Under Construction...</h1>
-      // return enteredQuestions === dataFromStepOne.numQuestions ? (
-      //   <h2>All questions entered</h2>
-      // ) : (
-      //   <AddLessonQuestions
-      //     title={dataFromStepOne['lessonTitle']}
-      //     topics={dataFromStepOne['selectedTopics']}
-      //     setEnteredQuestions={setEnteredQuestions}
-      //     setQuestionData={setdataFromStepTwo}
-      //   />
-      // )
+        // return <h1>Under Construction...</h1>
+        return (
+          <AddLessonQuestions
+            title={lessonData.lessonName}
+            lessonTopics={lessonData.lessonTopics}
+            setEnteredQuestions={setEnteredQuestions}
+            setLessonData={setLessonData}
+          />
+        )
+
       case 3:
         return <ReviewLesson lessonTitle={lessonData.lessonName} questions={dataFromStepTwo} />
       default:
-        return <AddLessonStructure data={lessonData} setData={setLessonData} />
+        return <AddLessonStructure prevData={lessonData} setPrevData={setLessonData} />
     }
   }
   return (
@@ -99,17 +99,6 @@ const AddLessons = () => {
           {!lessonData ? (
             <Box>
               <h1>Loading...</h1>
-              {/* <Skeleton
-                variant="rectangular"
-                // width="70vw"
-                // height="70vh"
-                sx={{
-                  marginTop: '64px',
-                  marginLeft: '65px',
-                }}
-              >
-                <AddLessonStructure data={lessonData} setData={setLessonData} />
-              </Skeleton> */}
             </Box>
           ) : (
             handlePageBasedOnStep(activeStep)

@@ -87,36 +87,36 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
     options: [],
     correctAnswer: '',
   })
-  const [topicsToDisplay, setTopicsToDisplay] = useState([])
 
   const saveQuestion = event => {
     event.preventDefault()
+    alert('functionality not implemented yet')
     // console.log('saving question')
     // console.log(answers.correctAnswer)
-    if (answers.correctAnswer === '') {
-      alert('Please select a correct answer')
-      return
-    }
-    setEnteredQuestions(prev => prev + 1)
-    setQuestionData(prevData => [
-      ...prevData,
-      {
-        questionType: 'Multiple Choice',
-        prompt,
-        snippet,
-        topicsCovered: topicsToDisplay,
-        options: answers.options,
-        answer: answers.correctAnswer,
-      },
-    ])
-    setPrompt('')
-    setsnippet('')
-    setAnswers({
-      options: [],
-      correctAnswer: '',
-    })
-    setTopicsToDisplay([])
-    resetQuestionFormat('')
+    // if (answers.correctAnswer === '') {
+    //   alert('Please select a correct answer')
+    //   return
+    // }
+    // setEnteredQuestions(prev => prev + 1)
+    // setQuestionData(prevData => [
+    //   ...prevData,
+    //   {
+    //     questionType: 'Multiple Choice',
+    //     prompt,
+    //     snippet,
+    //     topicsCovered: topicsToDisplay,
+    //     options: answers.options,
+    //     answer: answers.correctAnswer,
+    //   },
+    // ])
+    // setPrompt('')
+    // setsnippet('')
+    // setAnswers({
+    //   options: [],
+    //   correctAnswer: '',
+    // })
+    // setTopicsToDisplay([])
+    // resetQuestionFormat('')
   }
 
   return (
@@ -142,7 +142,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           required
           fullWidth
         />
-        <CheckboxSelect topics={topics} setTopicsToDisplay={setTopicsToDisplay} />
+        {/* <CheckboxSelect topics={topics} setTopicsToDisplay={setTopicsToDisplay} /> */}
         <AnswerChoices answers={answers} setAnswers={setAnswers} />
         <Box>
           <Tooltip title="Save Question" arrow>

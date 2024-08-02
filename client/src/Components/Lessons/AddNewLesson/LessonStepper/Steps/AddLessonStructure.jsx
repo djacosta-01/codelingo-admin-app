@@ -1,39 +1,59 @@
 import { useState, useEffect } from 'react'
-import { TextField, Button } from '@mui/material'
-import CheckboxSelect from '../../CheckBoxSelect'
+import { TextField, Button, Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
+import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../../../supabaseClient/supabaseClient'
+import CheckboxSelect from '../../CheckBoxSelect'
+import { Check } from '@mui/icons-material'
 
-const AddLessonStructure = ({ data, setData }) => {
-  const [lessonTopics, setLessonTopics] = useState([])
-  // const [topicsToDisplay, setTopicsToDisplay] = useState([])
-  console.log('data')
-  console.log(data)
+const AddLessonStructure = ({ prevData, setPrevData }) => {
+  const [topicsFromGraph, setTopicsFromGraph] = useState([])
+  const [lessonTopics, setLessonTopics] = useState(prevData.lessonTopics)
+  const { className } = useParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchLessonTopics = async () => {
       const { data, error } = await supabase.from('knowledge_graph').select('nodes')
       if (error) console.error('Error fetching lesson topics: ', error)
-      else setLessonTopics(data[0].nodes)
+      else setTopicsFromGraph(data[0].nodes)
     }
     fetchLessonTopics()
   }, [])
 
   const handleInputChange = _event => {
-    setData({
-      ...data,
+    setPrevData({
+      ...prevData,
       [_event.target.name]: _event.target.value,
     })
   }
 
-  const submitForm = event => {
+  const submitForm = async event => {
     event.preventDefault()
-    alert('functionality not implemented yet')
-    console.log('saving lesson structure')
+    const { lessonID, lessonName } = prevData
+    console.log(lessonID)
+    console.log(lessonName)
+    console.log(lessonTopics)
+    const { data, error } = await supabase.from('lessons').upsert(
+      {
+        lesson_id: lessonID,
+        lesson_name: lessonName,
+        lesson_topics: lessonTopics,
+      },
+      { onConflict: ['lesson_id'] }
+    )
+    if (error) {
+      console.error('Error adding lesson structure: ', error)
+      return
+    } else {
+      console.log(data)
+      alert('Lesson structure added to draft')
+      navigate(`/classes/${className}/add-lessons/${lessonName}`)
+    }
   }
 
   return (
     <>
-      <h1> Lesson Structure</h1>
+      <h1>Lesson Structure</h1>
       <form onSubmit={submitForm}>
         <TextField
           id="lesson-title-input"
@@ -41,20 +61,20 @@ const AddLessonStructure = ({ data, setData }) => {
           margin="dense"
           variant="standard"
           name="lessonName"
-          value={data.lessonName}
+          value={prevData.lessonName}
           onChange={handleInputChange}
           required
         />
         <CheckboxSelect
-          topics={lessonTopics}
-          topicsPreviouslySelected={data.lessonTopics}
-          // setTopicsToDisplay={setTopicsToDisplay}
+          topicsFromGraph={topicsFromGraph}
+          lessonTopics={lessonTopics}
+          setLessonTopics={setLessonTopics}
         />
         <Button type="submit" variant="contained">
           Save
         </Button>
       </form>
-      {/* {data.lessonName} */}
+      {lessonTopics.join(',')}
     </>
   )
 }
