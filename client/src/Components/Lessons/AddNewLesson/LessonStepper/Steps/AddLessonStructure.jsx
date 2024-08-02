@@ -5,7 +5,9 @@ import { supabase } from '../../../../../supabaseClient/supabaseClient'
 
 const AddLessonStructure = ({ data, setData }) => {
   const [lessonTopics, setLessonTopics] = useState([])
-  const [topicsToDisplay, setTopicsToDisplay] = useState([])
+  // const [topicsToDisplay, setTopicsToDisplay] = useState([])
+  console.log('data')
+  console.log(data)
 
   useEffect(() => {
     const fetchLessonTopics = async () => {
@@ -22,6 +24,7 @@ const AddLessonStructure = ({ data, setData }) => {
       [_event.target.name]: _event.target.value,
     })
   }
+
   const submitForm = event => {
     event.preventDefault()
     alert('functionality not implemented yet')
@@ -45,13 +48,13 @@ const AddLessonStructure = ({ data, setData }) => {
         <CheckboxSelect
           topics={lessonTopics}
           topicsPreviouslySelected={data.lessonTopics}
-          setTopicsToDisplay={setTopicsToDisplay}
+          // setTopicsToDisplay={setTopicsToDisplay}
         />
         <Button type="submit" variant="contained">
           Save
         </Button>
       </form>
-      {data.lessonName}
+      {/* {data.lessonName} */}
     </>
   )
 }

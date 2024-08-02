@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Avatar, Box, Skeleton } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../../../supabaseClient/supabaseClient'
@@ -10,13 +10,7 @@ import NavbarWithSideMenu from '../../NavbarAndSideMenu/NavbarWithSideMenu'
 const AddLessons = () => {
   const { lessonName } = useParams()
   const [activeStep, setActiveStep] = useState(1)
-  const [lessonData, setLessonData] = useState({
-    lessonID: null,
-    lessonName: lessonName ? lessonName : '',
-    isDraft: true,
-    lessonTopics: [],
-    lessonQuestions: [],
-  })
+  const [lessonData, setLessonData] = useState(null)
 
   useEffect(() => {
     const fetchLessonIfExists = async () => {
@@ -39,13 +33,13 @@ const AddLessons = () => {
           console.error('Error fetching lesson: ', error)
           return
         }
-        setLessonData(prev => ({
-          ...prev,
+        setLessonData({
+          isDraft: data[0].is_draft,
+          lessonName: data[0].lesson_name,
           lessonID: data[data.length - 1].lesson_id,
-          isDraft: false,
           lessonTopics: data[0].lesson_topics,
           lessonQuestions: data[0].questions,
-        }))
+        })
       }
     }
     fetchLessonIfExists()
@@ -83,15 +77,16 @@ const AddLessons = () => {
     <>
       <NavbarWithSideMenu displaySideMenu={false} />
       <Box
-        id="TEST"
+        id="add-lesson-container"
         sx={{
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
+          // backgroundColor: 'grey',
         }}
       >
         <Box
-          id="BLAH"
+          id="add-lesson-content"
           sx={{
             display: 'flex',
             flex: 1,
@@ -101,12 +96,27 @@ const AddLessons = () => {
             // backgroundColor: 'pink',
           }}
         >
-          {handlePageBasedOnStep(activeStep)}
+          {!lessonData ? (
+            <Box>
+              <h1>Loading...</h1>
+              {/* <Skeleton
+                variant="rectangular"
+                // width="70vw"
+                // height="70vh"
+                sx={{
+                  marginTop: '64px',
+                  marginLeft: '65px',
+                }}
+              >
+                <AddLessonStructure data={lessonData} setData={setLessonData} />
+              </Skeleton> */}
+            </Box>
+          ) : (
+            handlePageBasedOnStep(activeStep)
+          )}
         </Box>
-
         <LessonStepper activeStep={activeStep} setActiveStep={setActiveStep} />
       </Box>
-      {console.log(lessonData)}
     </>
   )
 }

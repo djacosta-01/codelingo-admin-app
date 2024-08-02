@@ -1,57 +1,48 @@
-import { FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
+import { Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
 import { useState, useEffect } from 'react'
 
-const CheckboxSelect = ({ topics, topicsPreviouslySelected, setTopicsToDisplay }) => {
-  const mappings = () => {
-    const initialMappings = topicsPreviouslySelected
-      ? topics.map(topic => ({ [topic]: topicsPreviouslySelected.includes(topic) }))
-      : topics.map(topic => ({ [topic]: false }))
-    return Object.assign({}, ...initialMappings)
-  }
-
-  const [topicMappings, setTopicMappings] = useState(mappings())
-
-  useEffect(() => {
-    const selectedTopics = Object.keys(topicMappings).filter(topic => topicMappings[topic])
-    setTopicsToDisplay(selectedTopics)
-  }, [topicMappings, setTopicMappings, setTopicsToDisplay])
-
-  const handleTopicChange = event => {
-    const { name, checked } = event.target
-    setTopicMappings(prevMappings => ({
-      ...prevMappings,
-      [name]: checked,
-    }))
-  }
-
+const CheckboxSelect = ({ topics, topicsPreviouslySelected }) => {
+  const [selectValues, setSelectValues] = useState(topicsPreviouslySelected)
   return (
     <>
       <Select
         required
-        labelId="relevant-topics-for-question-select-label"
         id="relevant-topics-for-question-select"
         multiple
         displayEmpty
-        value={Object.keys(topicMappings).filter(topic => topicMappings[topic])}
-        renderValue={selected => (selected.length === 0 ? 'Select Topics' : selected.join(', '))}
+        value={selectValues}
+        renderValue={selected => (selected.length === 0 ? 'Select topics' : selected.join(', '))}
       >
-        <MenuItem disabled value="">
-          <em>Select topics</em>
-        </MenuItem>
-        {topics.map((topic, index) => (
-          <MenuItem key={index} value={topic}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <MenuItem>
+            <em>Select topics</em>
+          </MenuItem>
+          {topics.map((topic, index) => (
             <FormControlLabel
+              key={index}
               control={
                 <Checkbox
-                  checked={topicMappings[topic] || false}
-                  onChange={handleTopicChange}
+                  checked={selectValues.includes(topic)}
+                  onChange={_event => {
+                    if (selectValues.includes(topic)) {
+                      setSelectValues(prev => prev.filter(id => id !== topic))
+                    } else {
+                      setSelectValues(prev => [...prev, topic])
+                    }
+                  }}
                   name={topic}
                 />
               }
               label={topic}
             />
-          </MenuItem>
-        ))}
+          ))}
+        </Box>
       </Select>
     </>
   )
