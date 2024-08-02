@@ -1,10 +1,10 @@
-import { Box, TextField, MenuItem } from '@mui/material'
+import { Box, Select, MenuItem } from '@mui/material'
 import { useState } from 'react'
 import MultipleChoice from '../../QuestionTypes/MultipleChoice'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 
-const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLessonData }) => {
+const AddLessonQuestions = ({ lessonTopics, setEnteredQuestions, setLessonData }) => {
   const [questionFormat, setQuestionFormat] = useState('')
   const handlePageBasedOnQuestionFormat = format => {
     switch (format) {
@@ -42,22 +42,34 @@ const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLesso
     }
   }
   return (
-    <>
-      <TextField
-        select
-        label="Question Format"
+    <Box
+      id="add-question-container"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        gap: 1,
+        width: '50%',
+        // backgroundColor: 'grey',
+      }}
+    >
+      <Select
         value={questionFormat}
         onChange={event => setQuestionFormat(event.target.value)}
+        displayEmpty
+        renderValue={selected => (selected === '' ? 'Select Question Format' : selected)}
       >
-        {questionFormats.map((format, index) => (
-          <MenuItem key={index} value={format}>
+        {questionFormats.map(format => (
+          <MenuItem key={format} value={format}>
             {format}
           </MenuItem>
         ))}
-      </TextField>
+      </Select>
       {handlePageBasedOnQuestionFormat(questionFormat)}
       {}
-    </>
+    </Box>
   )
 }
 

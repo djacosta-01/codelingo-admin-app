@@ -55,9 +55,8 @@ const AddLessons = () => {
     fetchLessonIfExists()
   }, [activeStep, lessonName])
 
-  const [dataFromStepTwo, setdataFromStepTwo] = useState([])
   const [enteredQuestions, setEnteredQuestions] = useState(0)
-  const [isStepOneComplete, setIsStepOneComplete] = useState(false)
+  // const [isStepOneComplete, setIsStepOneComplete] = useState(false)
 
   const handlePageBasedOnStep = step => {
     switch (step) {
@@ -72,7 +71,7 @@ const AddLessons = () => {
         )
 
       case 3:
-        return <ReviewLesson lessonTitle={lessonData.lessonName} questions={dataFromStepTwo} />
+        return <ReviewLesson lessonTitle={lessonData.lessonName} questions={lessonData.questions} />
       default:
         return <AddLessonStructure prevData={lessonData} setPrevData={setLessonData} />
     }
@@ -86,7 +85,6 @@ const AddLessons = () => {
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
-          // backgroundColor: 'grey',
         }}
       >
         <Box
@@ -98,7 +96,7 @@ const AddLessons = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            // backgroundColor: 'pink',
+            backgroundColor: 'pink',
           }}
         >
           {!lessonData ? (

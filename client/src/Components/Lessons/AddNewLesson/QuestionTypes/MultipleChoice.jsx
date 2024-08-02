@@ -31,15 +31,24 @@ const AnswerChoices = ({ answers, setAnswers }) => {
   }, [correctAnswer, answerOne, answerTwo, answerThree, answerFour, answers, setAnswers])
 
   return (
-    <Box sx={{ backgroundColor: 'pink', display: 'flex', alignItems: 'flex-end' }}>
+    <Box
+      sx={{
+        backgroundColor: 'lightblue',
+        width: 'inherit',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
       <FormControl>
         <FormLabel>Answer Choices</FormLabel>
         <RadioGroup
+          // row
           id="answer-choices-radio-group"
           value={correctAnswer}
           onChange={event => setCorrectAnswer(event.target.value)}
+          sx={{ display: 'flex', flexDirection: 'row' }}
         >
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerOne} />
             <TextField
               required
@@ -49,7 +58,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerOne(event.target.value)}
             />
           </Box>
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerTwo} />
             <TextField
               required
@@ -59,7 +68,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerTwo(event.target.value)}
             />
           </Box>
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerThree} />
             <TextField
               required
@@ -69,7 +78,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerThree(event.target.value)}
             />
           </Box>
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerFour} />
             <TextField
               required
@@ -77,7 +86,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               label="Answer 4"
               value={answerFour}
               onChange={event => setAnswerFour(event.target.value)}
-            ></TextField>
+            />
           </Box>
         </RadioGroup>
       </FormControl>
@@ -125,8 +134,15 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   }
   const [questionTopics, setQuestionTopics] = useState([])
   return (
-    <>
-      <form onSubmit={saveQuestion}>
+    <Box
+      sx={{
+        width: '100vw',
+        backgroundColor: 'lightgreen',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <form onSubmit={saveQuestion} style={{ width: 'inherit', backgroundColor: 'grey' }}>
         <TextField
           id="question-prompt-input"
           label="Question Prompt"
@@ -196,7 +212,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           </Tooltip>
         </Box>
       </form>
-    </>
+    </Box>
   )
 }
 
