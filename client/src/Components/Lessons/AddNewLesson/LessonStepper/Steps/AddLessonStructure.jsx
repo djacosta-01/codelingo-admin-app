@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { TextField, Button, Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../../../supabaseClient/supabaseClient'
-import CheckboxSelect from '../../CheckBoxSelect'
-import { Check } from '@mui/icons-material'
 
 const AddLessonStructure = ({ prevData, setPrevData }) => {
   const [topicsFromGraph, setTopicsFromGraph] = useState([])
@@ -38,6 +36,7 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
         lesson_id: lessonID,
         lesson_name: lessonName,
         lesson_topics: lessonTopics,
+        is_draft: prevData.isDraft,
       },
       { onConflict: ['lesson_id'] }
     )
@@ -65,11 +64,47 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
           onChange={handleInputChange}
           required
         />
-        <CheckboxSelect
-          topicsFromGraph={topicsFromGraph}
-          lessonTopics={lessonTopics}
-          setLessonTopics={setLessonTopics}
-        />
+        <Select
+          required
+          id="relevant-topics-for-question-select"
+          multiple
+          displayEmpty
+          value={lessonTopics}
+          renderValue={selected =>
+            selected?.length === 0 ? 'Select topics' : selected?.join(', ')
+          }
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <MenuItem>
+              <em>Select topics</em>
+            </MenuItem>
+            {topicsFromGraph.map((topic, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={lessonTopics.includes(topic)}
+                    onChange={_event => {
+                      if (lessonTopics.includes(topic)) {
+                        setLessonTopics(prev => prev.filter(id => id !== topic))
+                      } else {
+                        setLessonTopics(prev => [...prev, topic])
+                      }
+                    }}
+                    name={topic}
+                  />
+                }
+                label={topic}
+              />
+            ))}
+          </Box>
+        </Select>
         <Button type="submit" variant="contained">
           Save
         </Button>

@@ -42,22 +42,7 @@ const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLesso
     }
   }
   return (
-    <Box
-      sx={
-        {
-          // minHeight: '90vh',
-          // display: 'flex',
-          // flexDirection: 'column',
-          // justifyContent: 'center',
-          // alignItems: 'center',
-          // gap: 1,
-          // '& > :not(style)': {
-          //   m: 1,
-          //   width: '50ch',
-          // },
-        }
-      }
-    >
+    <>
       <TextField
         select
         label="Question Format"
@@ -72,7 +57,7 @@ const AddLessonQuestions = ({ title, lessonTopics, setEnteredQuestions, setLesso
       </TextField>
       {handlePageBasedOnQuestionFormat(questionFormat)}
       {}
-    </Box>
+    </>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Avatar, Box, Skeleton } from '@mui/material'
+import { Box } from '@mui/material'
 import { useState, useEffect, act } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../../../supabaseClient/supabaseClient'
@@ -7,6 +7,7 @@ import AddLessonStructure from './LessonStepper/Steps/AddLessonStructure'
 import AddLessonQuestions from './LessonStepper/Steps/AddLessonQuestions'
 import ReviewLesson from './LessonStepper/Steps/ReviewLesson'
 import NavbarWithSideMenu from '../../NavbarAndSideMenu/NavbarWithSideMenu'
+
 const AddLessons = () => {
   const { lessonName } = useParams()
   const [activeStep, setActiveStep] = useState(1)
@@ -22,7 +23,11 @@ const AddLessons = () => {
         }
         setLessonData(prev => ({
           ...prev,
+          isDraft: true,
           lessonID: data[data.length - 1].lesson_id + 1,
+          lessonName: '',
+          lessonTopics: [],
+          lessonQuestions: [],
         }))
       } else {
         const { data, error } = await supabase
@@ -33,15 +38,15 @@ const AddLessons = () => {
           console.error('Error fetching lesson: ', error)
           return
         }
-        console.log('in use effect')
+        // console.log('in use effect')
         // console.log('step', activeStep)
         // console.log(data)
         // console.log('lesson name')
         // console.log(lessonName)
         setLessonData({
           isDraft: data[0].is_draft,
-          lessonName: data[0].lesson_name,
           lessonID: data[data.length - 1].lesson_id,
+          lessonName: data[0].lesson_name,
           lessonTopics: data[0].lesson_topics,
           lessonQuestions: data[0].questions,
         })
@@ -57,7 +62,6 @@ const AddLessons = () => {
   const handlePageBasedOnStep = step => {
     switch (step) {
       case 2:
-        // return <h1>Under Construction...</h1>
         return (
           <AddLessonQuestions
             title={lessonData.lessonName}
