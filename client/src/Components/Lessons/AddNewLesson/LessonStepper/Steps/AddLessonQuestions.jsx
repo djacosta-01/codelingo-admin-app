@@ -52,7 +52,6 @@ const AddLessonQuestions = ({ lessonTopics, setEnteredQuestions, setLessonData }
         flex: 1,
         gap: 1,
         width: '50%',
-        // backgroundColor: 'grey',
       }}
     >
       <Select

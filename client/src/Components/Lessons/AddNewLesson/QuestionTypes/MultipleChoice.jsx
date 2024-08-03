@@ -31,24 +31,21 @@ const AnswerChoices = ({ answers, setAnswers }) => {
   }, [correctAnswer, answerOne, answerTwo, answerThree, answerFour, answers, setAnswers])
 
   return (
-    <Box
-      sx={{
-        backgroundColor: 'lightblue',
-        width: 'inherit',
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
+    <Box id="answer-choices-container">
       <FormControl>
-        <FormLabel>Answer Choices</FormLabel>
         <RadioGroup
-          // row
           id="answer-choices-radio-group"
           value={correctAnswer}
           onChange={event => setCorrectAnswer(event.target.value)}
-          sx={{ display: 'flex', flexDirection: 'row' }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box id="answer-option-1" sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerOne} />
             <TextField
               required
@@ -58,7 +55,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerOne(event.target.value)}
             />
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box id="answer-option-2" sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerTwo} />
             <TextField
               required
@@ -68,7 +65,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerTwo(event.target.value)}
             />
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box id="answer-option-3" sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerThree} />
             <TextField
               required
@@ -78,7 +75,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
               onChange={event => setAnswerThree(event.target.value)}
             />
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box id="answer-option-4" sx={{ display: 'flex', flexDirection: 'column' }}>
             <Radio required value={answerFour} />
             <TextField
               required
@@ -89,6 +86,7 @@ const AnswerChoices = ({ answers, setAnswers }) => {
             />
           </Box>
         </RadioGroup>
+        {/* <FormLabel>Answer Options</FormLabel> */}
       </FormControl>
     </Box>
   )
@@ -136,13 +134,13 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
   return (
     <Box
       sx={{
-        width: '100vw',
-        backgroundColor: 'lightgreen',
+        width: '50vw',
         display: 'flex',
         justifyContent: 'center',
+        gap: 1,
       }}
     >
-      <form onSubmit={saveQuestion} style={{ width: 'inherit', backgroundColor: 'grey' }}>
+      <form onSubmit={saveQuestion} style={{ width: 'inherit' }}>
         <TextField
           id="question-prompt-input"
           label="Question Prompt"
@@ -163,14 +161,13 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           required
           fullWidth
         />
-
         <Select
           required
           id="relevant-topics-for-question-select"
           multiple
           displayEmpty
           value={questionTopics}
-          renderValue={selected => (selected.length === 0 ? 'Select topics' : selected.join(', '))}
+          renderValue={selected => (selected.length === 0 ? 'Topics Covered' : selected.join(', '))}
         >
           <Box
             sx={{
@@ -204,7 +201,7 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           </Box>
         </Select>
         <AnswerChoices answers={answers} setAnswers={setAnswers} />
-        <Box>
+        <Box id="save-button">
           <Tooltip title="Save Question" arrow>
             <IconButton type="submit">
               <CheckIcon />
