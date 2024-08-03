@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react'
-import { TextField, Button, Box, FormControlLabel, MenuItem, Checkbox, Select } from '@mui/material'
+import {
+  TextField,
+  Button,
+  Box,
+  FormControlLabel,
+  MenuItem,
+  Checkbox,
+  Select,
+  Tooltip,
+} from '@mui/material'
+import CheckIcon from '@mui/icons-material/Check'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../../../../supabaseClient/supabaseClient'
 
@@ -71,7 +81,7 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
           displayEmpty
           value={lessonTopics}
           renderValue={selected =>
-            selected?.length === 0 ? 'Select topics' : selected?.join(', ')
+            selected?.length === 0 ? 'Select Lesson Topics' : selected?.join(', ')
           }
         >
           <Box
@@ -105,9 +115,13 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
             ))}
           </Box>
         </Select>
-        <Button type="submit" variant="contained">
-          Save
-        </Button>
+        <Box id="save-button">
+          <Tooltip title="Save Structure" arrow>
+            <Button type="submit" variant="contained">
+              <CheckIcon />
+            </Button>
+          </Tooltip>
+        </Box>
       </form>
     </>
   )

@@ -96,7 +96,7 @@ const AddLessons = () => {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'pink',
+            // backgroundColor: 'pink',
           }}
         >
           {!lessonData ? (
