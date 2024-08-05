@@ -38,9 +38,9 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
   const submitForm = async event => {
     event.preventDefault()
     const { lessonID, lessonName } = prevData
-    console.log(lessonID)
-    console.log(lessonName)
-    console.log(lessonTopics)
+    // console.log(lessonID)
+    // console.log(lessonName)
+    // console.log(lessonTopics)
     const { data, error } = await supabase.from('lessons').upsert(
       {
         lesson_id: lessonID,

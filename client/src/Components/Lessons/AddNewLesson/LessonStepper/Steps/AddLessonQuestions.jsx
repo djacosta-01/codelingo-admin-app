@@ -4,16 +4,16 @@ import MultipleChoice from '../../QuestionTypes/MultipleChoice'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 
-const AddLessonQuestions = ({ lessonTopics, setEnteredQuestions, setLessonData }) => {
+const AddLessonQuestions = ({ prevLessonData, setLessonData }) => {
   const [questionFormat, setQuestionFormat] = useState('')
   const handlePageBasedOnQuestionFormat = format => {
     switch (format) {
       case 'Multiple Choice':
         return (
           <MultipleChoice
-            setEnteredQuestions={setEnteredQuestions}
-            topics={lessonTopics}
-            setQuestionData={setLessonData}
+            topics={prevLessonData.lessonTopics}
+            prevData={prevLessonData}
+            setLessonData={setLessonData}
             resetQuestionFormat={setQuestionFormat}
           />
         )
@@ -67,7 +67,6 @@ const AddLessonQuestions = ({ lessonTopics, setEnteredQuestions, setLessonData }
         ))}
       </Select>
       {handlePageBasedOnQuestionFormat(questionFormat)}
-      {}
     </Box>
   )
 }

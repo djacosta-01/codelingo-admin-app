@@ -1,5 +1,5 @@
 import { Box } from '@mui/material'
-import { useState, useEffect, act } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../../../supabaseClient/supabaseClient'
 import LessonStepper from './LessonStepper/LessonStepper'
@@ -12,23 +12,25 @@ const AddLessons = () => {
   const { lessonName } = useParams()
   const [activeStep, setActiveStep] = useState(1)
   const [lessonData, setLessonData] = useState(null)
+  const [enteredQuestions, setEnteredQuestions] = useState(0)
 
   useEffect(() => {
     const fetchLessonIfExists = async () => {
+      // no lesson name means we are creating a new lesson
+      console.log('in use effect')
       if (!lessonName) {
         const { data, error } = await supabase.from('lessons').select('lesson_id')
         if (error) {
           console.error('Error fetching lesson: ', error)
           return
         }
-        setLessonData(prev => ({
-          ...prev,
+        setLessonData({
           isDraft: true,
-          lessonID: data[data.length - 1].lesson_id + 1,
+          lessonID: data.length + 1,
           lessonName: '',
           lessonTopics: [],
           lessonQuestions: [],
-        }))
+        })
       } else {
         const { data, error } = await supabase
           .from('lessons')
@@ -38,24 +40,18 @@ const AddLessons = () => {
           console.error('Error fetching lesson: ', error)
           return
         }
-        // console.log('in use effect')
-        // console.log('step', activeStep)
-        // console.log(data)
-        // console.log('lesson name')
-        // console.log(lessonName)
         setLessonData({
           isDraft: data[0].is_draft,
           lessonID: data[data.length - 1].lesson_id,
           lessonName: data[0].lesson_name,
           lessonTopics: data[0].lesson_topics,
-          lessonQuestions: data[0].questions,
+          lessonQuestions: data[0].questions ?? [],
         })
       }
     }
     fetchLessonIfExists()
-  }, [activeStep, lessonName])
+  }, [activeStep, lessonName, enteredQuestions])
 
-  const [enteredQuestions, setEnteredQuestions] = useState(0)
   // const [isStepOneComplete, setIsStepOneComplete] = useState(false)
 
   const handlePageBasedOnStep = step => {
@@ -63,10 +59,10 @@ const AddLessons = () => {
       case 2:
         return (
           <AddLessonQuestions
-            title={lessonData.lessonName}
-            lessonTopics={lessonData.lessonTopics}
-            setEnteredQuestions={setEnteredQuestions}
+            prevLessonData={lessonData}
             setLessonData={setLessonData}
+            // enteredQuestions={enteredQuestions}
+            // setEnteredQuestions={setEnteredQuestions}
           />
         )
 

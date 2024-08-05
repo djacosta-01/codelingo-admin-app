@@ -4,7 +4,6 @@ import {
   IconButton,
   Tooltip,
   FormControl,
-  FormLabel,
   RadioGroup,
   Radio,
   FormControlLabel,
@@ -14,6 +13,7 @@ import {
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import CheckIcon from '@mui/icons-material/Check'
+import { supabase } from '../../../../supabaseClient/supabaseClient'
 
 const AnswerChoices = ({ answers, setAnswers }) => {
   const [answerOne, setAnswerOne] = useState('')
@@ -86,51 +86,58 @@ const AnswerChoices = ({ answers, setAnswers }) => {
             />
           </Box>
         </RadioGroup>
-        {/* <FormLabel>Answer Options</FormLabel> */}
       </FormControl>
     </Box>
   )
 }
 
-const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQuestionFormat }) => {
-  const [prompt, setPrompt] = useState('')
-  const [snippet, setsnippet] = useState('')
+const MultipleChoice = ({ topics, prevData, setLessonData, resetQuestionFormat }) => {
   const [answers, setAnswers] = useState({
     options: [],
     correctAnswer: '',
   })
+  const [newQuestion, setNewQuestion] = useState({
+    prompt: '',
+    snippet: '',
+    topicsCovered: [],
+    // options: [],
+    // correctAnswer: '',
+  })
 
-  const saveQuestion = event => {
-    event.preventDefault()
-    alert('functionality not implemented yet')
-    // console.log('saving question')
-    // console.log(answers.correctAnswer)
-    // if (answers.correctAnswer === '') {
-    //   alert('Please select a correct answer')
-    //   return
-    // }
-    // setEnteredQuestions(prev => prev + 1)
-    // setQuestionData(prevData => [
-    //   ...prevData,
-    //   {
-    //     questionType: 'Multiple Choice',
-    //     prompt,
-    //     snippet,
-    //     topicsCovered: topicsToDisplay,
-    //     options: answers.options,
-    //     answer: answers.correctAnswer,
-    //   },
-    // ])
-    // setPrompt('')
-    // setsnippet('')
-    // setAnswers({
-    //   options: [],
-    //   correctAnswer: '',
-    // })
-    // setTopicsToDisplay([])
-    // resetQuestionFormat('')
+  const handleInputChange = _event => {
+    const { name, value } = _event.target
+    setNewQuestion(prev => ({
+      ...prev,
+      [name]: value,
+    }))
   }
-  const [questionTopics, setQuestionTopics] = useState([])
+
+  const saveQuestion = async event => {
+    event.preventDefault()
+    const question = {
+      prompt: newQuestion.prompt,
+      snippet: newQuestion.snippet,
+      topicsCovered: newQuestion.topicsCovered,
+      options: answers.options,
+      correctAnswer: answers.correctAnswer,
+    }
+    const { data, error } = await supabase
+      .from('lessons')
+      .update({ questions: [...prevData.lessonQuestions, question] })
+      .eq('lesson_id', prevData.lessonID)
+    if (error) {
+      console.error('Error adding question: ', error)
+      return
+    } else {
+      setLessonData(prev => ({
+        ...prev,
+        lessonQuestions: [...prev.lessonQuestions, question],
+      }))
+      alert('Question added to lesson')
+    }
+    resetQuestionFormat('')
+  }
+
   return (
     <Box
       sx={{
@@ -143,9 +150,10 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
       <form onSubmit={saveQuestion} style={{ width: 'inherit' }}>
         <TextField
           id="question-prompt-input"
+          name="prompt"
           label="Question Prompt"
-          value={prompt}
-          onChange={event => setPrompt(event.target.value)}
+          value={newQuestion.prompt}
+          onChange={handleInputChange}
           multiline
           rows={3}
           required
@@ -153,9 +161,10 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
         />
         <TextField
           id="code-snippet-input"
+          name="snippet"
           label="Code Snippet"
-          value={snippet}
-          onChange={event => setsnippet(event.target.value)}
+          value={newQuestion.snippet}
+          onChange={handleInputChange}
           multiline
           rows={3}
           required
@@ -166,14 +175,19 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
           id="relevant-topics-for-question-select"
           multiple
           displayEmpty
-          value={questionTopics}
-          renderValue={selected => (selected.length === 0 ? 'Topics Covered' : selected.join(', '))}
+          name="topicsCovered"
+          value={newQuestion.topicsCovered}
+          renderValue={selected =>
+            selected?.length === 0 ? 'Topics Covered' : selected?.join(', ')
+          }
         >
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
+              justifyContent: 'center',
               alignItems: 'center',
+              gap: 1,
             }}
           >
             <MenuItem>
@@ -184,12 +198,18 @@ const MultipleChoice = ({ setEnteredQuestions, topics, setQuestionData, resetQue
                 key={index}
                 control={
                   <Checkbox
-                    checked={questionTopics.includes(topic)}
+                    checked={newQuestion.topicsCovered.includes(topic)}
                     onChange={_event => {
-                      if (questionTopics.includes(topic)) {
-                        setQuestionTopics(prev => prev.filter(id => id !== topic))
+                      if (newQuestion.topicsCovered.includes(topic)) {
+                        setNewQuestion(prev => ({
+                          ...prev,
+                          topicsCovered: prev.topicsCovered.filter(id => id !== topic),
+                        }))
                       } else {
-                        setQuestionTopics(prev => [...prev, topic])
+                        setNewQuestion(prev => ({
+                          ...prev,
+                          topicsCovered: [...prev.topicsCovered, topic],
+                        }))
                       }
                     }}
                     name={topic}
