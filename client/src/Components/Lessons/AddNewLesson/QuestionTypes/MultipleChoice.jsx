@@ -140,11 +140,11 @@ const MultipleChoice = ({ topics, prevData, setLessonData, resetQuestionFormat }
 
   return (
     <Box
+      id="multiple-choice-container"
       sx={{
         width: '50vw',
         display: 'flex',
         justifyContent: 'center',
-        gap: 1,
       }}
     >
       <form onSubmit={saveQuestion} style={{ width: 'inherit' }}>
@@ -167,7 +167,7 @@ const MultipleChoice = ({ topics, prevData, setLessonData, resetQuestionFormat }
           onChange={handleInputChange}
           multiline
           rows={3}
-          required
+          // required
           fullWidth
         />
         <Select
@@ -187,7 +187,6 @@ const MultipleChoice = ({ topics, prevData, setLessonData, resetQuestionFormat }
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: 1,
             }}
           >
             <MenuItem>
@@ -221,7 +220,7 @@ const MultipleChoice = ({ topics, prevData, setLessonData, resetQuestionFormat }
           </Box>
         </Select>
         <AnswerChoices answers={answers} setAnswers={setAnswers} />
-        <Box id="save-button">
+        <Box id="save-button" sx={{ margin: 5 }}>
           <Tooltip title="Save Question" arrow>
             <IconButton type="submit">
               <CheckIcon />

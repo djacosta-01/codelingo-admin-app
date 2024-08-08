@@ -74,7 +74,7 @@ const Lesson = () => {
                   key={index}
                   defaultExpanded={index === 0}
                   sx={{
-                    width: 800,
+                    width: '50%',
                     outline: '1px solid black',
                   }}
                 >

@@ -15,7 +15,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { IconButton, Box, Tooltip } from '@mui/material'
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Info, BugReport, Logout } from '@mui/icons-material'
 import { supabase } from '../../supabaseClient/supabaseClient'
 

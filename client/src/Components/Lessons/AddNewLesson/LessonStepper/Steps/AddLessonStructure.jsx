@@ -89,6 +89,7 @@ const AddLessonStructure = ({ prevData, setPrevData }) => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <MenuItem>

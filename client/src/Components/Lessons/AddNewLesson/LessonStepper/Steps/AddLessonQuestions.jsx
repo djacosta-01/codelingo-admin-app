@@ -1,6 +1,8 @@
-import { Box, Select, MenuItem } from '@mui/material'
+import { Box, Select, MenuItem, Button } from '@mui/material'
 import { useState } from 'react'
 import MultipleChoice from '../../QuestionTypes/MultipleChoice'
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 
@@ -50,11 +52,13 @@ const AddLessonQuestions = ({ prevLessonData, setLessonData }) => {
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
-        gap: 1,
+        gap: 3,
         width: '50%',
+        // backgroundColor: 'pink',
       }}
     >
       <Select
+        id="select-question-format"
         value={questionFormat}
         onChange={event => setQuestionFormat(event.target.value)}
         displayEmpty
@@ -67,6 +71,23 @@ const AddLessonQuestions = ({ prevLessonData, setLessonData }) => {
         ))}
       </Select>
       {handlePageBasedOnQuestionFormat(questionFormat)}
+      {/* <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Button id="back-button" onClick={() => alert('back button pressed')}>
+          <NavigateBeforeIcon />
+          Back
+        </Button>
+        <Button id="next-button" onClick={() => alert('next button clicked')}>
+          Next
+          <NavigateNextIcon />
+        </Button>
+      </Box> */}
+      {console.log(prevLessonData)}
     </Box>
   )
 }
