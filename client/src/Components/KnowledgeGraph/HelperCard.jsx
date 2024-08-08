@@ -54,7 +54,6 @@ const HelperCard = () => {
               flexDirection: 'column',
               justifyContent: 'space-between',
               alignItems: 'center',
-              // gap: 1,
               margin: 1,
               padding: 0,
               flexWrap: 'wrap',
@@ -97,7 +96,7 @@ const HelperCard = () => {
       ) : (
         <Tooltip title="Help" arrow>
           <IconButton onClick={handleCardToggle}>
-            <HelpIcon id="help-button" color="info" />
+            <HelpIcon id="help-button" color="info" fontSize="large" />
           </IconButton>
         </Tooltip>
       )}

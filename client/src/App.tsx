@@ -68,7 +68,7 @@ function App() {
             }
           />
           <Route
-            path="/lessons"
+            path="/classes/:className/lessons"
             element={
               <AuthenticatedRoute session={session}>
                 <Lessons />
@@ -76,7 +76,7 @@ function App() {
             }
           />
           <Route
-            path="/lesson"
+            path="/classes/:className/lessons/lesson/:lessonName"
             element={
               <AuthenticatedRoute session={session}>
                 <Lesson />
@@ -84,7 +84,7 @@ function App() {
             }
           />
           <Route
-            path="/add-lessons"
+            path="/classes/:className/add-lessons"
             element={
               <AuthenticatedRoute session={session}>
                 <AddLessons />
@@ -92,15 +92,16 @@ function App() {
             }
           />
           <Route
-            path="/class-performance"
+            path="/classes/:className/add-lessons/:lessonName"
             element={
               <AuthenticatedRoute session={session}>
-                <StudentPerformance />
+                <AddLessons />
               </AuthenticatedRoute>
             }
           />
+
           <Route
-            path="/knowledge-graph"
+            path="/classes/:className/knowledge-graph"
             element={
               <AuthenticatedRoute session={session}>
                 <KnowledgeGraph />
@@ -108,7 +109,7 @@ function App() {
             }
           />
           <Route
-            path="/roster"
+            path="/classes/:className/roster"
             element={
               <AuthenticatedRoute session={session}>
                 <Roster />
@@ -116,7 +117,15 @@ function App() {
             }
           />
           <Route
-            path="/class-settings"
+            path="/classes/:className/class-performance"
+            element={
+              <AuthenticatedRoute session={session}>
+                <StudentPerformance />
+              </AuthenticatedRoute>
+            }
+          />
+          <Route
+            path="/classes/:className/class-settings"
             element={
               <AuthenticatedRoute session={session}>
                 <ClassroomSettings />

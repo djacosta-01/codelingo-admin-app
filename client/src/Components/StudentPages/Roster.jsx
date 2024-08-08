@@ -1,9 +1,11 @@
-import React from 'react'
+import { useParams } from 'react-router-dom'
 import NavbarWithSideMenu from '../NavbarAndSideMenu/NavbarWithSideMenu'
+
 export default function Roster() {
+  const { className } = useParams()
   return (
-    <div className="roster">
-      <NavbarWithSideMenu displaySideMenu={true} />
+    <div id="roster">
+      <NavbarWithSideMenu className={className} displaySideMenu={true} />
       <h1>Roster</h1>
     </div>
   )

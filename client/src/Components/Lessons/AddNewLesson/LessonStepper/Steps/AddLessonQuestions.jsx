@@ -1,19 +1,21 @@
-import { Box, TextField, MenuItem } from '@mui/material'
+import { Box, Select, MenuItem, Button } from '@mui/material'
 import { useState } from 'react'
-import MultipleChoice from './MultipleChoice'
+import MultipleChoice from '../../QuestionTypes/MultipleChoice'
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
+import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 
 const questionFormats = ['Multiple Choice', 'Matching', 'Fill in the Blank', 'Rearrange the Code']
 
-const AddLessonQuestions = ({ title, topics, setEnteredQuestions, setQuestionData }) => {
+const AddLessonQuestions = ({ prevLessonData, setLessonData }) => {
   const [questionFormat, setQuestionFormat] = useState('')
   const handlePageBasedOnQuestionFormat = format => {
     switch (format) {
       case 'Multiple Choice':
         return (
           <MultipleChoice
-            setEnteredQuestions={setEnteredQuestions}
-            topics={topics}
-            setQuestionData={setQuestionData}
+            topics={prevLessonData.lessonTopics}
+            prevData={prevLessonData}
+            setLessonData={setLessonData}
             resetQuestionFormat={setQuestionFormat}
           />
         )
@@ -43,31 +45,49 @@ const AddLessonQuestions = ({ title, topics, setEnteredQuestions, setQuestionDat
   }
   return (
     <Box
+      id="add-question-container"
       sx={{
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        '& > :not(style)': {
-          m: 1,
-          width: '50ch',
-        },
+        flex: 1,
+        gap: 3,
+        width: '50%',
+        // backgroundColor: 'pink',
       }}
     >
-      <h1>{title}</h1>
-      <TextField
-        select
-        label="Question Format"
+      <Select
+        id="select-question-format"
         value={questionFormat}
         onChange={event => setQuestionFormat(event.target.value)}
+        displayEmpty
+        renderValue={selected => (selected === '' ? 'Select Question Format' : selected)}
       >
-        {questionFormats.map((format, index) => (
-          <MenuItem key={index} value={format}>
+        {questionFormats.map(format => (
+          <MenuItem key={format} value={format}>
             {format}
           </MenuItem>
         ))}
-      </TextField>
+      </Select>
       {handlePageBasedOnQuestionFormat(questionFormat)}
+      {/* <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Button id="back-button" onClick={() => alert('back button pressed')}>
+          <NavigateBeforeIcon />
+          Back
+        </Button>
+        <Button id="next-button" onClick={() => alert('next button clicked')}>
+          Next
+          <NavigateNextIcon />
+        </Button>
+      </Box> */}
+      {console.log(prevLessonData)}
     </Box>
   )
 }
