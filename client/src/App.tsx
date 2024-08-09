@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Box } from '@mui/material'
 import { supabase } from './supabaseClient/supabaseClient.js'
-import Login from './Components/Login/Login.jsx'
+import Login from './Components/Authentication/Login/Login.jsx'
+import Register from './Components/Authentication/Registration/Registration.jsx'
 import Home from './Components/Homepage/Home.tsx'
 import StudentPerformance from './Components/StudentPages/StudentPerformance.jsx'
 import React from 'react'
@@ -13,6 +14,7 @@ import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import KnowledgeGraph from './Components/KnowledgeGraph/KnowledgeGraph.jsx'
+import { url } from 'inspector'
 
 const items = [
   {
@@ -39,8 +41,6 @@ function App() {
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
   const [session, setSession] = useState(null)
 
-  // TODO: have a className state to store the class name and pass it to the Lessons component
-
   // authenticating user
   useEffect(() => {
     const currentSession = supabase.auth.getSession()
@@ -66,6 +66,11 @@ function App() {
                 <Login />
               )
             }
+          />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/test-route"
+            element={<h2>Welcome! Please check your email and verify your account</h2>}
           />
           <Route
             path="/classes/:className/lessons"

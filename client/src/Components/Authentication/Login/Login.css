@@ -29,8 +29,8 @@
 }
 
 .login-container {
-  background-color: #222222;
-  color: white;
+  /* background-color: #222222; */
+  /* color: white; */
   display: flex;
   flex-direction: column;
   align-items: center;
