@@ -5,7 +5,7 @@ export default function Roster() {
   const { className } = useParams()
   return (
     <div id="roster">
-      <NavbarWithSideMenu className={className} displaySideMenu={true} />
+      <NavbarWithSideMenu className={className} displaySideMenu={true} currentPage={'Roster'} />
       <h1>Roster</h1>
     </div>
   )

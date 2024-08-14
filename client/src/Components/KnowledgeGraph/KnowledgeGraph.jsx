@@ -202,7 +202,11 @@ const KnowledgeGraph = () => {
   }, [])
   return (
     <>
-      <NavbarWithSideMenu className={className} displaySideMenu={true} />
+      <NavbarWithSideMenu
+        className={className}
+        displaySideMenu={true}
+        currentPage={'Knowledge Graph'}
+      />
       <Box
         sx={{
           marginTop: '64px',

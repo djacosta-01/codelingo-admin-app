@@ -14,7 +14,7 @@ import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import KnowledgeGraph from './Components/KnowledgeGraph/KnowledgeGraph.jsx'
-import { url } from 'inspector'
+import QrCode from './qrCode.jsx'
 
 const items = [
   {
@@ -137,6 +137,7 @@ function App() {
               </AuthenticatedRoute>
             }
           />
+          <Route path="/test-code" element={<QrCode />} />
         </Routes>
       </Router>
     </Box>

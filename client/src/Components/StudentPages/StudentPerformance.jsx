@@ -5,7 +5,11 @@ const StudentPerformance = () => {
   const { className } = useParams()
   return (
     <div>
-      <NavbarWithSideMenu className={className} displaySideMenu={true} />
+      <NavbarWithSideMenu
+        className={className}
+        displaySideMenu={true}
+        currentPage={'Class Performance'}
+      />
       <h1> Student Performance</h1>
     </div>
   )

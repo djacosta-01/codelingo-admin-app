@@ -66,7 +66,7 @@ const Login = () => {
         />
         <button type="submit">Log In</button>
       </form>
-      <Typography
+      {/* <Typography
         variant="caption"
         onClick={() => alert('forgot password')}
         sx={{
@@ -79,7 +79,7 @@ const Login = () => {
         }}
       >
         Forgot Password?
-      </Typography>
+      </Typography> */}
       <p>
         Don't have an account? <Link to="/register">Register Here</Link>
       </p>

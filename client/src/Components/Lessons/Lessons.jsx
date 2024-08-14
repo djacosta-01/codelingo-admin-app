@@ -126,7 +126,7 @@ const Lessons = () => {
 
   return (
     <>
-      <NavbarWithSideMenu className={className} displaySideMenu={true} />
+      <NavbarWithSideMenu className={className} displaySideMenu={true} currentPage={'Lessons'} />
       <Box
         sx={{
           marginTop: '64px',
