@@ -210,9 +210,9 @@ const KnowledgeGraph = () => {
       <Box
         sx={{
           marginTop: '64px',
-          marginLeft: '65px',
+          // marginLeft: '65px',
           height: '90vh',
-          width: '100%',
+          width: '100vw',
         }}
       >
         {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
@@ -225,17 +225,18 @@ const KnowledgeGraph = () => {
               onConnect={onConnect}
               fitView
             >
-              <Background gap={16} />
-              {/* <Box
+              <Background gap={20} />
+              <Box
+                id="controls"
                 sx={{
                   position: 'fixed',
                   bottom: 30,
-                  left: 20,
+                  left: 60,
                   zIndex: 100,
                 }}
-              > */}
-              <Controls />
-              {/* </Box> */}
+              >
+                <Controls />
+              </Box>
             </ReactFlow>
           </>
         ) : (
@@ -244,6 +245,7 @@ const KnowledgeGraph = () => {
       </Box>
 
       <Box
+        id="helper-card"
         sx={{
           display: 'flex',
           position: 'fixed',
@@ -254,11 +256,12 @@ const KnowledgeGraph = () => {
         <HelperCard />
       </Box>
       <Box
+        id="add-save-buttons"
         sx={{
           display: 'flex',
           gap: 2,
           position: 'fixed',
-          bottom: 30,
+          bottom: 45,
           right: 20,
         }}
       >
@@ -276,6 +279,7 @@ const KnowledgeGraph = () => {
           <form onSubmit={addDataToGraph}>
             <TextField
               variant="standard"
+              type="search"
               name="parentNodes"
               label="Parent Node(s)"
               value={inputState.parentNodes}
@@ -284,6 +288,7 @@ const KnowledgeGraph = () => {
             <TextField
               required
               variant="standard"
+              type="search"
               name={'nodeTopic'}
               label="Node Name"
               value={inputState.nodeTopic}
@@ -291,6 +296,7 @@ const KnowledgeGraph = () => {
             />
             <TextField
               variant="standard"
+              type="search"
               name="targetNodes"
               label="Child Node(s)"
               value={inputState.targetNodes}
