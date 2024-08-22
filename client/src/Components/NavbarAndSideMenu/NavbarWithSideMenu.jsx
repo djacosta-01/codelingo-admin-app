@@ -88,13 +88,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })
   })
 )
 
-const NavbarWithSideMenu = ({ className, displaySideMenu }) => {
+const NavbarWithSideMenu = ({ className, displaySideMenu, currentPage }) => {
   const theme = useTheme()
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
 
   const handleMenuOpen = () => setIsSideMenuOpen(true)
   const handleMenuClose = () => setIsSideMenuOpen(false)
-
   const navigate = useNavigate()
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut()
@@ -200,6 +199,8 @@ const NavbarWithSideMenu = ({ className, displaySideMenu }) => {
                     minHeight: 48,
                     justifyContent: isSideMenuOpen ? 'initial' : 'center',
                     px: 2.5,
+                    backgroundColor: currentPage === text ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
+                    ':hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' },
                   }}
                   onClick={() => navigate(slug)}
                 >
@@ -208,6 +209,7 @@ const NavbarWithSideMenu = ({ className, displaySideMenu }) => {
                       minWidth: 0,
                       mr: isSideMenuOpen ? 3 : 'auto',
                       justifyContent: 'center',
+                      color: currentPage === text ? 'black' : 'auto',
                     }}
                   >
                     {icon}
