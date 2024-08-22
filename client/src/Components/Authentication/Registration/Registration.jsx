@@ -29,6 +29,7 @@ function Register() {
     })
     if (error) alert('Error signing up: ' + error.message)
     else {
+      // const { error } = await supabase.from('professors').insert([{
       alert('You have successfully signed up! Please check your email to confirm your account')
       // TODO: redirect to like an intro page so they can learn how to use the app and set up knowledge graph and their profile
       navigate('/')

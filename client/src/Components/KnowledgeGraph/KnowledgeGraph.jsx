@@ -40,7 +40,7 @@ const KnowledgeGraph = () => {
 
   const saveGraphData = async () => {
     // TODO: use upsert instead of update
-    const { data, error } = await supabase.from('knowledge_graph').update({
+    const { data, error } = await supabase.from('class_knowledge_graph').update({
       nodes,
       edges,
       react_flow_data: [
@@ -184,7 +184,7 @@ const KnowledgeGraph = () => {
   )
   useEffect(() => {
     const fetchGraphData = async () => {
-      const { data, error } = await supabase.from('knowledge_graph').select('*')
+      const { data, error } = await supabase.from('class_knowledge_graph').select('*')
       if (error) {
         setLoadingMessage("We couldn't find your knowledge graph")
         return
