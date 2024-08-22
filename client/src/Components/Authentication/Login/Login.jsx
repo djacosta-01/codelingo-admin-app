@@ -35,7 +35,7 @@ const Login = () => {
   }
   const handlePasswordReset = async () => {
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://localhost:3000/reset-password',
+      redirectTo: 'http://example.com/account/update-password', // change this with actual URL in future
     })
   }
   const handleSubmit = async event => {
@@ -89,7 +89,7 @@ const Login = () => {
         <button type="submit">Log In</button>
       </form>
       {/* Forgot Password Logic */}
-      {/* <Typography
+      <Typography
         variant="caption"
         onClick={() => handleDialogOpen()}
         sx={{
@@ -125,9 +125,9 @@ const Login = () => {
               onChange={_event => setEmail(_event.target.value)}
             />
           </DialogContent>
-          <Button onClick={() => alert('button clicked')}>Reset Password</Button>
+          <Button onClick={() => alert('COMING SOON...SORRY...')}>Reset Password</Button>
         </Box>
-      </Dialog> */}
+      </Dialog>
       {/* Registration */}
       <Typography>
         Don't have an account? <Link to="/register">Register Here</Link>
