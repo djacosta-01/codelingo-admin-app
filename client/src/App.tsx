@@ -14,28 +14,7 @@ import ClassroomSettings from './Components/StudentPages/ClassroomSettings.jsx'
 import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import KnowledgeGraph from './Components/KnowledgeGraph/KnowledgeGraph.jsx'
-import QrCode from './qrCode.jsx'
-
-// const items = [
-//   {
-//     id: 'cmsi-1010',
-//     title: 'CMSI 1010 - 02',
-//     backgroundImage: 'class1.jpg',
-//   },
-//   {
-//     id: 'cmsi-2120',
-//     title: 'CMSI 2120 - 01',
-//     backgroundImage: 'class2.jpg',
-//   },
-//   {
-//     id: 'cmsi-3801',
-//     title: 'CMSI 3801 - 01',
-//     backgroundImage: 'class3.jpg',
-//   },
-// ]
-// const handleSelectItem = (item: { id: string; title: string; backgroundImage: string }) => {
-//   console.log('item', item)
-// }
+import QrCode from './qrCode.jsx' // for testing purposes right now
 
 function App() {
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
