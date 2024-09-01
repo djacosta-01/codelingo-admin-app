@@ -13,7 +13,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { IconButton, Box, Tooltip } from '@mui/material'
+import { IconButton, Box, Tooltip, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Info, BugReport, Logout } from '@mui/icons-material'
@@ -139,15 +139,18 @@ const NavbarWithSideMenu = ({ className, displaySideMenu, currentPage }) => {
               ''
             )}
             <Box
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/home')}
               sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 '& :hover': {
                   cursor: 'pointer',
                   textDecoration: 'underline',
                 },
               }}
             >
-              <h2>Codelingo</h2>
+              <Typography variant="h5">Codelingo</Typography>
             </Box>
           </Box>
 

@@ -43,11 +43,9 @@ const Login = () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       alert('Error logging in: ' + error.message)
-      console.log(error)
+      console.error(error)
     } else {
-      // setIsLoggedIn(true)
-      // console.log('Login Success')
-      navigate('/')
+      navigate('/home')
     }
   }
 

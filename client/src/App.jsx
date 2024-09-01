@@ -18,15 +18,17 @@ import QrCode from './qrCode.jsx' // for testing purposes right now
 
 function App() {
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
-  const [session, setSession] = useState(null)
+  const [userSession, setUserSession] = useState(null)
 
   // authenticating user
   useEffect(() => {
     const currentSession = supabase.auth.getSession()
-    setSession(currentSession)
+    // console.log(currentSession)
+    if (currentSession) setUserSession(currentSession)
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
+      // console.log(_event, session)
+      setUserSession(session)
     })
   }, [])
 
@@ -34,19 +36,16 @@ function App() {
     <Box className="App">
       <Router>
         <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route
-            path="/"
+            path="/home"
             element={
-              session ? (
-                <AuthenticatedRoute session={session}>
-                  <Home />
-                </AuthenticatedRoute>
-              ) : (
-                <Login />
-              )
+              <AuthenticatedRoute session={userSession}>
+                <Home />
+              </AuthenticatedRoute>
             }
           />
-          <Route path="/register" element={<Register />} />
           {/* <Route
             path="/test-route"
             element={<h2>Welcome! Please check your email and verify your account</h2>}
@@ -54,7 +53,7 @@ function App() {
           <Route
             path="/classes/:className/lessons"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <Lessons />
               </AuthenticatedRoute>
             }
@@ -62,7 +61,7 @@ function App() {
           <Route
             path="/classes/:className/lessons/lesson/:lessonName"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <Lesson />
               </AuthenticatedRoute>
             }
@@ -70,7 +69,7 @@ function App() {
           <Route
             path="/classes/:className/add-lessons"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <AddLessons />
               </AuthenticatedRoute>
             }
@@ -78,7 +77,7 @@ function App() {
           <Route
             path="/classes/:className/add-lessons/:lessonName"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <AddLessons />
               </AuthenticatedRoute>
             }
@@ -87,7 +86,7 @@ function App() {
           <Route
             path="/classes/:className/knowledge-graph"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <KnowledgeGraph />
               </AuthenticatedRoute>
             }
@@ -95,7 +94,7 @@ function App() {
           <Route
             path="/classes/:className/roster"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <Roster />
               </AuthenticatedRoute>
             }
@@ -103,7 +102,7 @@ function App() {
           <Route
             path="/classes/:className/class-performance"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <StudentPerformance />
               </AuthenticatedRoute>
             }
@@ -111,7 +110,7 @@ function App() {
           <Route
             path="/classes/:className/class-settings"
             element={
-              <AuthenticatedRoute session={session}>
+              <AuthenticatedRoute session={userSession}>
                 <ClassroomSettings />
               </AuthenticatedRoute>
             }

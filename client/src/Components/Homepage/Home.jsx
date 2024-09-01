@@ -1,4 +1,4 @@
-import NewClass from './NewClass.js'
+import NewClass from './NewClass.jsx'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Paper, Typography } from '@mui/material'
@@ -36,8 +36,8 @@ const Home = () => {
         console.error('Error fetching classes: ', classesError)
         return
       }
-      console.log('user')
-      console.log(user.user)
+      // console.log('user')
+      // console.log(user.user)
       setClasses(classes)
     }
     fetchClasses()
