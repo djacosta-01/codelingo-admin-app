@@ -111,7 +111,7 @@ function App() {
               </AuthenticatedRoute>
             }
           />
-          <Route path="/test-code" element={<QrCode />} />
+          {/* <Route path="/test-code" element={<QrCode />} /> */}
         </Routes>
       </Router>
     </Box>
