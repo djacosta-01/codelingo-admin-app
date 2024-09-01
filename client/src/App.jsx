@@ -46,10 +46,6 @@ function App() {
               </AuthenticatedRoute>
             }
           />
-          {/* <Route
-            path="/test-route"
-            element={<h2>Welcome! Please check your email and verify your account</h2>}
-          /> */}
           <Route
             path="/classes/:className/lessons"
             element={
