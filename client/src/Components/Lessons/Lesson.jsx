@@ -24,6 +24,7 @@ const Lesson = () => {
         setLoadingMessage('Lesson Not Found')
         return
       }
+      console.log(data)
       setLessonContent(data[0].questions)
       // console.log(lessonContent)
     }

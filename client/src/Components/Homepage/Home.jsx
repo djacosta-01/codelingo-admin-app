@@ -38,6 +38,7 @@ const Home = () => {
       }
       // console.log('user')
       // console.log(user.user)
+      console.log(classes)
       setClasses(classes)
     }
     fetchClasses()

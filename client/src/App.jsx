@@ -15,6 +15,7 @@ import Lesson from './Components/Lessons/Lesson.jsx'
 import AuthenticatedRoute from './Components/PrivateRoute.jsx'
 import KnowledgeGraph from './Components/KnowledgeGraph/KnowledgeGraph.jsx'
 import QrCode from './qrCode.jsx' // for testing purposes right now
+import QRCode from 'react-qr-code'
 
 function App() {
   // TODO: once user is authenticated, fetch user data and pass in relevant data to components as props?
@@ -111,7 +112,7 @@ function App() {
               </AuthenticatedRoute>
             }
           />
-          {/* <Route path="/test-code" element={<QrCode />} /> */}
+          <Route path="/test" element={<QrCode />} />
         </Routes>
       </Router>
     </Box>
