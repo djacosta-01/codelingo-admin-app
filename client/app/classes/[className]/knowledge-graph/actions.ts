@@ -1,6 +1,6 @@
 'use server'
 
-import { Json } from '@/supabase'
+// import { Json } from '@/supabase'
 import { createClient } from '@/utils/supabase/server'
 
 export const getKnowledgeGraphData = async (className: string) => {
@@ -20,7 +20,6 @@ export const getKnowledgeGraphData = async (className: string) => {
     .select('class_id')
     .eq('name', cleanedClassName)
 
-  console.log('Class ID: ', classID)
   if (error) {
     console.error('Error fetching class ID: ', error)
     return null
