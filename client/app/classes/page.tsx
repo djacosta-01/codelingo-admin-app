@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 const Classes = () => {
-  const [classes, setClasses] = useState<string[]>([])
+  const [classes, setClasses] = useState<(string | null)[]>([])
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -31,7 +31,7 @@ const Classes = () => {
           }}
         >
           {classes.map((className, index) => (
-            <Link href="/">
+            <Link href={`/classes/${className}/lessons`}>
               <Paper
                 key={index}
                 sx={{
