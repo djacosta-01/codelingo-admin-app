@@ -13,9 +13,10 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { IconButton, Box, Tooltip, Typography } from '@mui/material'
+import { IconButton, Box, Tooltip, Typography, Button } from '@mui/material'
 import { useState } from 'react'
 import { Info, BugReport, Logout } from '@mui/icons-material'
+import Link from 'next/link'
 
 const drawerWidth = 240
 
@@ -157,9 +158,8 @@ const NavbarWithSideMenu = ({
             ) : (
               ''
             )}
+
             <Box
-              //   onClick={() => navigate('/home')}
-              onClick={() => alert('Home page in development...')}
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -170,7 +170,10 @@ const NavbarWithSideMenu = ({
                 },
               }}
             >
-              <Typography variant="h5">Codelingo</Typography>
+              {/* Fix this bc it looks awful */}
+              <Typography variant="h5">
+                <Link href="/classes">Codelingo</Link>
+              </Typography>
             </Box>
           </Box>
 
