@@ -19,17 +19,17 @@ export const getLessonData = async (className: string): Promise<(string | null)[
     .from('classes')
     .select('class_id')
     .eq('name', cleanedClassName)
+    .single()
 
   if (classError) {
     console.error('Error fetching class ID: ', classError)
     return []
   }
 
-  console.log(classID)
   const { data: lessonIDs, error: lessonIDsError } = await supabase
     .from('class_lesson_bank')
     .select('lesson_id')
-    .eq('class_id', classID[0].class_id)
+    .eq('class_id', classID.class_id)
 
   if (lessonIDsError) {
     console.error('Error fetching lesson IDs: ', lessonIDsError)

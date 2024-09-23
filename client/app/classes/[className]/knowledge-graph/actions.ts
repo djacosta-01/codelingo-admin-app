@@ -38,3 +38,5 @@ export const getKnowledgeGraphData = async (className: string) => {
 
   return graphData
 }
+
+// TODO: add server action for adding nodes and stuff

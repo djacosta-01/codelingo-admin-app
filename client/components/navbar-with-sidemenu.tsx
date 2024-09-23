@@ -1,3 +1,5 @@
+'use client'
+
 import { Menu, ChevronLeft } from '@mui/icons-material'
 import LessonsIcon from '@mui/icons-material/MenuBook'
 import KnowledgeGraphIcon from '@mui/icons-material/Workspaces'
@@ -199,8 +201,10 @@ const NavbarWithSideMenu = ({
               </IconButton>
             </Tooltip>
             <Tooltip title="Sign Out" arrow>
-              <IconButton onClick={() => handleSignOut()} sx={{ color: 'white' }}>
-                <Logout />
+              <IconButton sx={{ color: 'white' }}>
+                <Link href="/auth/logout">
+                  <Logout />
+                </Link>
               </IconButton>
             </Tooltip>
           </Box>
