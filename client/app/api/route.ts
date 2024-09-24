@@ -41,5 +41,6 @@ export async function GET() {
   // signing out dummy student user
   await supabase.auth.signOut()
 
+  console.log('enrolledClassDetails: ', enrolledClassDetails)
   return NextResponse.json({ studentClassData: enrolledClassDetails })
 }
