@@ -4,16 +4,19 @@ import { Box } from '@mui/material'
 import { ReactFlow, Controls, Background } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect } from 'react'
-import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import { AddNodeForm } from '@/app/classes/[className]/knowledge-graph/add-node'
 import { useOnNodesChange, useOnEdgesChange, useOnConnect } from '@/hooks/knowledgeGraphHooks'
+import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 
 const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
-  const [nodes, setNodes] = useState([])
-  const [edges, setEdges] = useState([])
-  const [reactFlowData, setReactFlowData] = useState({ reactFlowNodes: [], reactFlowEdges: [] })
+  const [nodes, setNodes] = useState<string[]>([])
+  const [edges, setEdges] = useState<string[]>([])
+  const [reactFlowData, setReactFlowData] = useState<any>({
+    reactFlowNodes: [],
+    reactFlowEdges: [],
+  })
 
   // hooks
   const onNodesChange = useOnNodesChange({ setNodes, setReactFlowData })
@@ -21,13 +24,14 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const onConnect = useOnConnect({ setReactFlowData })
 
   useEffect(() => {
-    // TODO: FIX TYPES!!!
+    // TODO: FIX TYPES!!! PLEASE GET RID OF THE ANY TYPES!!!
     const fetchClassGraphData = async () => {
       const graphData = await getKnowledgeGraphData(params.className)
       const { nodes, edges, react_flow_data } = graphData
+
       setNodes(nodes)
       setEdges(edges)
-      setReactFlowData(prev => ({
+      setReactFlowData((prev: any) => ({
         ...prev,
         reactFlowNodes: react_flow_data[0].reactFlowNodes,
         reactFlowEdges: react_flow_data[0].reactFlowEdges,

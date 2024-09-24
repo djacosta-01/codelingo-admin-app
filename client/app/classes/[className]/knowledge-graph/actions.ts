@@ -3,7 +3,9 @@
 // import { Json } from '@/supabase'
 import { createClient } from '@/utils/supabase/server'
 
-export const getKnowledgeGraphData = async (className: string) => {
+export const getKnowledgeGraphData = async (className: string): Promise<any> => {
+  // returning any for now!!
+
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
