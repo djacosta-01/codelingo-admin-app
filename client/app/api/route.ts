@@ -1,14 +1,14 @@
 import { createClient } from '@/utils/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 // import { redirect } from 'next/navigation'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = createClient()
 
   // THIS IS TEMPORARY AND FOR TESTING PURPOSES ONLY
   // signing in dummy student user to return fake data
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email: process.env.NEXT_PUBLIC_TEST_EMAIL_STUDENT!,
     password: process.env.NEXT_PUBLIC_TEST_PASSWORD_STUDENT!,
   })

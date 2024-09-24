@@ -13,7 +13,7 @@ const Lessons = ({ params }: { params: { className: string } }) => {
       setLessons(data)
     }
     fetchLessons()
-  }, [])
+  }, [params.className])
 
   return (
     <>

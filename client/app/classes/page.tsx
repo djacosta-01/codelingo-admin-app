@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, Paper } from '@mui/material'
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import { getClassData } from '@/app/classes/actions'
 import { useState, useEffect } from 'react'
@@ -31,7 +31,7 @@ const Classes = () => {
           }}
         >
           {classes.map((className, index) => (
-            <Link href={`/classes/${className}/lessons`}>
+            <Link key={index} href={`/classes/${className}/lessons`}>
               <Paper
                 key={index}
                 sx={{

@@ -4,12 +4,12 @@ import { useState } from 'react'
 import {
   Box,
   TextField,
-  Typography,
+  // Typography,
   InputAdornment,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
+  // Dialog,
+  // DialogTitle,
+  // DialogContent,
+  // DialogContentText,
   Button,
 } from '@mui/material'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -19,20 +19,20 @@ import Image from 'next/image'
 import { login } from '@/app/auth/login/actions'
 
 export default function Home() {
-  const [open, setOpen] = useState(false)
+  // const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   // const navigate = useNavigate()
 
-  const handleDialogOpen = () => {
-    setOpen(true)
-  }
+  // const handleDialogOpen = () => {
+  //   setOpen(true)
+  // }
 
-  const handleDialogClose = () => {
-    setEmail('')
-    setOpen(false)
-  }
+  // const handleDialogClose = () => {
+  //   setEmail('')
+  //   setOpen(false)
+  // }
 
   return (
     <Box

@@ -84,7 +84,7 @@ const HelperCard = () => {
             </Typography>
             <Typography>
               <ul>
-                <li>Add Node(s): Click "Add" button and enter relevant information</li>
+                <li>{`Add Node(s): Click "Add" button and enter relevant information`}</li>
                 <li>
                   Creating Edge(s): Enter edge info when adding a node or click edge source and drag
                   to desired node

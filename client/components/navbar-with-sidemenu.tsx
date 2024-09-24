@@ -15,11 +15,11 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import { IconButton, Box, Tooltip, Typography, Button } from '@mui/material'
+import { IconButton, Box, Tooltip, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Info, BugReport, Logout } from '@mui/icons-material'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 
 const drawerWidth = 240
 
@@ -118,10 +118,10 @@ const NavbarWithSideMenu = ({
   const handleMenuOpen = () => setIsSideMenuOpen(true)
   const handleMenuClose = () => setIsSideMenuOpen(false)
   //   const navigate = useNavigate()
-  const handleSignOut = async () => {
-    // const { error } = await supabase.auth.signOut()
-    // if (error) console.log('Error logging out:', error.message)
-  }
+  // const handleSignOut = async () => {
+  //   // const { error } = await supabase.auth.signOut()
+  //   // if (error) console.log('Error logging out:', error.message)
+  // }
 
   // TODO: fix routes of other side menu items
   const sideMenuItems = [
@@ -226,7 +226,7 @@ const NavbarWithSideMenu = ({
             </IconButton>
           </DrawerHeader>
           <List>
-            {sideMenuItems.map(({ text, icon, slug }, index) => (
+            {sideMenuItems.map(({ text, icon /*slug*/ }, index) => (
               <ListItem key={index} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton
                   sx={{
