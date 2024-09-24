@@ -19,6 +19,7 @@ import { IconButton, Box, Tooltip, Typography, Button } from '@mui/material'
 import { useState } from 'react'
 import { Info, BugReport, Logout } from '@mui/icons-material'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const drawerWidth = 240
 
@@ -183,9 +184,12 @@ const NavbarWithSideMenu = ({
             <Tooltip title="About" arrow>
               <IconButton
                 sx={{ color: 'white' }}
-                onClick={() => alert('About page in development...')}
+                // onClick={() => alert('About page in development...')}
+                // onClick={() => alert('About page in development...')}
               >
-                <Info />
+                <Link href="/api">
+                  <Info />
+                </Link>
               </IconButton>
             </Tooltip>
             <Tooltip title="Report a Problem" arrow>
