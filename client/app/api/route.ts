@@ -41,6 +41,13 @@ export async function GET() {
   // signing out dummy student user
   await supabase.auth.signOut()
 
-  console.log('enrolledClassDetails: ', enrolledClassDetails)
+  // Create a response object
+  const response = NextResponse.json({ studentClassData: enrolledClassDetails })
+
+  // Set CORS headers
+  response.headers.append('Access-Control-Allow-Origin', 'http://localhost:3000') // Change to your origin
+  response.headers.append('Access-Control-Allow-Methods', 'GET, POST, OPTIONS') // Specify allowed methods
+  response.headers.append('Access-Control-Allow-Headers', 'Content-Type') // Specify allowed headers
+
   return NextResponse.json({ studentClassData: enrolledClassDetails })
 }
