@@ -2,6 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  console.log('in the supabase middleware')
+  // console.log(request)
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -34,6 +36,12 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  // TODO: temporary fix
+  const apiUrl = request.url.includes('api')
+  if (apiUrl) {
+    return supabaseResponse
+  }
 
   // console.log('user:', user)
   if (!user && request.nextUrl.pathname !== '/') {
