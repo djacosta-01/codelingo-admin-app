@@ -41,17 +41,5 @@ export async function GET() {
   // signing out dummy student user
   await supabase.auth.signOut()
 
-  return NextResponse.json(
-    {
-      studentClassData: enrolledClassDetails, // Correctly structured JSON response
-    },
-    {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*', // Allow all origins (for testing; restrict in production)
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
-    }
-  )
+  return NextResponse.json({ studentClassData: enrolledClassDetails })
 }
