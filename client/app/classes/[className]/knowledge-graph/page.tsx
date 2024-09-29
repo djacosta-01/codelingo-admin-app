@@ -1,7 +1,7 @@
 'use client'
 
 import { Box } from '@mui/material'
-import { ReactFlow, Controls, Background } from '@xyflow/react'
+import { type Node, type Edge, ReactFlow, Controls, Background } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect } from 'react'
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
@@ -13,7 +13,10 @@ import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph
 const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
-  const [reactFlowData, setReactFlowData] = useState<any>({
+  const [reactFlowData, setReactFlowData] = useState<{
+    reactFlowNodes: Node[]
+    reactFlowEdges: Edge[]
+  }>({
     reactFlowNodes: [],
     reactFlowEdges: [],
   })
@@ -31,7 +34,7 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
 
       setNodes(nodes)
       setEdges(edges)
-      setReactFlowData((prev: any) => ({
+      setReactFlowData(prev => ({
         ...prev,
         reactFlowNodes: react_flow_data[0].reactFlowNodes,
         reactFlowEdges: react_flow_data[0].reactFlowEdges,
