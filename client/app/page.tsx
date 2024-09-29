@@ -12,19 +12,11 @@ import {
   // DialogContentText,
   Button,
 } from '@mui/material'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import LockIcon from '@mui/icons-material/Lock'
 import logoImage from '@/assets/logo.png'
 import Image from 'next/image'
 import { login } from '@/app/auth/login/actions'
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-})
 
 export default function Home() {
   // const [open, setOpen] = useState(false)
@@ -43,73 +35,71 @@ export default function Home() {
   // }
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Box
-        className="login-container"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 3,
-          height: '100vh',
-        }}
-      >
-        <Image src={logoImage} alt="CodeLingo" width="200" height="200" />
-        <form>
-          <Box
-            id="form-container"
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4,
+    <Box
+      className="login-container"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 3,
+        height: '100vh',
+      }}
+    >
+      <Image src={logoImage} alt="CodeLingo" width="200" height="200" />
+      <form>
+        <Box
+          id="form-container"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+          }}
+        >
+          <TextField
+            variant="standard"
+            id="email"
+            name="email"
+            type="email"
+            label="Email"
+            value={email}
+            onChange={_event => setEmail(_event.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AccountCircle fontSize="small" />
+                </InputAdornment>
+              ),
             }}
-          >
-            <TextField
-              variant="standard"
-              id="email"
-              name="email"
-              type="email"
-              label="Email"
-              value={email}
-              onChange={_event => setEmail(_event.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              variant="standard"
-              id="password"
-              name="password"
-              type="password"
-              label="Password"
-              value={password}
-              onChange={_event => setPassword(_event.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Box>
-              <Button variant="contained" formAction={login} type="submit">
-                Log In
-              </Button>
-            </Box>
+          />
+          <TextField
+            variant="standard"
+            id="password"
+            name="password"
+            type="password"
+            label="Password"
+            value={password}
+            onChange={_event => setPassword(_event.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Box>
+            <Button variant="contained" formAction={login} type="submit">
+              Log In
+            </Button>
           </Box>
-        </form>
+        </Box>
+      </form>
 
-        {/* Forgot Password Logic */}
-        {/* <Typography
+      {/* Forgot Password Logic */}
+      {/* <Typography
         variant="caption"
         onClick={() => handleDialogOpen()}
         sx={{
@@ -149,11 +139,10 @@ export default function Home() {
         </Box>
       </Dialog> */}
 
-        {/* Registration */}
-        {/* <Typography>
+      {/* Registration */}
+      {/* <Typography>
         Don't have an account? <Link to="/register">Register Here</Link>
       </Typography> */}
-      </Box>
-    </ThemeProvider>
+    </Box>
   )
 }

@@ -124,7 +124,7 @@ const SideMenu = ({
                 minHeight: 48,
                 justifyContent: isSideMenuOpen ? 'initial' : 'center',
                 px: 2.5,
-                backgroundColor: currentPage === text ? 'rgba(0, 0.1, 0.1, 0.4)' : 'transparent',
+                // backgroundColor: currentPage === text ? 'rgba(0, 0.1, 0.1, 0.4)' : 'transparent',
                 // ':hover': { backgroundColor: 'rgba(0, 0, 0, 0.1)' },
               }}
               onClick={() => router.push(slug)}
