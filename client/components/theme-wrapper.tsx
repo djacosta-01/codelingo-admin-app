@@ -27,7 +27,7 @@ const ToggleTheme = ({ mode, toggleMode }: { mode: 'light' | 'dark'; toggleMode:
 }
 
 const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState<'light' | 'dark'>('light')
+  const [mode, setMode] = useState<'light' | 'dark'>('dark')
 
   const toggleMode = () => {
     setMode(prevMode => (prevMode === 'light' ? 'dark' : 'light'))
