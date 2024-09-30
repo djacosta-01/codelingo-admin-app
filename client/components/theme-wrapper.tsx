@@ -9,6 +9,7 @@ import { useState } from 'react'
 const ToggleTheme = ({ mode, toggleMode }: { mode: 'light' | 'dark'; toggleMode: () => void }) => {
   return (
     <Box
+      id="mode-toggler"
       sx={{
         position: 'fixed',
         bottom: 0,

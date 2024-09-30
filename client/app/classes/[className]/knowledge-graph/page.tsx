@@ -27,7 +27,6 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const onConnect = useOnConnect({ setReactFlowData })
 
   useEffect(() => {
-    // TODO: FIX TYPES!!! PLEASE GET RID OF THE ANY TYPES!!!
     const fetchClassGraphData = async () => {
       const graphData = await getKnowledgeGraphData(params.className)
       const { nodes, edges, react_flow_data } = graphData
@@ -62,11 +61,6 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
           alignItems: 'center',
         }}
       >
-        {/* THIS IS JUST TEMPORARY WHILE I FIGURE OUT HOW TO FIX MY ESLINT RULES */}
-        <div hidden>
-          {nodes}
-          {edges}
-        </div>
         {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
           <>
             <ReactFlow

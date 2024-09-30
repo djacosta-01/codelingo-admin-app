@@ -3,9 +3,11 @@ import { Box, Paper, Typography } from '@mui/material'
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import { getLessonData } from '@/app/classes/[className]/lessons/actions'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const Lessons = ({ params }: { params: { className: string } }) => {
   const [lessons, setLessons] = useState<(string | null)[]>([]) // only getting lesson names for now
+  const router = useRouter()
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -35,10 +37,11 @@ const Lessons = ({ params }: { params: { className: string } }) => {
           flexWrap: 'wrap',
         }}
       >
-        {/* Only displaying lesson names for now. In future, will display lesson data through a table */}
+        {/* Only displaying lesson names for now. In future, will display lesson data through a table or something like that */}
         {lessons.map((lessonName, index) => (
           <Paper
             key={index}
+            onClick={() => router.push(`/classes/${params.className}/lessons/${lessonName}`)}
             sx={{
               display: 'flex',
               alignItems: 'center',

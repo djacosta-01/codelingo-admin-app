@@ -49,7 +49,5 @@ export const getLessonData = async (className: string): Promise<(string | null)[
     return []
   }
 
-  //   console.log(lessonData)
-
   return lessonData.map((lesson: { name: string | null }) => lesson.name)
 }
