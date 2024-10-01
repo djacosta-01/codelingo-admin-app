@@ -1,4 +1,5 @@
 'use client'
+
 import { Box, Paper, Typography } from '@mui/material'
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import { getLessonData } from '@/app/classes/[className]/lessons/actions'

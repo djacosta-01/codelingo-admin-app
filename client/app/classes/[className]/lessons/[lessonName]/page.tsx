@@ -2,8 +2,8 @@
 
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid'
-import { AddCircleOutline, Edit } from '@mui/icons-material'
+import { DataGrid, GridRowsProp, GridColDef, GridToolbar } from '@mui/x-data-grid'
+import { AddCircleOutline, Edit, Delete } from '@mui/icons-material'
 import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { useState, useEffect } from 'react'
 
@@ -15,15 +15,23 @@ const columns: GridColDef[] = [
   { field: 'col5', headerName: 'Answer', width: 200 },
   {
     field: 'col6',
-    headerName: 'Edit Question',
+    headerName: 'Question Actions',
     width: 200,
     renderCell: () => (
-      <IconButton
-        onClick={() => alert('edit question button clicked')}
-        sx={{ ':hover': { color: '#1ABBFF' } }}
-      >
-        <Edit />
-      </IconButton>
+      <>
+        <IconButton
+          onClick={() => alert('edit question button clicked')}
+          sx={{ ':hover': { color: '#1ABBFF' } }}
+        >
+          <Edit />
+        </IconButton>
+        <IconButton
+          onClick={() => alert('delete question button clicked')}
+          sx={{ ':hover': { color: '#E4080A' } }}
+        >
+          <Delete />
+        </IconButton>
+      </>
     ),
   },
 ]
@@ -66,6 +74,7 @@ const Lesson = ({
           display: 'flex',
           flexDirection: 'column',
           height: 'calc(100vh - 64px)',
+          width: 'calc(100vw - 65px)',
         }}
       >
         <Box sx={{ paddingLeft: 3 }}>
@@ -88,13 +97,17 @@ const Lesson = ({
             </IconButton>
           </Tooltip>
         </Box>
+        {/* source: https://mui.com/x/react-data-grid/demo/ */}
         <DataGrid
+          ignoreDiacritics
           rows={rows}
           columns={columns}
-          sx={{
-            display: 'flex',
-            flexGrow: 1,
-            justifyContent: 'center',
+          disableColumnSelector
+          slots={{ toolbar: GridToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
           }}
         />
       </Box>
