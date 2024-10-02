@@ -1,40 +1,51 @@
 'use client'
 
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
-import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { DataGrid, GridRowsProp, GridColDef, GridToolbar } from '@mui/x-data-grid'
-import { AddCircleOutline, Edit, Delete } from '@mui/icons-material'
-import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
-import { useState, useEffect } from 'react'
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material'
+import { AddCircleOutline } from '@mui/icons-material'
+// import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { useState } from 'react'
 
-const columns: GridColDef[] = [
-  { field: 'col1', headerName: 'Question', width: 200 },
-  { field: 'col2', headerName: 'Snippet', width: 200 },
-  { field: 'col3', headerName: 'Units Covered', width: 200 },
-  { field: 'col4', headerName: 'Options', width: 200 },
-  { field: 'col5', headerName: 'Answer', width: 200 },
-  {
-    field: 'col6',
-    headerName: 'Question Actions',
-    width: 200,
-    renderCell: () => (
-      <>
-        <IconButton
-          onClick={() => alert('edit question button clicked')}
-          sx={{ ':hover': { color: '#1ABBFF' } }}
-        >
-          <Edit />
-        </IconButton>
-        <IconButton
-          onClick={() => alert('delete question button clicked')}
-          sx={{ ':hover': { color: '#E4080A' } }}
-        >
-          <Delete />
-        </IconButton>
-      </>
-    ),
-  },
-]
+// TEST
+import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
+
+// const columns: GridColDef[] = [
+//   { field: 'col1', headerName: 'Question', width: 200 },
+//   { field: 'col2', headerName: 'Snippet', width: 200 },
+//   { field: 'col3', headerName: 'Units Covered', width: 200 },
+//   { field: 'col4', headerName: 'Options', width: 200 },
+//   { field: 'col5', headerName: 'Answer', width: 200 },
+//   {
+//     field: 'col6',
+//     headerName: 'Question Actions',
+//     width: 200,
+//     renderCell: () => (
+//       <>
+//         <IconButton
+//           onClick={() => alert('edit question button clicked')}
+//           sx={{ ':hover': { color: '#1ABBFF' } }}
+//         >
+//           <Edit />
+//         </IconButton>
+//         <IconButton
+//           onClick={() => alert('delete question button clicked')}
+//           sx={{ ':hover': { color: '#E4080A' } }}
+//         >
+//           <Delete />
+//         </IconButton>
+//       </>
+//     ),
+//   },
+// ]
 
 const Lesson = ({
   params,
@@ -44,24 +55,26 @@ const Lesson = ({
     lessonName: string
   }
 }) => {
-  const [rows, setRows] = useState<GridRowsProp>([])
-  useEffect(() => {
-    const fetchLessonQuestions = async () => {
-      const lessonQuestions = await getLessonQuestionData(params.className, params.lessonName)
-      const tableRows = lessonQuestions.map(
-        ({ prompt, snippet, topics, answer_options, answer }, index) => ({
-          id: index,
-          col1: prompt,
-          col2: snippet,
-          col3: topics?.join(', '),
-          col4: answer_options?.join(', '),
-          col5: answer,
-        })
-      )
-      setRows(tableRows)
-    }
-    fetchLessonQuestions()
-  }, [])
+  const [open, setOpen] = useState<boolean>(false)
+  // const [rows, setRows] = useState<GridRowsProp>([])
+
+  // useEffect(() => {
+  //   const fetchLessonQuestions = async () => {
+  //     const lessonQuestions = await getLessonQuestionData(params.className, params.lessonName)
+  //     const tableRows = lessonQuestions.map(
+  //       ({ prompt, snippet, topics, answer_options, answer }, index) => ({
+  //         id: index,
+  //         col1: prompt,
+  //         col2: snippet,
+  //         col3: topics?.join(', '),
+  //         col4: answer_options?.join(', '),
+  //         col5: answer,
+  //       })
+  //     )
+  //     setRows(tableRows)
+  //   }
+  //   fetchLessonQuestions()
+  // }, [])
 
   return (
     <>
@@ -92,24 +105,20 @@ const Lesson = ({
         >
           <Typography variant="h5">Questions</Typography>
           <Tooltip title="Add Question">
-            <IconButton onClick={() => alert('add question button clicked')}>
+            <IconButton onClick={() => setOpen(prev => !prev)}>
               <AddCircleOutline />
             </IconButton>
           </Tooltip>
         </Box>
-        {/* source: https://mui.com/x/react-data-grid/demo/ */}
-        <DataGrid
-          ignoreDiacritics
-          rows={rows}
-          columns={columns}
-          disableColumnSelector
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-            },
-          }}
-        />
+        <QuestionDataGrid params={{ className: params.className, lessonName: params.lessonName }} />
+        <Dialog open={open}>
+          <DialogContent>
+            <DialogTitle>Add Question</DialogTitle>
+            <DialogActions>
+              <button onClick={() => setOpen(false)}>Cancel</button>
+            </DialogActions>
+          </DialogContent>
+        </Dialog>
       </Box>
     </>
   )
