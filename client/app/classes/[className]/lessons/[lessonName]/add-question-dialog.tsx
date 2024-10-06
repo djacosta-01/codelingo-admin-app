@@ -19,7 +19,7 @@ import {
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
-import { insertQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { insertQuestion } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 const AddQuestionDialog = ({
   open,
@@ -57,7 +57,9 @@ const AddQuestionDialog = ({
   const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
   const [correctAnswer, setCorrectAnswer] = useState<string>('')
-
+  const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
+    'Add Question'
+  )
   useEffect(() => {
     if (prevQuestionData) {
       const { questionType, prompt, topics, answerOptions, answer } = prevQuestionData
@@ -72,6 +74,7 @@ const AddQuestionDialog = ({
         option4: answerOptions[3],
       }))
       setCorrectAnswer(answer)
+      setButtonOperation('Update Question')
     }
   }, [open])
 
@@ -83,6 +86,7 @@ const AddQuestionDialog = ({
     setOptions({ option1: '', option2: '', option3: '', option4: '' })
     setCorrectAnswer('')
     setTopicsCovered([])
+    setButtonOperation('Add Question')
     resetPrevData(null)
   }
 
@@ -96,15 +100,19 @@ const AddQuestionDialog = ({
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const response = await insertQuestionData({
-      questionType,
-      prompt: questionPrompt,
-      snippet: '',
-      topics: topicsCovered,
-      answer_options: Object.values(options),
-      answer: correctAnswer,
-    })
-    if (response.success) {
+    const response =
+      buttonOperation === 'Add Question'
+        ? await insertQuestion({
+            questionType,
+            prompt: questionPrompt,
+            snippet: '',
+            topics: topicsCovered,
+            answer_options: Object.values(options),
+            answer: correctAnswer,
+          })
+        : alert('Update Question logic not implemented yet')
+
+    if (response?.success) {
       handleDialogClose()
     }
     setAlertOpen(true)
@@ -242,7 +250,7 @@ const AddQuestionDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleDialogClose}>Cancel</Button>
-        <Button type="submit">Add Question</Button>
+        <Button type="submit">{buttonOperation}</Button>
       </DialogActions>
     </Dialog>
   )

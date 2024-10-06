@@ -12,7 +12,7 @@ import {
   GridActionsCellItem,
   GridRowId,
 } from '@mui/x-data-grid'
-import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { getLessonQuestions } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
@@ -59,7 +59,7 @@ const QuestionDataGrid = ({
 
   useEffect(() => {
     const fetchLessonQuestions = async () => {
-      const lessonQuestions = await getLessonQuestionData(params.className, params.lessonName)
+      const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
         ({ prompt, snippet, topics, answer_options, answer }, index) => ({
           id: index,
