@@ -56,7 +56,6 @@ const Lesson = ({
 
   const handleDialogClose = () => {
     setOpen(false)
-
     // reset form values
     setQuestionType('')
     setQuestionPrompt('')
@@ -66,8 +65,6 @@ const Lesson = ({
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // handleDialogClose()
-
     const response = await insertQuestionData({
       questionType,
       prompt: questionPrompt,
@@ -176,6 +173,8 @@ const Lesson = ({
                   display: 'flex',
                   justifyContent: 'center',
                   gap: 3,
+                  flexWrap: 'wrap',
+                  width: '25%',
                 }}
               >
                 <TextField
@@ -185,6 +184,9 @@ const Lesson = ({
                   variant="standard"
                   value={options.option1}
                   onChange={handleOptionInput}
+                  sx={{
+                    flexBasis: 'calc(50% - 12px)',
+                  }}
                 />
                 <TextField
                   required
@@ -193,6 +195,9 @@ const Lesson = ({
                   variant="standard"
                   value={options.option2}
                   onChange={handleOptionInput}
+                  sx={{
+                    flexBasis: 'calc(50% - 12px)',
+                  }}
                 />
                 <TextField
                   required
@@ -201,6 +206,9 @@ const Lesson = ({
                   variant="standard"
                   value={options.option3}
                   onChange={handleOptionInput}
+                  sx={{
+                    flexBasis: 'calc(50% - 12px)',
+                  }}
                 />
                 <TextField
                   required
@@ -209,8 +217,12 @@ const Lesson = ({
                   variant="standard"
                   value={options.option4}
                   onChange={handleOptionInput}
+                  sx={{
+                    flexBasis: 'calc(50% - 12px)',
+                  }}
                 />
               </Box>
+
               <FormControl>
                 <InputLabel id="correct-answer">Correct Answer</InputLabel>
                 <Select
