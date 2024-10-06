@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 
-export const getLessonQuestionData = async (
+export const getLessonQuestions = async (
   className: string,
   lessonName: string
 ): Promise<
@@ -65,7 +65,7 @@ export const getLessonQuestionData = async (
   return questionData
 }
 
-export async function insertQuestionData({
+export async function insertQuestion({
   questionType,
   prompt,
   snippet,
