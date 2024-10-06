@@ -1,79 +1,60 @@
-import { useState, useEffect } from 'react'
+'use client'
+
+import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
-import SaveIcon from '@mui/icons-material/Save'
-import CancelIcon from '@mui/icons-material/Close'
 import {
   GridRowsProp,
-  GridRowModesModel,
-  GridRowModes,
   DataGrid,
   GridColDef,
   GridToolbar,
   GridActionsCellItem,
-  GridEventListener,
   GridRowId,
-  GridRowModel,
-  GridRowEditStopReasons,
 } from '@mui/x-data-grid'
 import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
   params,
+  setPrevData,
+  setOpen,
 }: {
   params: {
     className: string
     lessonName: string
   }
+  setPrevData: Dispatch<
+    SetStateAction<{
+      questionType: string
+      prompt: string
+      snippet: string
+      topics: string[]
+      answerOptions: string[]
+      answer: string
+    } | null>
+  >
+  setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>()
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
-
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true
-    }
-  }
 
   const handleEditClick = (id: GridRowId) => () => {
-    console.log('edit clicked', id)
-    console.log('rowModesModel', rowModesModel)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  }
-
-  const handleSaveClick = (id: GridRowId) => () => {
-    console.log('save clicked', id)
-    console.log('rowModesModel', rowModesModel)
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
+    const row = rows?.find(row => row.id === id)
+    const { col0, col1, col2, col3, col4 } = row!
+    setPrevData(prev => ({
+      ...prev,
+      questionType: 'multiple-choice',
+      prompt: col0,
+      snippet: col1,
+      topics: col2.split(', '),
+      answerOptions: col3.split(', '),
+      answer: col4,
+    }))
+    setOpen(true)
   }
 
   const handleDeleteClick = (id: GridRowId) => () => {
     setRows(rows?.filter(row => row.id !== id))
-  }
-
-  const handleCancelClick = (id: GridRowId) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    })
-
-    const editedRow = rows?.find(row => row.id === id)
-    if (editedRow!.isNew) {
-      setRows(rows?.filter(row => row.id !== id))
-    }
-  }
-
-  const processRowUpdate = (newRow: GridRowModel) => {
-    const updatedRow = { ...newRow, isNew: false }
-    console.log('processRowUpdate', updatedRow)
-    setRows(rows?.map(row => (row.id === newRow.id ? updatedRow : row)))
-    return updatedRow
-  }
-
-  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    setRowModesModel(newRowModesModel)
   }
 
   useEffect(() => {
@@ -133,30 +114,6 @@ const QuestionDataGrid = ({
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              key={id}
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: 'primary.main',
-              }}
-              onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              key={id}
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ]
-        }
-
         return [
           <GridActionsCellItem
             key={id}
@@ -195,10 +152,6 @@ const QuestionDataGrid = ({
         rows={rows}
         columns={columns}
         editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
         disableColumnSelector
         slots={{ toolbar: GridToolbar }}
         slotProps={{

@@ -18,7 +18,7 @@ import {
   Fade,
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
-import { type Dispatch, type SetStateAction, useState } from 'react'
+import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { insertQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 const AddQuestionDialog = ({
@@ -26,11 +26,31 @@ const AddQuestionDialog = ({
   setOpen,
   alertOpen,
   setAlertOpen,
+  prevQuestionData,
+  resetPrevData,
 }: {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   alertOpen: boolean
   setAlertOpen: Dispatch<SetStateAction<boolean>>
+  prevQuestionData: {
+    questionType: string
+    prompt: string
+    snippet: string
+    topics: string[]
+    answerOptions: string[]
+    answer: string
+  } | null
+  resetPrevData: Dispatch<
+    SetStateAction<{
+      questionType: string
+      prompt: string
+      snippet: string
+      topics: string[]
+      answerOptions: string[]
+      answer: string
+    } | null>
+  >
 }) => {
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
@@ -38,9 +58,22 @@ const AddQuestionDialog = ({
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
   const [correctAnswer, setCorrectAnswer] = useState<string>('')
 
-  //   const handleDialogOpen = () => {
-  //     setOpen(true)
-  //   }
+  useEffect(() => {
+    if (prevQuestionData) {
+      const { questionType, prompt, topics, answerOptions, answer } = prevQuestionData
+      setQuestionType(questionType)
+      setQuestionPrompt(prompt)
+      setTopicsCovered(topics)
+      setOptions(prev => ({
+        ...prev,
+        option1: answerOptions[0],
+        option2: answerOptions[1],
+        option3: answerOptions[2],
+        option4: answerOptions[3],
+      }))
+      setCorrectAnswer(answer)
+    }
+  }, [open])
 
   const handleDialogClose = () => {
     setOpen(false)
@@ -49,6 +82,8 @@ const AddQuestionDialog = ({
     setQuestionPrompt('')
     setOptions({ option1: '', option2: '', option3: '', option4: '' })
     setCorrectAnswer('')
+    setTopicsCovered([])
+    resetPrevData(null)
   }
 
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {

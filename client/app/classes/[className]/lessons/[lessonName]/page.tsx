@@ -4,7 +4,6 @@ import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import { Box, IconButton, Tooltip, Typography, Alert, Fade } from '@mui/material'
 import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
-import { insertQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 import AddQuestionDialog from '@/app/classes/[className]/lessons/[lessonName]/add-question-dialog'
 
@@ -18,6 +17,14 @@ const Lesson = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
+  const [prevQuestionData, setPrevQuestionData] = useState<{
+    questionType: string
+    prompt: string
+    snippet: string
+    topics: string[]
+    answerOptions: string[]
+    answer: string
+  } | null>(null)
 
   const handleDialogOpen = () => {
     setOpen(true)
@@ -76,12 +83,18 @@ const Lesson = ({
             Question added successfully
           </Alert>
         </Fade>
-        <QuestionDataGrid params={{ className: params.className, lessonName: params.lessonName }} />
+        <QuestionDataGrid
+          params={{ className: params.className, lessonName: params.lessonName }}
+          setPrevData={setPrevQuestionData}
+          setOpen={setOpen}
+        />
         <AddQuestionDialog
           open={open}
           setOpen={setOpen}
           alertOpen={alertOpen}
           setAlertOpen={setAlertOpen}
+          prevQuestionData={prevQuestionData}
+          resetPrevData={setPrevQuestionData}
         />
       </Box>
     </>
