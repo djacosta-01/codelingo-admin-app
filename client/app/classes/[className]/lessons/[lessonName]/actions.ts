@@ -64,3 +64,45 @@ export const getLessonQuestionData = async (
 
   return questionData
 }
+
+export async function insertQuestionData({
+  questionType,
+  prompt,
+  snippet,
+  topics,
+  answer_options,
+  answer,
+}: {
+  questionType: string
+  prompt: string
+  snippet: string
+  topics: string[]
+  answer_options: string[]
+  answer: string
+}) {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error } = await supabase.from('questions').insert({
+    question_type: questionType,
+    prompt,
+    snippet,
+    topics,
+    answer_options,
+    answer,
+  })
+
+  if (error) {
+    console.error('Error inserting question data: ', error)
+    return { success: false, error }
+  }
+
+  return { success: true }
+}

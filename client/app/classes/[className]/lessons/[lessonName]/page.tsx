@@ -17,9 +17,12 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Alert,
+  Fade,
 } from '@mui/material'
-import { AddCircleOutline } from '@mui/icons-material'
+import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
+import { insertQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 
 const Lesson = ({
@@ -34,14 +37,17 @@ const Lesson = ({
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
   const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
+  const [topicsCovered, setTopicsCovered] = useState<string[]>([])
   const [correctAnswer, setCorrectAnswer] = useState<string>('')
+
+  const [alertOpen, setAlertOpen] = useState<boolean>(false)
 
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOptions({ ...options, [e.target.name]: e.target.value })
   }
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
-    setCorrectAnswer(e.target.value as string)
+    setCorrectAnswer(e.target.value)
   }
 
   const handleDialogOpen = () => {
@@ -50,6 +56,7 @@ const Lesson = ({
 
   const handleDialogClose = () => {
     setOpen(false)
+
     // reset form values
     setQuestionType('')
     setQuestionPrompt('')
@@ -57,15 +64,24 @@ const Lesson = ({
     setCorrectAnswer('')
   }
 
-  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    handleDialogClose()
-    console.log('submitting form')
-    console.log('questionType', questionType)
-    console.log('questionPrompt', questionPrompt)
-    console.log('options', options)
-    console.log('correctAnswer', correctAnswer)
+    // handleDialogClose()
+
+    const response = await insertQuestionData({
+      questionType,
+      prompt: questionPrompt,
+      snippet: '',
+      topics: topicsCovered,
+      answer_options: Object.values(options),
+      answer: correctAnswer,
+    })
+    if (response.success) {
+      handleDialogClose()
+    }
+    setAlertOpen(true)
   }
+
   return (
     <>
       <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />
@@ -100,11 +116,29 @@ const Lesson = ({
             </IconButton>
           </Tooltip>
         </Box>
+        <Fade in={alertOpen}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setAlertOpen(false)
+                }}
+              >
+                <Close fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Question added successfully
+          </Alert>
+        </Fade>
         <QuestionDataGrid params={{ className: params.className, lessonName: params.lessonName }} />
         <Dialog open={open} fullScreen PaperProps={{ component: 'form', onSubmit: submitForm }}>
           <DialogTitle>Add Question</DialogTitle>
           <DialogContent>
-            {/* <form onSubmit={submitForm}> */}
             <Box
               id="add-question-form"
               sx={{
@@ -129,7 +163,6 @@ const Lesson = ({
                   <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
                 </Select>
               </FormControl>
-
               <TextField
                 required
                 label="Question Prompt"
@@ -196,8 +229,26 @@ const Lesson = ({
                   ))}
                 </Select>
               </FormControl>
+              <Fade in={alertOpen}>
+                <Alert
+                  severity="error"
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setAlertOpen(false)
+                      }}
+                    >
+                      <Close fontSize="inherit" />
+                    </IconButton>
+                  }
+                >
+                  Failed to add question. Please review your input and try again
+                </Alert>
+              </Fade>
             </Box>
-            {/* </form> */}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDialogClose}>Cancel</Button>
