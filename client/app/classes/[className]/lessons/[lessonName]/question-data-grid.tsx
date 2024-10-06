@@ -95,34 +95,41 @@ const QuestionDataGrid = ({
   }, [])
 
   const columns: GridColDef[] = [
-    { field: 'col0', headerName: 'Questions', width: 180, editable: true },
+    { field: 'col0', headerName: 'Questions', width: 180, align: 'center', headerAlign: 'center' },
     {
       field: 'col1',
       headerName: 'Snippet',
       width: 180,
-      align: 'left',
-      headerAlign: 'left',
+      align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'col2',
-      headerName: 'Topics',
+      headerName: 'Units Covered',
       width: 180,
+      align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'col3',
       headerName: 'Options',
       width: 220,
+      align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'col4',
       headerName: 'Answer',
       width: 220,
-      editable: true,
+      align: 'center',
+      headerAlign: 'center',
     },
     {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
+      align: 'center',
+      headerAlign: 'center',
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
