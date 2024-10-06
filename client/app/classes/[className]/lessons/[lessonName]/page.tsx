@@ -2,6 +2,7 @@
 
 import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
 import {
+  type SelectChangeEvent,
   Box,
   IconButton,
   Tooltip,
@@ -10,42 +11,16 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from '@mui/material'
 import { AddCircleOutline } from '@mui/icons-material'
-// import { getLessonQuestionData } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { useState } from 'react'
-
-// TEST
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
-
-// const columns: GridColDef[] = [
-//   { field: 'col1', headerName: 'Question', width: 200 },
-//   { field: 'col2', headerName: 'Snippet', width: 200 },
-//   { field: 'col3', headerName: 'Units Covered', width: 200 },
-//   { field: 'col4', headerName: 'Options', width: 200 },
-//   { field: 'col5', headerName: 'Answer', width: 200 },
-//   {
-//     field: 'col6',
-//     headerName: 'Question Actions',
-//     width: 200,
-//     renderCell: () => (
-//       <>
-//         <IconButton
-//           onClick={() => alert('edit question button clicked')}
-//           sx={{ ':hover': { color: '#1ABBFF' } }}
-//         >
-//           <Edit />
-//         </IconButton>
-//         <IconButton
-//           onClick={() => alert('delete question button clicked')}
-//           sx={{ ':hover': { color: '#E4080A' } }}
-//         >
-//           <Delete />
-//         </IconButton>
-//       </>
-//     ),
-//   },
-// ]
 
 const Lesson = ({
   params,
@@ -56,25 +31,26 @@ const Lesson = ({
   }
 }) => {
   const [open, setOpen] = useState<boolean>(false)
-  // const [rows, setRows] = useState<GridRowsProp>([])
+  const [questionType, setQuestionType] = useState<string>('multiple-choice')
+  const [questionPrompt, setQuestionPrompt] = useState<string>('')
+  const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
+  const [correctAnswer, setCorrectAnswer] = useState<string>('')
 
-  // useEffect(() => {
-  //   const fetchLessonQuestions = async () => {
-  //     const lessonQuestions = await getLessonQuestionData(params.className, params.lessonName)
-  //     const tableRows = lessonQuestions.map(
-  //       ({ prompt, snippet, topics, answer_options, answer }, index) => ({
-  //         id: index,
-  //         col1: prompt,
-  //         col2: snippet,
-  //         col3: topics?.join(', '),
-  //         col4: answer_options?.join(', '),
-  //         col5: answer,
-  //       })
-  //     )
-  //     setRows(tableRows)
-  //   }
-  //   fetchLessonQuestions()
-  // }, [])
+  const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setOptions({ ...options, [e.target.name]: e.target.value })
+  }
+
+  const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
+    setCorrectAnswer(e.target.value as string)
+  }
+
+  const handleDialogOpen = () => {
+    setOpen(true)
+  }
+
+  const handleDialogClose = () => {
+    setOpen(false)
+  }
 
   return (
     <>
@@ -105,19 +81,110 @@ const Lesson = ({
         >
           <Typography variant="h5">Questions</Typography>
           <Tooltip title="Add Question">
-            <IconButton onClick={() => setOpen(prev => !prev)}>
+            <IconButton onClick={handleDialogOpen}>
               <AddCircleOutline />
             </IconButton>
           </Tooltip>
         </Box>
         <QuestionDataGrid params={{ className: params.className, lessonName: params.lessonName }} />
-        <Dialog open={open}>
+        <Dialog open={open} fullScreen>
+          <DialogTitle>Add Question</DialogTitle>
           <DialogContent>
-            <DialogTitle>Add Question</DialogTitle>
-            <DialogActions>
-              <button onClick={() => setOpen(false)}>Cancel</button>
-            </DialogActions>
+            <form>
+              <Box
+                id="add-question-form"
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                  justifyContent: 'space-evenly',
+                  height: '80vh',
+                  alignItems: 'center',
+                }}
+              >
+                <Select
+                  label="Question Type"
+                  variant="standard"
+                  sx={{ width: '15em' }}
+                  value={questionType}
+                  onChange={e => setQuestionType(e.target.value)}
+                >
+                  <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
+                </Select>
+                <TextField
+                  label="Question Prompt"
+                  variant="standard"
+                  value={questionPrompt}
+                  onChange={e => setQuestionPrompt(e.target.value)}
+                />
+                <Box
+                  id="options"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: 3,
+                  }}
+                >
+                  <TextField
+                    required
+                    label="Option 1"
+                    name="option1"
+                    variant="standard"
+                    value={options.option1}
+                    onChange={handleOptionInput}
+                  />
+                  <TextField
+                    required
+                    label="Option 2"
+                    name="option2"
+                    variant="standard"
+                    value={options.option2}
+                    onChange={handleOptionInput}
+                  />
+                  <TextField
+                    required
+                    label="Option 3"
+                    name="option3"
+                    variant="standard"
+                    value={options.option3}
+                    onChange={handleOptionInput}
+                  />
+                  <TextField
+                    required
+                    label="Option 4"
+                    name="option4"
+                    variant="standard"
+                    value={options.option4}
+                    onChange={handleOptionInput}
+                  />
+                </Box>
+                <FormControl>
+                  <InputLabel id="correct-answer-label">Correct Answer</InputLabel>
+                  <Select
+                    required
+                    labelId="correct-answer-label"
+                    label="Correct Answer"
+                    variant="standard"
+                    sx={{ width: '15em' }}
+                    value={Object.keys(options).length !== 4 ? 'Correct Answer' : correctAnswer}
+                    onChange={handleCorrectAnswerSelect}
+                  >
+                    <MenuItem>
+                      <em>-- Correct Answer --</em>
+                    </MenuItem>
+                    {Array.from(Object.values(options)).map((option, index) => (
+                      <MenuItem key={index} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </form>
           </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose}>Cancel</Button>
+          </DialogActions>
         </Dialog>
       </Box>
     </>

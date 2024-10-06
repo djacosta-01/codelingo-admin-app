@@ -38,6 +38,8 @@ const QuestionDataGrid = ({
   }
 
   const handleEditClick = (id: GridRowId) => () => {
+    console.log('edit clicked', id)
+    console.log('rowModesModel', rowModesModel)
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
@@ -65,6 +67,7 @@ const QuestionDataGrid = ({
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const updatedRow = { ...newRow, isNew: false }
+    console.log('processRowUpdate', updatedRow)
     setRows(rows?.map(row => (row.id === newRow.id ? updatedRow : row)))
     return updatedRow
   }
@@ -79,11 +82,11 @@ const QuestionDataGrid = ({
       const tableRows = lessonQuestions.map(
         ({ prompt, snippet, topics, answer_options, answer }, index) => ({
           id: index,
-          col1: prompt,
-          col2: snippet,
-          col3: topics?.join(', '),
-          col4: answer_options?.join(', '),
-          col5: answer,
+          col0: prompt,
+          col1: snippet,
+          col2: topics?.join(', '),
+          col3: answer_options?.join(', '),
+          col4: answer,
         })
       )
       setRows(tableRows)
@@ -92,38 +95,29 @@ const QuestionDataGrid = ({
   }, [])
 
   const columns: GridColDef[] = [
-    { field: 'col1', headerName: 'Questions', width: 180, editable: true },
+    { field: 'col0', headerName: 'Questions', width: 180, editable: true },
     {
-      field: 'col2',
+      field: 'col1',
       headerName: 'Snippet',
-      //   type: 'number',
       width: 180,
       align: 'left',
       headerAlign: 'left',
-      editable: true,
+    },
+    {
+      field: 'col2',
+      headerName: 'Topics',
+      width: 180,
     },
     {
       field: 'col3',
-      headerName: 'Topics',
-      //   type: 'date',
-      width: 180,
-      editable: true,
+      headerName: 'Options',
+      width: 220,
     },
     {
       field: 'col4',
-      headerName: 'Options',
-      width: 220,
-      editable: true,
-      //   type: 'singleSelect',
-      //   valueOptions: ['Market', 'Finance', 'Development'],
-    },
-    {
-      field: 'col5',
       headerName: 'Answer',
       width: 220,
       editable: true,
-      //   type: 'singleSelect',
-      //   valueOptions: ['Market', 'Finance', 'Development'],
     },
     {
       field: 'actions',
