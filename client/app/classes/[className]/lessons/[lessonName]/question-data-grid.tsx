@@ -3,7 +3,7 @@
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
+import DeleteIcon from '@mui/icons-material/Delete'
 import {
   GridRowsProp,
   DataGrid,
@@ -26,6 +26,7 @@ const QuestionDataGrid = ({
   }
   setPrevData: Dispatch<
     SetStateAction<{
+      questionId: number
       questionType: string
       prompt: string
       snippet: string
@@ -40,9 +41,12 @@ const QuestionDataGrid = ({
 
   const handleEditClick = (id: GridRowId) => () => {
     const row = rows?.find(row => row.id === id)
-    const { col0, col1, col2, col3, col4 } = row!
+    // console.log(row)
+    const { id: rowId, col0, col1, col2, col3, col4 } = row!
+
     setPrevData(prev => ({
       ...prev,
+      questionId: Number(rowId),
       questionType: 'multiple-choice',
       prompt: col0,
       snippet: col1,
@@ -61,8 +65,8 @@ const QuestionDataGrid = ({
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
-        ({ prompt, snippet, topics, answer_options, answer }, index) => ({
-          id: index,
+        ({ question_id, prompt, snippet, topics, answer_options, answer }) => ({
+          id: question_id,
           col0: prompt,
           col1: snippet,
           col2: topics?.join(', '),
@@ -73,7 +77,7 @@ const QuestionDataGrid = ({
       setRows(tableRows)
     }
     fetchLessonQuestions()
-  }, [])
+  }, [setOpen])
 
   const columns: GridColDef[] = [
     { field: 'col0', headerName: 'Questions', width: 180, align: 'center', headerAlign: 'center' },
@@ -122,6 +126,7 @@ const QuestionDataGrid = ({
             className="textPrimary"
             onClick={handleEditClick(id)}
             color="inherit"
+            sx={{ ':hover': { color: '#1B94F7' } }}
           />,
           <GridActionsCellItem
             key={id}
@@ -129,6 +134,7 @@ const QuestionDataGrid = ({
             label="Delete"
             onClick={handleDeleteClick(id)}
             color="inherit"
+            sx={{ ':hover': { color: 'red' } }}
           />,
         ]
       },

@@ -18,6 +18,7 @@ const Lesson = ({
   const [open, setOpen] = useState<boolean>(false)
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
   const [prevQuestionData, setPrevQuestionData] = useState<{
+    questionId: number
     questionType: string
     prompt: string
     snippet: string
@@ -47,7 +48,6 @@ const Lesson = ({
         <Box sx={{ paddingLeft: 3 }}>
           <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
         </Box>
-
         <Box
           sx={{
             paddingLeft: 5,

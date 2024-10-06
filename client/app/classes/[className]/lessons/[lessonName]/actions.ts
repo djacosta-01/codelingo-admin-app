@@ -7,6 +7,7 @@ export const getLessonQuestions = async (
   lessonName: string
 ): Promise<
   {
+    question_id: number
     prompt: string | null
     snippet: string | null
     topics: string[] | null
@@ -51,7 +52,7 @@ export const getLessonQuestions = async (
 
   const { data: questionData, error: questionsError } = await supabase
     .from('questions')
-    .select('prompt, snippet, topics, answer_options, answer')
+    .select('*')
     .in(
       'question_id',
       questionIDs.map(question => question.question_id)
@@ -90,6 +91,7 @@ export async function insertQuestion({
     return { success: false, error: 'No user found' }
   }
 
+  // only adding to questions table for now, will add to linking tables soon
   const { error } = await supabase.from('questions').insert({
     question_type: questionType,
     prompt,
@@ -101,6 +103,54 @@ export async function insertQuestion({
 
   if (error) {
     console.error('Error inserting question data: ', error)
+    return { success: false, error }
+  }
+
+  return { success: true }
+}
+
+export async function updateQuestion(
+  id: number,
+  {
+    questionType,
+    prompt,
+    snippet,
+    topics,
+    answer_options,
+    answer,
+  }: {
+    questionType: string
+    prompt: string
+    snippet: string
+    topics: string[]
+    answer_options: string[]
+    answer: string
+  }
+) {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error } = await supabase
+    .from('questions')
+    .update({
+      question_type: questionType,
+      prompt,
+      snippet,
+      topics,
+      answer_options,
+      answer,
+    })
+    .eq('question_id', id)
+
+  if (error) {
+    console.error('Error updating question data: ', error)
     return { success: false, error }
   }
 

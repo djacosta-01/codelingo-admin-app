@@ -19,7 +19,10 @@ import {
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
-import { insertQuestion } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import {
+  insertQuestion,
+  updateQuestion,
+} from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 const AddQuestionDialog = ({
   open,
@@ -34,6 +37,7 @@ const AddQuestionDialog = ({
   alertOpen: boolean
   setAlertOpen: Dispatch<SetStateAction<boolean>>
   prevQuestionData: {
+    questionId: number
     questionType: string
     prompt: string
     snippet: string
@@ -43,6 +47,7 @@ const AddQuestionDialog = ({
   } | null
   resetPrevData: Dispatch<
     SetStateAction<{
+      questionId: number
       questionType: string
       prompt: string
       snippet: string
@@ -52,6 +57,7 @@ const AddQuestionDialog = ({
     } | null>
   >
 }) => {
+  const [questionId, setQuestionId] = useState<number>(0)
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
   const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
@@ -62,7 +68,8 @@ const AddQuestionDialog = ({
   )
   useEffect(() => {
     if (prevQuestionData) {
-      const { questionType, prompt, topics, answerOptions, answer } = prevQuestionData
+      const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
+      setQuestionId(questionId)
       setQuestionType(questionType)
       setQuestionPrompt(prompt)
       setTopicsCovered(topics)
@@ -110,7 +117,14 @@ const AddQuestionDialog = ({
             answer_options: Object.values(options),
             answer: correctAnswer,
           })
-        : alert('Update Question logic not implemented yet')
+        : await updateQuestion(questionId, {
+            questionType,
+            prompt: questionPrompt,
+            snippet: '',
+            topics: topicsCovered,
+            answer_options: Object.values(options),
+            answer: correctAnswer,
+          })
 
     if (response?.success) {
       handleDialogClose()
