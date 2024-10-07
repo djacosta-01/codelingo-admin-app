@@ -156,3 +156,24 @@ export async function updateQuestion(
 
   return { success: true }
 }
+
+export async function deleteQuestion(id: number) {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error } = await supabase.from('questions').delete().eq('question_id', id)
+
+  if (error) {
+    console.error('Error deleting question: ', error)
+    return { success: false, error }
+  }
+
+  return { success: true }
+}

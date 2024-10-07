@@ -1,7 +1,7 @@
 'use client'
 
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
-import Box from '@mui/material/Box'
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
@@ -12,7 +12,10 @@ import {
   GridActionsCellItem,
   GridRowId,
 } from '@mui/x-data-grid'
-import { getLessonQuestions } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import {
+  getLessonQuestions,
+  deleteQuestion,
+} from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
@@ -38,15 +41,26 @@ const QuestionDataGrid = ({
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>()
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState<boolean>(false)
+  const [questionId, setQuestionId] = useState<number | null>(null)
+
+  const handleConfimationDialogOpen = (id: number) => {
+    setQuestionId(id)
+    setConfirmationDialogOpen(true)
+  }
+
+  const handleConfimationDialogClose = () => {
+    setQuestionId(null)
+    setConfirmationDialogOpen(false)
+  }
 
   const handleEditClick = (id: GridRowId) => () => {
     const row = rows?.find(row => row.id === id)
-    // console.log(row)
     const { id: rowId, col0, col1, col2, col3, col4 } = row!
 
     setPrevData(prev => ({
       ...prev,
-      questionId: Number(rowId),
+      questionId: rowId as number,
       questionType: 'multiple-choice',
       prompt: col0,
       snippet: col1,
@@ -57,8 +71,15 @@ const QuestionDataGrid = ({
     setOpen(true)
   }
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteQuestion = (id: GridRowId) => async () => {
+    // TODO: only delete question from lesson bank table, not from questions table in future
+    const response = await deleteQuestion(id as number)
+    if (!response.success) {
+      console.error('Error deleting question: ', response.error)
+      return
+    }
     setRows(rows?.filter(row => row.id !== id))
+    handleConfimationDialogClose()
   }
 
   useEffect(() => {
@@ -132,7 +153,7 @@ const QuestionDataGrid = ({
             key={id}
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={handleDeleteClick(id)}
+            onClick={() => handleConfimationDialogOpen(id as number)}
             color="inherit"
             sx={{ ':hover': { color: 'red' } }}
           />,
@@ -157,7 +178,6 @@ const QuestionDataGrid = ({
       <DataGrid
         rows={rows}
         columns={columns}
-        editMode="row"
         disableColumnSelector
         slots={{ toolbar: GridToolbar }}
         slotProps={{
@@ -166,6 +186,16 @@ const QuestionDataGrid = ({
           },
         }}
       />
+      <Dialog open={confirmationDialogOpen}>
+        <DialogTitle>Delete Question</DialogTitle>
+        <DialogContent>Are you sure you want to delete this question?</DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfimationDialogClose}>Cancel</Button>
+          <Button color="error" onClick={handleDeleteQuestion(questionId as number)}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
