@@ -66,6 +66,7 @@ const AddQuestionDialog = ({
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
   )
+
   useEffect(() => {
     if (prevQuestionData) {
       const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
@@ -126,7 +127,7 @@ const AddQuestionDialog = ({
             answer: correctAnswer,
           })
 
-    if (response?.success) {
+    if (response.success) {
       handleDialogClose()
     }
     setAlertOpen(true)
