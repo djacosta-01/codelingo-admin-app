@@ -1,6 +1,6 @@
 'use client'
 
-import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import { Box, IconButton, Tooltip, Typography, Alert, Fade } from '@mui/material'
 import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
@@ -89,6 +89,7 @@ const Lesson = ({
           setOpen={setOpen}
         />
         <AddQuestionDialog
+          lessonName={params.lessonName}
           open={open}
           setOpen={setOpen}
           alertOpen={alertOpen}

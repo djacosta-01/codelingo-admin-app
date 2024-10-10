@@ -66,21 +66,24 @@ export const getLessonQuestions = async (
   return questionData
 }
 
-export async function insertQuestion({
-  questionType,
-  prompt,
-  snippet,
-  topics,
-  answer_options,
-  answer,
-}: {
-  questionType: string
-  prompt: string
-  snippet: string
-  topics: string[]
-  answer_options: string[]
-  answer: string
-}) {
+export async function insertQuestion(
+  lessonName: string,
+  {
+    questionType,
+    prompt,
+    snippet,
+    topics,
+    answer_options,
+    answer,
+  }: {
+    questionType: string
+    prompt: string
+    snippet: string
+    topics: string[]
+    answer_options: string[]
+    answer: string
+  }
+) {
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -91,7 +94,7 @@ export async function insertQuestion({
     return { success: false, error: 'No user found' }
   }
 
-  // only adding to questions table for now, will add to linking tables soon
+  // adding to questions table for now
   const { error } = await supabase.from('questions').insert({
     question_type: questionType,
     prompt,
@@ -104,6 +107,44 @@ export async function insertQuestion({
   if (error) {
     console.error('Error inserting question data: ', error)
     return { success: false, error }
+  }
+
+  // getting the question id of the question we just inserted
+  const { data: questionIDs, error: questionIDError } = await supabase
+    .from('questions')
+    .select('question_id')
+
+  if (questionIDError) {
+    console.error('Error fetching question ID: ', questionIDError)
+    return { success: false, error: questionIDError }
+  }
+
+  // theoretically, the largest question id should be the one we just inserted
+  const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
+
+  // getting the lesson id of the lesson we want to add the question to
+  const cleanedLessonName = lessonName.replace(/%20/g, ' ')
+  const { data: lessonID, error: lessonIDError } = await supabase
+    .from('lessons')
+    .select('lesson_id')
+    .eq('name', cleanedLessonName)
+    .single()
+
+  if (lessonIDError) {
+    console.error('Error fetching question or lesson ID: ', lessonIDError)
+    return { success: false, error: lessonIDError }
+  }
+
+  // adding to lesson_question_bank table
+  const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
+    lesson_id: lessonID.lesson_id,
+    owner_id: user.id,
+    question_id: questionID,
+  })
+
+  if (lessonQuestionBankError) {
+    console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
+    return { success: false, error: lessonQuestionBankError }
   }
 
   return { success: true }

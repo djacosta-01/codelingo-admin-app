@@ -4,15 +4,9 @@ import { Box, Typography, Tooltip, IconButton } from '@mui/material'
 import { getLessonData, type Lesson } from '@/app/classes/[className]/lessons/actions'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  DataGrid,
-  GridRowsProp,
-  GridColDef,
-  GridRowId,
-  GridActionsCellItem,
-} from '@mui/x-data-grid'
+import { DataGrid, GridRowsProp, GridColDef, GridActionsCellItem } from '@mui/x-data-grid'
 import NavToLessonIcon from '@mui/icons-material/ArrowOutward'
-import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 
 const Lessons = ({ params }: { params: { className: string } }) => {
   const [rows, setRows] = useState<GridRowsProp>([])
@@ -52,7 +46,7 @@ const Lessons = ({ params }: { params: { className: string } }) => {
               label="Go to lesson"
               onClick={() => routeToLesson(id as number)}
               color="inherit"
-              sx={{ ':hover': { transform: 'rotate(45deg)', transition: 'transform 0.5s ease' } }}
+              sx={{ transition: 'ease-in-out 0.2s', ':hover': { transform: 'rotate(45deg)' } }}
             />
           </Tooltip>,
         ]
@@ -73,13 +67,10 @@ const Lessons = ({ params }: { params: { className: string } }) => {
       headerAlign: 'center',
     },
   ]
+
   return (
     <>
-      <NavbarWithSideMenu
-        className={params.className}
-        displaySideMenu={true}
-        currentPage="Lessons"
-      />
+      <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />
       <Box
         id="lesson-container"
         sx={{

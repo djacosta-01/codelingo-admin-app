@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Paper } from '@mui/material'
-import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import { getClassData } from '@/app/classes/actions'
 import { useState, useEffect } from 'react'
 // import Link from 'next/link'

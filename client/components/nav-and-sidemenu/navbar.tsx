@@ -108,9 +108,7 @@ const Navbar = ({
           </Tooltip>
           <Tooltip title="Sign Out" arrow>
             <IconButton onClick={() => router.push('/auth/logout')} sx={{ color: 'white' }}>
-              {/* <Link href="/auth/logout"> */}
               <Logout />
-              {/* </Link> */}
             </IconButton>
           </Tooltip>
         </Box>

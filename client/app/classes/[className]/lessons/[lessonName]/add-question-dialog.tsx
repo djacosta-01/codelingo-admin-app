@@ -25,6 +25,7 @@ import {
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 
 const AddQuestionDialog = ({
+  lessonName,
   open,
   setOpen,
   alertOpen,
@@ -32,6 +33,7 @@ const AddQuestionDialog = ({
   prevQuestionData,
   resetPrevData,
 }: {
+  lessonName: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   alertOpen: boolean
@@ -110,7 +112,7 @@ const AddQuestionDialog = ({
     e.preventDefault()
     const response =
       buttonOperation === 'Add Question'
-        ? await insertQuestion({
+        ? await insertQuestion(lessonName, {
             questionType,
             prompt: questionPrompt,
             snippet: '',
