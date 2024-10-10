@@ -1,10 +1,10 @@
 'use client'
 
 import { Box } from '@mui/material'
-import { ReactFlow, Controls, Background } from '@xyflow/react'
+import { type Node, type Edge, ReactFlow, Controls, Background } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect } from 'react'
-import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import { AddNodeForm } from '@/app/classes/[className]/knowledge-graph/add-node'
 import { useOnNodesChange, useOnEdgesChange, useOnConnect } from '@/hooks/knowledgeGraphHooks'
@@ -13,7 +13,10 @@ import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph
 const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
-  const [reactFlowData, setReactFlowData] = useState<any>({
+  const [reactFlowData, setReactFlowData] = useState<{
+    reactFlowNodes: Node[]
+    reactFlowEdges: Edge[]
+  }>({
     reactFlowNodes: [],
     reactFlowEdges: [],
   })
@@ -24,14 +27,13 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const onConnect = useOnConnect({ setReactFlowData })
 
   useEffect(() => {
-    // TODO: FIX TYPES!!! PLEASE GET RID OF THE ANY TYPES!!!
     const fetchClassGraphData = async () => {
       const graphData = await getKnowledgeGraphData(params.className)
       const { nodes, edges, react_flow_data } = graphData
 
       setNodes(nodes)
       setEdges(edges)
-      setReactFlowData((prev: any) => ({
+      setReactFlowData(prev => ({
         ...prev,
         reactFlowNodes: react_flow_data[0].reactFlowNodes,
         reactFlowEdges: react_flow_data[0].reactFlowEdges,
@@ -59,11 +61,6 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
           alignItems: 'center',
         }}
       >
-        {/* THIS IS JUST TEMPORARY WHILE I FIGURE OUT HOW TO FIX MY ESLINT RULES */}
-        <div hidden>
-          {nodes}
-          {edges}
-        </div>
         {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
           <>
             <ReactFlow

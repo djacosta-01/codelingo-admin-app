@@ -1,64 +1,102 @@
 'use client'
-import { Box, Paper, Typography } from '@mui/material'
-import NavbarWithSideMenu from '@/components/navbar-with-sidemenu'
-import { getLessonData } from '@/app/classes/[className]/lessons/actions'
+
+import { Box, Typography, Tooltip, IconButton } from '@mui/material'
+import { getLessonData, type Lesson } from '@/app/classes/[className]/lessons/actions'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { DataGrid, GridRowsProp, GridColDef, GridActionsCellItem } from '@mui/x-data-grid'
+import NavToLessonIcon from '@mui/icons-material/ArrowOutward'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 
 const Lessons = ({ params }: { params: { className: string } }) => {
-  const [lessons, setLessons] = useState<(string | null)[]>([]) // only getting lesson names for now
+  const [rows, setRows] = useState<GridRowsProp>([])
+  const [prevLessonData, setPrevLessonData] = useState<Lesson | null>(null)
+  const router = useRouter()
+
+  const routeToLesson = (id: number) => {
+    const lessonName = rows.find(row => row.id === id)?.col1
+    router.push(`/classes/${params.className}/lessons/${lessonName}`)
+  }
 
   useEffect(() => {
     const fetchLessons = async () => {
       const data = await getLessonData(params.className)
-      setLessons(data)
+      const lessons = data.map(({ lesson_id, name, topics }) => ({
+        id: lesson_id,
+        col1: name,
+        col2: topics?.join(', '),
+      }))
+      setRows(lessons)
     }
     fetchLessons()
   }, [params.className])
 
+  const columns: GridColDef[] = [
+    {
+      field: 'actions',
+      type: 'actions',
+      width: 100,
+      align: 'center',
+      headerAlign: 'center',
+      getActions: ({ id }) => {
+        return [
+          <Tooltip key={0} title={`Go to ${rows?.find(row => row.id === id)?.col1 ?? 'lesson'}`}>
+            <GridActionsCellItem
+              icon={<NavToLessonIcon />}
+              label="Go to lesson"
+              onClick={() => routeToLesson(id as number)}
+              color="inherit"
+              sx={{ transition: 'ease-in-out 0.2s', ':hover': { transform: 'rotate(45deg)' } }}
+            />
+          </Tooltip>,
+        ]
+      },
+    },
+    {
+      field: 'col1',
+      headerName: 'Lessons',
+      width: 180,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'col2',
+      headerName: 'Units Covered',
+      width: 180,
+      align: 'center',
+      headerAlign: 'center',
+    },
+  ]
+
   return (
     <>
-      <NavbarWithSideMenu
-        className={params.className}
-        displaySideMenu={true}
-        currentPage="Lessons"
-      />
+      <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />
       <Box
         id="lesson-container"
         sx={{
           marginTop: '64px',
           marginLeft: '65px',
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          flexGrow: 1,
-          minHeight: '90vh',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
+          height: 'calc(100vh - 64px)',
+          width: 'calc(100vw - 65px)',
         }}
       >
-        {/* Only displaying lesson names for now. In future, will display lesson data through a table */}
-        {lessons.map((lessonName, index) => (
-          <Paper
-            key={index}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '15em',
-              height: '10em',
-              margin: 5,
-              padding: 1,
-              outline: '1px solid black',
-              transition: 'ease-in-out 0.2s',
-              '&:hover': {
-                cursor: 'pointer',
-                transform: 'scale(1.05)',
-                textDecoration: 'underline',
-              },
-            }}
-          >
-            <Typography>{lessonName}</Typography>
-          </Paper>
-        ))}
+        <Box sx={{ paddingLeft: 3 }}>
+          <h1>{params.className.replace(/%20/g, ' ')}</h1>
+        </Box>
+        <Box
+          sx={{
+            paddingLeft: 5,
+            paddingBottom: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <Typography variant="h5">Lessons</Typography>
+        </Box>
+        <DataGrid rows={rows} columns={columns} />
       </Box>
     </>
   )

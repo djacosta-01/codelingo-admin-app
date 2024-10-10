@@ -1,21 +1,14 @@
 import { useCallback } from 'react'
-import {
-  NodeChange,
-  Connection,
-  EdgeChange,
-  addEdge,
-  applyNodeChanges,
-  applyEdgeChanges,
-} from '@xyflow/react'
+import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react'
 
 // TODO: FIX TYPES!!!
 export const useOnNodesChange = ({ setNodes, setReactFlowData }) => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
+    changes => {
       changes.forEach(change => {
         if (change.type === 'remove') {
-          setNodes(prev => prev.filter((node: string) => node !== change.id))
+          setNodes(prev => prev.filter(node => node !== change.id))
         }
       })
       setReactFlowData(prev => {
@@ -33,16 +26,14 @@ export const useOnNodesChange = ({ setNodes, setReactFlowData }) => {
 export const useOnEdgesChange = ({ setEdges, setReactFlowData }) => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) => {
+    changes => {
       changes.forEach(change => {
         if (change.type !== 'remove') {
           return
         }
         const edgeToRemove = change.id.split('-')
         return setEdges(prev =>
-          prev.filter(
-            (edge: string[]) => edge[0] !== edgeToRemove[0] || edge[1] !== edgeToRemove[1]
-          )
+          prev.filter(edge => edge[0] !== edgeToRemove[0] || edge[1] !== edgeToRemove[1])
         )
       })
       setReactFlowData(prev => {
@@ -61,7 +52,7 @@ export const useOnEdgesChange = ({ setEdges, setReactFlowData }) => {
 export const useOnConnect = ({ setReactFlowData }) => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   const onConnect = useCallback(
-    (connection: Connection) => {
+    connection => {
       setReactFlowData(prev => {
         return {
           ...prev,

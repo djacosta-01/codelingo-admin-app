@@ -2,7 +2,14 @@
 
 import { createClient } from '@/utils/supabase/server'
 
-export const getLessonData = async (className: string): Promise<(string | null)[]> => {
+export interface Lesson {
+  is_draft: boolean | null;
+  lesson_id: number;
+  name: string | null;
+  topics: string[] | null;
+}
+
+export const getLessonData = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -36,7 +43,7 @@ export const getLessonData = async (className: string): Promise<(string | null)[
     return []
   }
 
-  const { data: lessonData, error: lessonsError } = await supabase // chnage to select certain columns later
+  const { data: lessonData, error: lessonsError } = await supabase 
     .from('lessons')
     .select('*')
     .in(
@@ -49,7 +56,5 @@ export const getLessonData = async (className: string): Promise<(string | null)[
     return []
   }
 
-  //   console.log(lessonData)
-
-  return lessonData.map((lesson: { name: string | null }) => lesson.name)
+  return lessonData
 }

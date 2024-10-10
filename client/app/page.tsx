@@ -69,7 +69,7 @@ export default function Home() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <AccountCircle fontSize="small" sx={{ color: 'black' }} />
+                  <AccountCircle fontSize="small" />
                 </InputAdornment>
               ),
             }}
@@ -85,7 +85,7 @@ export default function Home() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <LockIcon fontSize="small" sx={{ color: 'black' }} />
+                  <LockIcon fontSize="small" />
                 </InputAdornment>
               ),
             }}
