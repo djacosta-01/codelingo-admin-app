@@ -6,6 +6,7 @@ import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 import AddQuestionDialog from '@/app/classes/[className]/lessons/[lessonName]/add-question-dialog'
+import { Question } from '@/types/content.types'
 
 const Lesson = ({
   params,
@@ -17,15 +18,7 @@ const Lesson = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
-  const [prevQuestionData, setPrevQuestionData] = useState<{
-    questionId: number
-    questionType: string
-    prompt: string
-    snippet: string
-    topics: string[]
-    answerOptions: string[]
-    answer: string
-  } | null>(null)
+  const [prevQuestionData, setPrevQuestionData] = useState<Question | null>(null)
 
   const handleDialogOpen = () => {
     setOpen(true)

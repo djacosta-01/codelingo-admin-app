@@ -1,11 +1,10 @@
 'use client'
 
 import { Box, Paper } from '@mui/material'
-import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import { getClassData } from '@/app/classes/actions'
 import { useState, useEffect } from 'react'
-// import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 
 const Classes = () => {
   const [classes, setClasses] = useState<(string | null)[]>([])

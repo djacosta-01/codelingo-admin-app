@@ -15,6 +15,7 @@ export const getLessonQuestions = async (
     answer: string | null
   }[]
 > => {
+  console.log('HEREHREHREHR')
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()

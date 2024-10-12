@@ -1,13 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-
-export interface Lesson {
-  is_draft: boolean | null;
-  lesson_id: number;
-  name: string | null;
-  topics: string[] | null;
-}
+import { Lesson } from '@/types/content.types'
 
 export const getLessonData = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
@@ -43,7 +37,7 @@ export const getLessonData = async (className: string): Promise<Lesson[]> => {
     return []
   }
 
-  const { data: lessonData, error: lessonsError } = await supabase 
+  const { data: lessonData, error: lessonsError } = await supabase
     .from('lessons')
     .select('*')
     .in(
