@@ -1,21 +1,33 @@
 'use client'
 
 import { Box, Typography, Tooltip, IconButton } from '@mui/material'
-import { getLessonData, type Lesson } from '@/app/classes/[className]/lessons/actions'
+import { getLessonData } from '@/app/classes/[className]/lessons/actions'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { DataGrid, GridRowsProp, GridColDef, GridActionsCellItem } from '@mui/x-data-grid'
-import NavToLessonIcon from '@mui/icons-material/ArrowOutward'
+import {
+  DataGrid,
+  GridRowsProp,
+  GridColDef,
+  GridActionsCellItem,
+  GridRowParams,
+} from '@mui/x-data-grid'
+import { Lesson } from '@/types/content.types'
+import { AddCircleOutline, Edit, Delete } from '@mui/icons-material'
 import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
+import AddLessonDialog from '@/app/classes/[className]/lessons/add-lesson-dialog'
 
 const Lessons = ({ params }: { params: { className: string } }) => {
+  const [open, setOpen] = useState<boolean>(false)
   const [rows, setRows] = useState<GridRowsProp>([])
   const [prevLessonData, setPrevLessonData] = useState<Lesson | null>(null)
   const router = useRouter()
 
-  const routeToLesson = (id: number) => {
-    const lessonName = rows.find(row => row.id === id)?.col1
-    router.push(`/classes/${params.className}/lessons/${lessonName}`)
+  const routeToLesson = ({ row }: GridRowParams) => {
+    router.push(`/classes/${params.className}/lessons/${row.lessonName}`)
+  }
+
+  const handleLessonDialogOpen = () => {
+    setOpen(true)
   }
 
   useEffect(() => {
@@ -23,8 +35,8 @@ const Lessons = ({ params }: { params: { className: string } }) => {
       const data = await getLessonData(params.className)
       const lessons = data.map(({ lesson_id, name, topics }) => ({
         id: lesson_id,
-        col1: name,
-        col2: topics?.join(', '),
+        lessonName: name,
+        unitsCovered: topics?.join(', '),
       }))
       setRows(lessons)
     }
@@ -33,38 +45,50 @@ const Lessons = ({ params }: { params: { className: string } }) => {
 
   const columns: GridColDef[] = [
     {
-      field: 'actions',
-      type: 'actions',
-      width: 100,
-      align: 'center',
-      headerAlign: 'center',
-      getActions: ({ id }) => {
-        return [
-          <Tooltip key={0} title={`Go to ${rows?.find(row => row.id === id)?.col1 ?? 'lesson'}`}>
-            <GridActionsCellItem
-              icon={<NavToLessonIcon />}
-              label="Go to lesson"
-              onClick={() => routeToLesson(id as number)}
-              color="inherit"
-              sx={{ transition: 'ease-in-out 0.2s', ':hover': { transform: 'rotate(45deg)' } }}
-            />
-          </Tooltip>,
-        ]
-      },
-    },
-    {
-      field: 'col1',
+      field: 'lessonName',
       headerName: 'Lessons',
       width: 180,
       align: 'center',
       headerAlign: 'center',
     },
     {
-      field: 'col2',
+      field: 'unitsCovered',
       headerName: 'Units Covered',
       width: 180,
       align: 'center',
       headerAlign: 'center',
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      align: 'center',
+      headerAlign: 'center',
+      width: 100,
+      cellClassName: 'actions',
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            key={id}
+            icon={<Edit />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => alert('Edit')}
+            // onClick={handleEditClick(id)}
+            color="inherit"
+            sx={{ ':hover': { color: '#1B94F7' } }}
+          />,
+          <GridActionsCellItem
+            key={id}
+            icon={<Delete />}
+            label="Delete"
+            // onClick={() => handleConfimationDialogOpen(id as number)}
+            onClick={() => alert('Delete')}
+            color="inherit"
+            sx={{ ':hover': { color: 'red' } }}
+          />,
+        ]
+      },
     },
   ]
 
@@ -82,7 +106,7 @@ const Lessons = ({ params }: { params: { className: string } }) => {
           width: 'calc(100vw - 65px)',
         }}
       >
-        <Box sx={{ paddingLeft: 3 }}>
+        <Box id="class-name" sx={{ paddingLeft: 3 }}>
           <h1>{params.className.replace(/%20/g, ' ')}</h1>
         </Box>
         <Box
@@ -93,10 +117,25 @@ const Lessons = ({ params }: { params: { className: string } }) => {
             alignItems: 'center',
             gap: 1,
           }}
+        ></Box>
+        <Box
+          sx={{
+            paddingLeft: 5,
+            paddingBottom: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+          }}
         >
           <Typography variant="h5">Lessons</Typography>
+          <Tooltip title="Create New Lesson">
+            <IconButton onClick={handleLessonDialogOpen}>
+              <AddCircleOutline />
+            </IconButton>
+          </Tooltip>
         </Box>
-        <DataGrid rows={rows} columns={columns} />
+        <AddLessonDialog className={params.className} open={open} setOpen={setOpen} />
+        <DataGrid rows={rows} columns={columns} onRowClick={routeToLesson} />
       </Box>
     </>
   )

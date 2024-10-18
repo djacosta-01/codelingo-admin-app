@@ -1,12 +1,12 @@
 export type Lesson = {
+  lesson_id?: number
   is_draft: boolean | null
-  lesson_id: number
   name: string | null
   topics: string[] | null
 }
 
 export type Question = {
-  questionId: number
+  questionId?: number
   questionType: string
   prompt: string
   snippet: string

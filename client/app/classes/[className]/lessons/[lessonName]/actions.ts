@@ -1,5 +1,6 @@
 'use server'
 
+import { Question } from '@/types/content.types'
 import { createClient } from '@/utils/supabase/server'
 
 export const getLessonQuestions = async (
@@ -69,21 +70,7 @@ export const getLessonQuestions = async (
 
 export async function insertQuestion(
   lessonName: string,
-  {
-    questionType,
-    prompt,
-    snippet,
-    topics,
-    answer_options,
-    answer,
-  }: {
-    questionType: string
-    prompt: string
-    snippet: string
-    topics: string[]
-    answer_options: string[]
-    answer: string
-  }
+  { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
   const supabase = createClient()
 
@@ -101,7 +88,7 @@ export async function insertQuestion(
     prompt,
     snippet,
     topics,
-    answer_options,
+    answer_options: answerOptions,
     answer,
   })
 
@@ -153,21 +140,7 @@ export async function insertQuestion(
 
 export async function updateQuestion(
   id: number,
-  {
-    questionType,
-    prompt,
-    snippet,
-    topics,
-    answer_options,
-    answer,
-  }: {
-    questionType: string
-    prompt: string
-    snippet: string
-    topics: string[]
-    answer_options: string[]
-    answer: string
-  }
+  { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
   const supabase = createClient()
 
@@ -186,7 +159,7 @@ export async function updateQuestion(
       prompt,
       snippet,
       topics,
-      answer_options,
+      answer_options: answerOptions,
       answer,
     })
     .eq('question_id', id)

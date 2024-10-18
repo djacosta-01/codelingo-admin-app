@@ -16,6 +16,7 @@ import {
   getLessonQuestions,
   deleteQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { Question } from '@/types/content.types'
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
@@ -27,17 +28,7 @@ const QuestionDataGrid = ({
     className: string
     lessonName: string
   }
-  setPrevData: Dispatch<
-    SetStateAction<{
-      questionId: number
-      questionType: string
-      prompt: string
-      snippet: string
-      topics: string[]
-      answerOptions: string[]
-      answer: string
-    } | null>
-  >
+  setPrevData: Dispatch<SetStateAction<Question | null>>
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>()
@@ -84,6 +75,7 @@ const QuestionDataGrid = ({
 
   useEffect(() => {
     const fetchLessonQuestions = async () => {
+      console.log('fetching lesson questions')
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
         ({ question_id, prompt, snippet, topics, answer_options, answer }) => ({
@@ -98,7 +90,7 @@ const QuestionDataGrid = ({
       setRows(tableRows)
     }
     fetchLessonQuestions()
-  }, [setOpen])
+  }, [params.className, params.lessonName, setOpen])
 
   const columns: GridColDef[] = [
     { field: 'col0', headerName: 'Questions', width: 180, align: 'center', headerAlign: 'center' },

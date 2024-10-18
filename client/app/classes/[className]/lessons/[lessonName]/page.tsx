@@ -4,9 +4,9 @@ import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sideme
 import { Box, IconButton, Tooltip, Typography, Alert, Fade } from '@mui/material'
 import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
+import { Question } from '@/types/content.types'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 import AddQuestionDialog from '@/app/classes/[className]/lessons/[lessonName]/add-question-dialog'
-import { Question } from '@/types/content.types'
 
 const Lesson = ({
   params,
@@ -38,7 +38,7 @@ const Lesson = ({
           width: 'calc(100vw - 65px)',
         }}
       >
-        <Box sx={{ paddingLeft: 3 }}>
+        <Box id="lesson-name" sx={{ paddingLeft: 3 }}>
           <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
         </Box>
         <Box
