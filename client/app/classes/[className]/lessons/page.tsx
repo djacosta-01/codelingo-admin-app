@@ -38,55 +38,6 @@ const Lessons = ({ params }: { params: { className: string } }) => {
     fetchLessons()
   }, [params.className])
 
-  const columns: GridColDef[] = [
-    {
-      field: 'lessonName',
-      headerName: 'Lessons',
-      width: 180,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'unitsCovered',
-      headerName: 'Units Covered',
-      width: 180,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Actions',
-      align: 'center',
-      headerAlign: 'center',
-      width: 100,
-      cellClassName: 'actions',
-      getActions: ({ id }) => {
-        return [
-          <GridActionsCellItem
-            key={id}
-            icon={<Edit />}
-            label="Edit"
-            className="textPrimary"
-            onClick={() => alert('Edit')}
-            // onClick={handleEditClick(id)}
-            color="inherit"
-            sx={{ ':hover': { color: '#1B94F7' } }}
-          />,
-          <GridActionsCellItem
-            key={id}
-            icon={<Delete />}
-            label="Delete"
-            // onClick={() => handleConfimationDialogOpen(id as number)}
-            onClick={() => alert('Delete')}
-            color="inherit"
-            sx={{ ':hover': { color: 'red' } }}
-          />,
-        ]
-      },
-    },
-  ]
-
   return (
     <>
       <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />

@@ -118,3 +118,24 @@ export const addLesson = async (
 
   return { success: true }
 }
+
+export const deleteLesson = async (lessonID: number) => {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error: deleteError } = await supabase.from('lessons').delete().eq('lesson_id', lessonID)
+
+  if (deleteError) {
+    console.error('Error deleting lesson: ', deleteError)
+    return { success: false, error: deleteError }
+  }
+
+  return { success: true }
+}

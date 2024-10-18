@@ -1,3 +1,5 @@
+'use client'
+
 import {
   DataGrid,
   GridRowsProp,
@@ -6,12 +8,13 @@ import {
   GridRowParams,
   GridToolbar,
 } from '@mui/x-data-grid'
-
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
-import { getLessonData } from '@/app/classes/[className]/lessons/actions'
 import { Edit, Delete } from '@mui/icons-material'
+import { getLessonData, deleteLesson } from '@/app/classes/[className]/lessons/actions'
+
 const LessonDataGrid = ({
   params,
   setPrevLessonData,
@@ -35,7 +38,6 @@ const LessonDataGrid = ({
   const handleConfimationDialogOpen = (id: number) => {
     setLessonId(id)
     setConfirmationDialogOpen(true)
-    alert('Delete clicked')
   }
 
   const handleConfimationDialogClose = () => {
@@ -55,9 +57,15 @@ const LessonDataGrid = ({
     setOpen(true)
   }
 
-  //   const handleDeleteLesson = (id: number) => async () => {
-  //     // call server action here...
-  //   }
+  const handleDeleteLesson = (id: number) => async () => {
+    const response = await deleteLesson(id)
+    if (!response.success) {
+      console.error('Error deleting lesson: ', response.error)
+      return
+    }
+    setRows(rows.filter(row => row.id !== id))
+    handleConfimationDialogClose()
+  }
 
   const columns: GridColDef[] = [
     {
@@ -121,18 +129,29 @@ const LessonDataGrid = ({
   }, [params.className])
 
   return (
-    <DataGrid
-      rows={rows}
-      columns={columns}
-      onRowClick={routeToLesson}
-      disableColumnSelector
-      slots={{ toolbar: GridToolbar }}
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-      }}
-    />
+    <>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        onRowClick={routeToLesson}
+        disableColumnSelector
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+        }}
+      />
+      <Dialog open={confirmationDialogOpen}>
+        <DialogTitle>Are you sure you want to delete this lesson?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleConfimationDialogClose}>Cancel</Button>
+          <Button color="error" onClick={handleDeleteLesson(lessonId as number)}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
