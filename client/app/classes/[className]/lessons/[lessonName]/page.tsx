@@ -78,7 +78,7 @@ const Lesson = ({
         </Fade>
         <QuestionDataGrid
           params={{ className: params.className, lessonName: params.lessonName }}
-          setPrevData={setPrevQuestionData}
+          setPrevQuestionData={setPrevQuestionData}
           setOpen={setOpen}
         />
         <AddQuestionDialog

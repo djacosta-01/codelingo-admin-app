@@ -55,9 +55,9 @@ const LessonDataGrid = ({
     setOpen(true)
   }
 
-  const handleDeleteLesson = (id: number) => async () => {
-    // call server action here...
-  }
+  //   const handleDeleteLesson = (id: number) => async () => {
+  //     // call server action here...
+  //   }
 
   const columns: GridColDef[] = [
     {
