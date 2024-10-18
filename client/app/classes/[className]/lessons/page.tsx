@@ -3,7 +3,6 @@
 import { Box, Typography, Tooltip, IconButton } from '@mui/material'
 import { getLessonData } from '@/app/classes/[className]/lessons/actions'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   DataGrid,
   GridRowsProp,
@@ -15,16 +14,12 @@ import { Lesson } from '@/types/content.types'
 import { AddCircleOutline, Edit, Delete } from '@mui/icons-material'
 import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import AddLessonDialog from '@/app/classes/[className]/lessons/add-lesson-dialog'
+import LessonDataGrid from '@/app/classes/[className]/lessons/lesson-data-grid'
 
 const Lessons = ({ params }: { params: { className: string } }) => {
   const [open, setOpen] = useState<boolean>(false)
   const [rows, setRows] = useState<GridRowsProp>([])
   const [prevLessonData, setPrevLessonData] = useState<Lesson | null>(null)
-  const router = useRouter()
-
-  const routeToLesson = ({ row }: GridRowParams) => {
-    router.push(`/classes/${params.className}/lessons/${row.lessonName}`)
-  }
 
   const handleLessonDialogOpen = () => {
     setOpen(true)
@@ -134,8 +129,18 @@ const Lessons = ({ params }: { params: { className: string } }) => {
             </IconButton>
           </Tooltip>
         </Box>
-        <AddLessonDialog className={params.className} open={open} setOpen={setOpen} />
-        <DataGrid rows={rows} columns={columns} onRowClick={routeToLesson} />
+        <AddLessonDialog
+          className={params.className}
+          open={open}
+          setOpen={setOpen}
+          prevLessonData={prevLessonData}
+          resetPrevLessonData={setPrevLessonData}
+        />
+        <LessonDataGrid
+          params={{ className: params.className }}
+          setPrevLessonData={setPrevLessonData}
+          setOpen={setOpen}
+        />
       </Box>
     </>
   )

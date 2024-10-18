@@ -1,6 +1,5 @@
 export type Lesson = {
   lesson_id?: number
-  is_draft: boolean | null
   name: string | null
   topics: string[] | null
 }

@@ -21,14 +21,14 @@ import { Question } from '@/types/content.types'
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
   params,
-  setPrevData,
+  setPrevQuestionData,
   setOpen,
 }: {
   params: {
     className: string
     lessonName: string
   }
-  setPrevData: Dispatch<SetStateAction<Question | null>>
+  setPrevQuestionData: Dispatch<SetStateAction<Question | null>>
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>()
@@ -45,13 +45,12 @@ const QuestionDataGrid = ({
     setConfirmationDialogOpen(false)
   }
 
-  const handleEditClick = (id: GridRowId) => () => {
+  const handleEditClick = (id: number) => () => {
     const row = rows?.find(row => row.id === id)
     const { id: rowId, col0, col1, col2, col3, col4 } = row!
-
-    setPrevData(prev => ({
+    setPrevQuestionData(prev => ({
       ...prev,
-      questionId: rowId as number,
+      questionId: rowId,
       questionType: 'multiple-choice',
       prompt: col0,
       snippet: col1,
@@ -62,9 +61,9 @@ const QuestionDataGrid = ({
     setOpen(true)
   }
 
-  const handleDeleteQuestion = (id: GridRowId) => async () => {
+  const handleDeleteQuestion = (id: number) => async () => {
     // TODO: only delete question from lesson bank table, not from questions table in future
-    const response = await deleteQuestion(id as number)
+    const response = await deleteQuestion(id)
     if (!response.success) {
       console.error('Error deleting question: ', response.error)
       return
@@ -137,7 +136,7 @@ const QuestionDataGrid = ({
             icon={<EditIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={handleEditClick(id)}
+            onClick={handleEditClick(id as number)}
             color="inherit"
             sx={{ ':hover': { color: '#1B94F7' } }}
           />,

@@ -18,23 +18,44 @@ import {
   type SelectChangeEvent,
 } from '@mui/material'
 import { addLesson } from '@/app/classes/[className]/lessons/actions'
+import { Lesson } from '@/types/content.types'
 
 const AddLessonDialog = ({
   className,
   open,
   setOpen,
+  prevLessonData,
+  resetPrevLessonData,
 }: {
   className: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
+  prevLessonData: Lesson | null
+  resetPrevLessonData: Dispatch<SetStateAction<Lesson | null>>
 }) => {
+  const [lessonID, setLessonID] = useState<number | null>(null)
   const [newLessonName, setNewLessonName] = useState<string>('')
   const [lessonTopics, setLessonTopics] = useState<string[]>([])
+  const [buttonOperation, setButtonOperation] = useState<'Add Lesson' | 'Update Lesson'>(
+    'Add Lesson'
+  )
+
+  useEffect(() => {
+    if (prevLessonData) {
+      const { lesson_id, name, topics } = prevLessonData
+      setLessonID(lesson_id ?? null)
+      setNewLessonName(name ?? '')
+      setLessonTopics(topics ?? [])
+      setButtonOperation('Update Lesson')
+    }
+  }, [prevLessonData])
 
   const handleLessonDiaglogClose = () => {
     setOpen(false)
     setNewLessonName('')
     setLessonTopics([])
+    setButtonOperation('Add Lesson')
+    resetPrevLessonData(null)
   }
 
   const handleLessonTopicChange = (e: SelectChangeEvent<typeof lessonTopics>) => {
@@ -109,7 +130,7 @@ const AddLessonDialog = ({
         <Button color="primary" onClick={handleLessonDiaglogClose}>
           Cancel
         </Button>
-        <Button type="submit">Add</Button>
+        <Button type="submit">{buttonOperation}</Button>
       </DialogActions>
     </Dialog>
   )
