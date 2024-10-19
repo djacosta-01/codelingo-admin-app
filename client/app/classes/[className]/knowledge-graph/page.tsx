@@ -9,6 +9,9 @@ import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import { AddNodeForm } from '@/app/classes/[className]/knowledge-graph/add-node'
 import { useOnNodesChange, useOnEdgesChange, useOnConnect } from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
+import CustomNode from '@/components/custom-test-node/custom-node'
+
+const nodeTypes = { editableNode: CustomNode }
 
 const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   const [nodes, setNodes] = useState<string[]>([])
@@ -28,17 +31,26 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
-      const graphData = await getKnowledgeGraphData(params.className)
-      const { nodes, edges, react_flow_data } = graphData
+      const response = await getKnowledgeGraphData(params.className)
 
-      setNodes(nodes)
-      setEdges(edges)
-      setReactFlowData(prev => ({
-        ...prev,
-        reactFlowNodes: react_flow_data[0].reactFlowNodes,
-        reactFlowEdges: react_flow_data[0].reactFlowEdges,
-      }))
+      if (response.success) {
+        const { nodes, edges, react_flow_data } = response.graphData!
+        setNodes(nodes!)
+        setEdges(edges!)
+        if (react_flow_data && Array.isArray(react_flow_data) && react_flow_data[0]) {
+          const data = react_flow_data[0] as unknown as {
+            reactFlowNodes: Node[]
+            reactFlowEdges: Edge[]
+          }
+          setReactFlowData(prev => ({
+            ...prev,
+            reactFlowNodes: data.reactFlowNodes,
+            reactFlowEdges: data.reactFlowEdges,
+          }))
+        }
+      }
     }
+
     fetchClassGraphData()
   }, [params.className])
 
@@ -69,6 +81,17 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
+              nodeTypes={nodeTypes}
+              colorMode="dark"
+              fitView
+            />
+            {/* <ReactFlow
+              nodes={reactFlowData.reactFlowNodes}
+              edges={reactFlowData.reactFlowEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              colorMode="dark"
               fitView
             >
               <Background gap={20} />
@@ -83,7 +106,8 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
               >
                 <Controls />
               </Box>
-            </ReactFlow>
+            </ReactFlow> */}
+            {/* <TestNode /> */}
           </>
         ) : (
           <h1>Loading graph data. This may take a few seconds...</h1>

@@ -135,6 +135,7 @@ const LessonDataGrid = ({
         columns={columns}
         onRowClick={routeToLesson}
         disableColumnSelector
+        ignoreDiacritics
         slots={{ toolbar: GridToolbar }}
         slotProps={{
           toolbar: {
