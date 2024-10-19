@@ -84,15 +84,6 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
               nodeTypes={nodeTypes}
               colorMode="dark"
               fitView
-            />
-            {/* <ReactFlow
-              nodes={reactFlowData.reactFlowNodes}
-              edges={reactFlowData.reactFlowEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              colorMode="dark"
-              fitView
             >
               <Background gap={20} />
               <Box
@@ -106,7 +97,7 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
               >
                 <Controls />
               </Box>
-            </ReactFlow> */}
+            </ReactFlow>
             {/* <TestNode /> */}
           </>
         ) : (
