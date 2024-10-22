@@ -136,7 +136,6 @@ export default function Login() {
           <Button onClick={() => alert('COMING SOON...SORRY...')}>Reset Password</Button>
         </Box>
       </Dialog>
-
       <Typography>
         {`Don't have an account?`} <Link href="/register">Register Here</Link>
       </Typography>

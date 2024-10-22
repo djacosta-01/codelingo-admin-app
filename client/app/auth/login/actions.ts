@@ -15,9 +15,6 @@ export async function login(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  // using student email for now for testing
-  const validEmail = data.email.includes('@lion.lmu.edu') // || data.email.includes('@lmu.edu')
-
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
@@ -30,19 +27,25 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
+  /**
+   * Currently only students can sign up. Need to add a way to differentiate between
+   * professor and student sign ups
+   */
   const supabase = createClient()
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
-  console.log('signup')
-  console.log(formData)
   const data = {
     displayName: formData.get('displayName') as string,
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
 
-  console.log(data)
+  // using student email for now for testing purposes
+  if (!data.email.includes('@lion.lmu.edu')) {
+    return { error: 'Invalid email. Please use your LMU email.' }
+  }
+
   const { error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
