@@ -1,6 +1,7 @@
 'use client'
 
 import { Box, TextField, Typography, Button } from '@mui/material'
+import { DataGrid } from '@mui/x-data-grid'
 import { useState } from 'react'
 import { signup } from '@/app/auth/login/actions'
 
