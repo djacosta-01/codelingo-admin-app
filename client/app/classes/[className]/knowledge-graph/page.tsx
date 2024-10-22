@@ -66,7 +66,7 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
         sx={{
           marginTop: '64px',
           //   marginLeft: '65px',
-          height: '90vh',
+          height: 'calc(100vh - 64px)',
           width: '100vw',
           display: 'flex',
           justifyContent: 'center',
