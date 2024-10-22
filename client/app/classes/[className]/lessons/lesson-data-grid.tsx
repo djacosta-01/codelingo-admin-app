@@ -14,14 +14,17 @@ import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
 import { Edit, Delete } from '@mui/icons-material'
 import { getLessonData, deleteLesson } from '@/app/classes/[className]/lessons/actions'
+import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 
 const LessonDataGrid = ({
-  params,
+  className,
   setPrevLessonData,
+  setDataLoading,
   setOpen,
 }: {
-  params: { className: string }
+  className: string
   setPrevLessonData: Dispatch<SetStateAction<Lesson | null>>
+  setDataLoading: Dispatch<SetStateAction<boolean>>
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>([])
@@ -32,7 +35,7 @@ const LessonDataGrid = ({
   const router = useRouter()
 
   const routeToLesson = ({ row }: GridRowParams) => {
-    router.push(`/classes/${params.className}/lessons/${row.lessonName}`)
+    router.push(`/classes/${className}/lessons/${row.lessonName}`)
   }
 
   const handleConfimationDialogOpen = (id: number) => {
@@ -116,7 +119,7 @@ const LessonDataGrid = ({
 
   useEffect(() => {
     const fetchLessons = async () => {
-      const lessons = await getLessonData(params.className)
+      const lessons = await getLessonData(className)
       setRows(
         lessons.map(({ lesson_id, name, topics }) => ({
           id: lesson_id,
@@ -124,34 +127,41 @@ const LessonDataGrid = ({
           unitsCovered: topics?.join(', '),
         }))
       )
+      setDataLoading(false)
     }
     fetchLessons()
-  }, [params.className])
+  }, [className])
 
   return (
     <>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        onRowClick={routeToLesson}
-        disableColumnSelector
-        ignoreDiacritics
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-        }}
-      />
-      <Dialog open={confirmationDialogOpen}>
-        <DialogTitle>Are you sure you want to delete this lesson?</DialogTitle>
-        <DialogActions>
-          <Button onClick={handleConfimationDialogClose}>Cancel</Button>
-          <Button color="error" onClick={handleDeleteLesson(lessonId as number)}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {rows.length === 0 ? (
+        <DataGridSkeleton columns={columns} />
+      ) : (
+        <>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            onRowClick={routeToLesson}
+            disableColumnSelector
+            ignoreDiacritics
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+          />
+          <Dialog open={confirmationDialogOpen}>
+            <DialogTitle>Are you sure you want to delete this lesson?</DialogTitle>
+            <DialogActions>
+              <Button onClick={handleConfimationDialogClose}>Cancel</Button>
+              <Button color="error" onClick={handleDeleteLesson(lessonId as number)}>
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </>
+      )}
     </>
   )
 }

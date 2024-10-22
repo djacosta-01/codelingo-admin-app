@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Question } from '@/types/content.types'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 import AddQuestionDialog from '@/app/classes/[className]/lessons/[lessonName]/add-question-dialog'
+import ClassConentHeaderSkeleton from '@/components/skeletons/class-content-header-skeleton'
 
 const Lesson = ({
   params,
@@ -19,6 +20,7 @@ const Lesson = ({
   const [open, setOpen] = useState<boolean>(false)
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
   const [prevQuestionData, setPrevQuestionData] = useState<Question | null>(null)
+  const [dataLoading, setDataLoading] = useState<boolean>(true)
 
   const handleDialogOpen = () => {
     setOpen(true)
@@ -38,25 +40,32 @@ const Lesson = ({
           width: 'calc(100vw - 65px)',
         }}
       >
-        <Box id="lesson-name" sx={{ paddingLeft: 3 }}>
-          <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
-        </Box>
-        <Box
-          sx={{
-            paddingLeft: 5,
-            paddingBottom: 1,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-          }}
-        >
-          <Typography variant="h5">Questions</Typography>
-          <Tooltip title="Add Question">
-            <IconButton onClick={handleDialogOpen}>
-              <AddCircleOutline />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        {dataLoading ? (
+          <ClassConentHeaderSkeleton />
+        ) : (
+          <>
+            <Box id="lesson-name" sx={{ paddingLeft: 3 }}>
+              <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
+            </Box>
+            <Box
+              sx={{
+                paddingLeft: 5,
+                paddingBottom: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Typography variant="h5">Questions</Typography>
+              <Tooltip title="Add Question">
+                <IconButton onClick={handleDialogOpen}>
+                  <AddCircleOutline />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </>
+        )}
+
         <Fade in={alertOpen}>
           <Alert
             severity="success"
@@ -79,6 +88,7 @@ const Lesson = ({
         <QuestionDataGrid
           params={{ className: params.className, lessonName: params.lessonName }}
           setPrevQuestionData={setPrevQuestionData}
+          setDataLoading={setDataLoading}
           setOpen={setOpen}
         />
         <AddQuestionDialog

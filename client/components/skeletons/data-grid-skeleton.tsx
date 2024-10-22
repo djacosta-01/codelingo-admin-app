@@ -1,14 +1,17 @@
+'use client'
+
 import { Box } from '@mui/material'
 import { GridColDef, DataGrid } from '@mui/x-data-grid'
 
-const TestSkeleton = ({ columns }: { columns: GridColDef[] }) => {
+const DataGridSkeleton = ({ columns }: { columns: GridColDef[] }) => {
   return (
     <Box
       id="test-skeleton"
       sx={{
-        height: '100vh',
-        width: '100vw',
         display: 'flex',
+        flexDirection: 'column',
+        height: 'calc(100vh - 64px)', // to compensate for the navbar from the parent component
+        width: 'calc(100vw - 65px)', // to compensate for the side menu from the parent component
       }}
     >
       <DataGrid
@@ -24,3 +27,5 @@ const TestSkeleton = ({ columns }: { columns: GridColDef[] }) => {
     </Box>
   )
 }
+
+export default DataGridSkeleton
