@@ -2,6 +2,8 @@
 
 import {
   DataGrid,
+  GridRow,
+  GridRowProps,
   GridRowsProp,
   GridColDef,
   GridActionsCellItem,
@@ -144,10 +146,16 @@ const LessonDataGrid = ({
             onRowClick={routeToLesson}
             disableColumnSelector
             ignoreDiacritics
+            getRowClassName={() => 'custom-row'} // Add custom class to rows
             slots={{ toolbar: GridToolbar }}
             slotProps={{
               toolbar: {
                 showQuickFilter: true,
+              },
+            }}
+            sx={{
+              '& .custom-row:hover': {
+                cursor: 'pointer', // Change cursor to pointer on hover
               },
             }}
           />

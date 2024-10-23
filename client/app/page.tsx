@@ -58,7 +58,6 @@ export default function Login() {
           }}
         >
           <TextField
-            variant="standard"
             id="email"
             name="email"
             type="email"
@@ -74,7 +73,6 @@ export default function Login() {
             }}
           />
           <TextField
-            variant="standard"
             id="password"
             name="password"
             type="password"
