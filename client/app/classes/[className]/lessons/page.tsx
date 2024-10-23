@@ -20,57 +20,44 @@ const Lessons = ({ params }: { params: { className: string } }) => {
 
   return (
     <>
-      <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />
-      <Box
-        id="lesson-container"
-        sx={{
-          marginTop: '64px',
-          marginLeft: '65px',
-          display: 'flex',
-          flexDirection: 'column',
-          height: 'calc(100vh - 64px)',
-          width: 'calc(100vw - 65px)',
-        }}
-      >
-        {dataLoading ? (
-          <ClassConentHeaderSkeleton />
-        ) : (
-          <>
-            <Box id="class-name" sx={{ paddingLeft: 3 }}>
-              <h1>{params.className.replace(/%20/g, ' ')}</h1>
-            </Box>
-            <Box
-              sx={{
-                paddingLeft: 5,
-                paddingBottom: 1,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-              }}
-            >
-              <Typography variant="h5">Lessons</Typography>
-              <Tooltip title="Create New Lesson">
-                <IconButton onClick={handleLessonDialogOpen}>
-                  <AddCircleOutline />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </>
-        )}
-        <AddLessonDialog
-          className={params.className}
-          open={open}
-          setOpen={setOpen}
-          prevLessonData={prevLessonData}
-          resetPrevLessonData={setPrevLessonData}
-        />
-        <LessonDataGrid
-          className={params.className}
-          setPrevLessonData={setPrevLessonData}
-          setDataLoading={setDataLoading}
-          setOpen={setOpen}
-        />
-      </Box>
+      {dataLoading ? (
+        <ClassConentHeaderSkeleton />
+      ) : (
+        <>
+          <Box id="class-name" sx={{ paddingLeft: 3 }}>
+            <h1>{params.className.replace(/%20/g, ' ')}</h1>
+          </Box>
+          <Box
+            sx={{
+              paddingLeft: 5,
+              paddingBottom: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <Typography variant="h5">Lessons</Typography>
+            <Tooltip title="Create New Lesson">
+              <IconButton onClick={handleLessonDialogOpen}>
+                <AddCircleOutline />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </>
+      )}
+      <AddLessonDialog
+        className={params.className}
+        open={open}
+        setOpen={setOpen}
+        prevLessonData={prevLessonData}
+        resetPrevLessonData={setPrevLessonData}
+      />
+      <LessonDataGrid
+        className={params.className}
+        setPrevLessonData={setPrevLessonData}
+        setDataLoading={setDataLoading}
+        setOpen={setOpen}
+      />
     </>
   )
 }

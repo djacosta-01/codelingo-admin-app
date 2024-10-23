@@ -76,13 +76,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })
 const SideMenu = ({
   displaySideMenu,
   isSideMenuOpen,
-  currentPage,
+  // currentPage,
   className,
   handleMenuClose,
 }: {
   displaySideMenu: boolean
   isSideMenuOpen: boolean
-  currentPage: string
+  // currentPage: string
   className: string
   handleMenuClose: () => void
 }) => {

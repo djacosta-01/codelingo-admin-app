@@ -24,7 +24,6 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
     reactFlowEdges: [],
   })
 
-  // hooks
   const onNodesChange = useOnNodesChange({ setNodes, setReactFlowData })
   const onEdgesChange = useOnEdgesChange({ setEdges, setReactFlowData })
   const onConnect = useOnConnect({ setReactFlowData })
@@ -56,54 +55,37 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
 
   return (
     <>
-      <NavbarWithSideMenu
-        className={params.className}
-        displaySideMenu={true}
-        currentPage={'Knowledge Graph'}
-      />
-      <Box
-        id={`${params.className.toLowerCase}-knowledge-graph-container`}
-        sx={{
-          marginTop: '64px',
-          //   marginLeft: '65px',
-          height: 'calc(100vh - 64px)',
-          width: '100vw',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
-          <>
-            <ReactFlow
-              nodes={reactFlowData.reactFlowNodes}
-              edges={reactFlowData.reactFlowEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              nodeTypes={nodeTypes}
-              colorMode="dark"
-              fitView
+      {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
+        <>
+          <ReactFlow
+            nodes={reactFlowData.reactFlowNodes}
+            edges={reactFlowData.reactFlowEdges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            colorMode="dark"
+            fitView
+          >
+            <Background gap={20} />
+            <Box
+              id="controls"
+              sx={{
+                position: 'fixed',
+                bottom: 30,
+                left: 60,
+                zIndex: 100,
+              }}
             >
-              <Background gap={20} />
-              <Box
-                id="controls"
-                sx={{
-                  position: 'fixed',
-                  bottom: 30,
-                  left: 60,
-                  zIndex: 100,
-                }}
-              >
-                <Controls />
-              </Box>
-            </ReactFlow>
-            {/* <TestNode /> */}
-          </>
-        ) : (
+              <Controls />
+            </Box>
+          </ReactFlow>
+        </>
+      ) : (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <h1>Loading graph data. This may take a few seconds...</h1>
-        )}
-      </Box>
+        </Box>
+      )}
       <Box
         id="helper-card"
         sx={{

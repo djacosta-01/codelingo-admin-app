@@ -28,79 +28,66 @@ const Lesson = ({
 
   return (
     <>
-      <NavbarWithSideMenu className={params.className} displaySideMenu currentPage="Lessons" />
-      <Box
-        id="lesson-details-container"
-        sx={{
-          marginTop: '64px',
-          marginLeft: '65px',
-          display: 'flex',
-          flexDirection: 'column',
-          height: 'calc(100vh - 64px)',
-          width: 'calc(100vw - 65px)',
-        }}
-      >
-        {dataLoading ? (
-          <ClassConentHeaderSkeleton />
-        ) : (
-          <>
-            <Box id="lesson-name" sx={{ paddingLeft: 3 }}>
-              <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
-            </Box>
-            <Box
-              sx={{
-                paddingLeft: 5,
-                paddingBottom: 1,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
+      {dataLoading ? (
+        <ClassConentHeaderSkeleton />
+      ) : (
+        <>
+          <Box id="lesson-name" sx={{ paddingLeft: 3 }}>
+            <h1>{params.lessonName.replace(/%20/g, ' ')}</h1>
+          </Box>
+          <Box
+            sx={{
+              paddingLeft: 5,
+              paddingBottom: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <Typography variant="h5">Questions</Typography>
+            <Tooltip title="Add Question">
+              <IconButton onClick={handleDialogOpen}>
+                <AddCircleOutline />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </>
+      )}
+
+      <Fade in={alertOpen}>
+        <Alert
+          severity="success"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlertOpen(false)
               }}
             >
-              <Typography variant="h5">Questions</Typography>
-              <Tooltip title="Add Question">
-                <IconButton onClick={handleDialogOpen}>
-                  <AddCircleOutline />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </>
-        )}
-
-        <Fade in={alertOpen}>
-          <Alert
-            severity="success"
-            action={
-              <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setAlertOpen(false)
-                }}
-              >
-                <Close fontSize="inherit" />
-              </IconButton>
-            }
-          >
-            Question added successfully
-          </Alert>
-        </Fade>
-        <QuestionDataGrid
-          params={{ className: params.className, lessonName: params.lessonName }}
-          setPrevQuestionData={setPrevQuestionData}
-          setDataLoading={setDataLoading}
-          setOpen={setOpen}
-        />
-        <AddQuestionDialog
-          lessonName={params.lessonName}
-          open={open}
-          setOpen={setOpen}
-          alertOpen={alertOpen}
-          setAlertOpen={setAlertOpen}
-          prevQuestionData={prevQuestionData}
-          resetPrevData={setPrevQuestionData}
-        />
-      </Box>
+              <Close fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          Question added successfully
+        </Alert>
+      </Fade>
+      <QuestionDataGrid
+        params={{ className: params.className, lessonName: params.lessonName }}
+        setPrevQuestionData={setPrevQuestionData}
+        setDataLoading={setDataLoading}
+        setOpen={setOpen}
+      />
+      <AddQuestionDialog
+        lessonName={params.lessonName}
+        open={open}
+        setOpen={setOpen}
+        alertOpen={alertOpen}
+        setAlertOpen={setAlertOpen}
+        prevQuestionData={prevQuestionData}
+        resetPrevData={setPrevQuestionData}
+      />
     </>
   )
 }
