@@ -5,7 +5,6 @@ import { getClassData } from '@/app/classes/actions'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
-import Navbar from '@/components/nav-and-sidemenu/navbar'
 
 const Classes = () => {
   const [classes, setClasses] = useState<(string | null)[]>([])

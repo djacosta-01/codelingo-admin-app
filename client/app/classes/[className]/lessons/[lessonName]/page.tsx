@@ -1,6 +1,5 @@
 'use client'
 
-import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import { Box, IconButton, Tooltip, Typography, Alert, Fade } from '@mui/material'
 import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'

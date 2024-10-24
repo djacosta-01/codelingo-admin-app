@@ -1,6 +1,6 @@
-import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 import { Box } from '@mui/material'
 import { ReactNode } from 'react'
+import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
 
 const ClassPageLayout = ({
   children,
