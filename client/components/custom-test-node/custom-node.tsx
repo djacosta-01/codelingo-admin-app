@@ -13,8 +13,8 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
-import { Handle, Position, ReactFlow, ReactFlowProvider } from '@xyflow/react'
+import { useState } from 'react'
+import { Handle, Position } from '@xyflow/react'
 
 // const nodeNames = ['Priority Queues']
 

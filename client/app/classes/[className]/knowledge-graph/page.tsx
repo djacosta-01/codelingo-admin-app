@@ -1,19 +1,31 @@
 'use client'
 
 import { Box } from '@mui/material'
-import { type Node, type Edge, ReactFlow, Controls, Background } from '@xyflow/react'
+import {
+  type Node,
+  type Edge,
+  ReactFlow,
+  Controls,
+  Background,
+  useReactFlow,
+  ReactFlowProvider,
+} from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect } from 'react'
-import NavbarWithSideMenu from '@/components/nav-and-sidemenu/navbar-with-sidemenu'
-import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import { AddNodeForm } from '@/app/classes/[className]/knowledge-graph/add-node'
-import { useOnNodesChange, useOnEdgesChange, useOnConnect } from '@/hooks/knowledgeGraphHooks'
+import {
+  useOnNodesChange,
+  useOnEdgesChange,
+  useOnConnect,
+  useOnConnectEnd,
+} from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import CustomNode from '@/components/custom-test-node/custom-node'
+import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 
 const nodeTypes = { editableNode: CustomNode }
 
-const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
+const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
   const [reactFlowData, setReactFlowData] = useState<{
@@ -24,13 +36,16 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
     reactFlowEdges: [],
   })
 
+  const { screenToFlowPosition } = useReactFlow()
+
   const onNodesChange = useOnNodesChange({ setNodes, setReactFlowData })
   const onEdgesChange = useOnEdgesChange({ setEdges, setReactFlowData })
   const onConnect = useOnConnect({ setReactFlowData })
+  const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges)
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
-      const response = await getKnowledgeGraphData(params.className)
+      const response = await getKnowledgeGraphData(className)
 
       if (response.success) {
         const { nodes, edges, react_flow_data } = response.graphData!
@@ -51,8 +66,9 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
     }
 
     fetchClassGraphData()
-  }, [params.className])
+  }, [className])
 
+  console.log(nodes, edges)
   return (
     <>
       {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
@@ -63,8 +79,10 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onConnectEnd={onConnectEnd}
             nodeTypes={nodeTypes}
             colorMode="dark"
+            nodeOrigin={[0.5, 0]}
             fitView
           >
             <Background gap={20} />
@@ -102,4 +120,10 @@ const KnowledgeGraph = ({ params }: { params: { className: string } }) => {
   )
 }
 
-export default KnowledgeGraph
+export default function KnowledgeGraphWrapper({ params }: { params: { className: string } }) {
+  return (
+    <ReactFlowProvider>
+      <KnowledgeGraph className={params.className} />
+    </ReactFlowProvider>
+  )
+}
