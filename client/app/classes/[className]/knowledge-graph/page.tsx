@@ -40,7 +40,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
 
   const onNodesChange = useOnNodesChange({ setNodes, setReactFlowData })
   const onEdgesChange = useOnEdgesChange({ setEdges, setReactFlowData })
-  const onConnect = useOnConnect({ setReactFlowData })
+  const onConnect = useOnConnect({ setReactFlowData, setEdges })
   const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
 
   useEffect(() => {

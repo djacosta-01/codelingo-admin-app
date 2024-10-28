@@ -50,11 +50,12 @@ export const useOnEdgesChange = ({ setEdges, setReactFlowData }) => {
 }
 
 // TODO: need to pass in setEdges as well here
-export const useOnConnect = ({ setReactFlowData }) => {
+export const useOnConnect = ({ setReactFlowData, setEdges }) => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
   console.log('in useOnConnect')
   const onConnect = useCallback(
     connection => {
+      setEdges(prev => [...prev, [connection.source, connection.target]])
       setReactFlowData(prev => {
         return {
           ...prev,
