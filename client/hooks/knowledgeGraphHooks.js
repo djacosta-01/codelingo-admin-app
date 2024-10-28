@@ -49,8 +49,10 @@ export const useOnEdgesChange = ({ setEdges, setReactFlowData }) => {
   return onEdgesChange
 }
 
+// TODO: need to pass in setEdges as well here
 export const useOnConnect = ({ setReactFlowData }) => {
   /* source: https://reactflow.dev/learn/concepts/core-concepts */
+  console.log('in useOnConnect')
   const onConnect = useCallback(
     connection => {
       setReactFlowData(prev => {
@@ -69,7 +71,7 @@ export const useOnConnect = ({ setReactFlowData }) => {
 // TODO: need to pass in setReactFlowData and set nodes and edges in there as well
 let id = 1
 const getId = () => `${id++}`
-export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges) => {
+export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setReactFlowData) => {
   /* https://reactflow.dev/examples/nodes/add-node-on-edge-drop */
   const onConnectEnd = useCallback(
     (event, connectionState) => {
@@ -90,12 +92,22 @@ export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges) => {
           origin: [0.5, 0.0],
         }
 
-        console.log('newNode', newNode)
-
-        setNodes(nds => nds.concat(newNode))
-        setEdges(eds =>
-          eds.concat({ id, source: connectionState.fromNode.id, target: id, animated: true })
-        )
+        // setNodes(nds => nds.concat(newNode))
+        // setEdges(eds =>
+        //   eds.concat({ id, source: connectionState.fromNode.id, target: id, animated: true })
+        // )
+        setNodes(nds => [...nds, newNode.id])
+        setEdges(eds => [...eds, [connectionState.fromNode.id, id]])
+        setReactFlowData(prev => {
+          return {
+            ...prev,
+            reactFlowNodes: [...prev.reactFlowNodes, newNode],
+            reactFlowEdges: [
+              ...prev.reactFlowEdges,
+              { id, source: connectionState.fromNode.id, target: id, animated: true },
+            ],
+          }
+        })
       }
     },
     [screenToFlowPosition]

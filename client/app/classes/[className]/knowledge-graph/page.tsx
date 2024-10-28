@@ -41,7 +41,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const onNodesChange = useOnNodesChange({ setNodes, setReactFlowData })
   const onEdgesChange = useOnEdgesChange({ setEdges, setReactFlowData })
   const onConnect = useOnConnect({ setReactFlowData })
-  const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges)
+  const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
@@ -68,7 +68,8 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
     fetchClassGraphData()
   }, [className])
 
-  console.log(nodes, edges)
+  console.log('nodes: ', nodes)
+  console.log('edges: ', edges)
   return (
     <>
       {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
