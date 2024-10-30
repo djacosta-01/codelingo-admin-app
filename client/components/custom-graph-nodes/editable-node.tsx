@@ -13,29 +13,55 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Handle, Position } from '@xyflow/react'
 
-// const nodeNames = ['Priority Queues']
+// TODO: when user clicks SAVE button, update the node name in the graph react flow data
 
-const CustomNode = ({
+/**
+ * 1.) Create a new hook in the hooks folder that takes in the following:
+ * - node id
+ * - new node name
+ * - react flow data
+ * - setReactFlowData
+ * - setNodes
+ *
+ * 2.) In the hook, find the node with the given id in the react flow data and update the node name
+ * 3.) Update the node name in the nodes array
+ *
+ * wrap the new hook in useCallback
+ *
+ */
+const EditableNode = ({
+  id,
   data,
   isConnectable,
 }: {
-  data: { label: string }
+  id: string
+  data: {
+    label: string
+    updateLabelHook: (nodeID: string, newLabel: string) => void
+  }
   isConnectable: boolean
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null)
   const [openNodeDialog, setOpenNodeDialog] = useState(false)
-  const [nodeName, setNodeName] = useState('')
+  const [nodeName, setNodeName] = useState(data.label)
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>, nodeName: string) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setIsMenuOpen(true)
     setAnchorElement(event.currentTarget)
-    setNodeName(nodeName)
   }
 
+  const handleSave = () => {
+    // alert('save clicked')
+    const updatedNodeName = data.updateLabelHook(id, nodeName)
+    console.log(updatedNodeName)
+    handleMenuClose()
+    handleCloseDialog()
+    // data.updateLabelHook(id, nodeName)
+  }
   const handleMenuClose = () => {
     setIsMenuOpen(false)
     setAnchorElement(null)
@@ -44,6 +70,8 @@ const CustomNode = ({
   const handleEditNode = () => {
     setOpenNodeDialog(true)
   }
+
+  const handleCloseDialog = () => setOpenNodeDialog(false)
 
   return (
     <Box
@@ -59,7 +87,7 @@ const CustomNode = ({
       <Handle type="target" position={Position.Top} isConnectable={isConnectable} />
       <Paper
         elevation={8}
-        onClick={e => handleClick(e, data.label)}
+        onClick={e => handleClick(e)}
         sx={{
           display: 'flex',
           justifyContent: 'center',
@@ -86,7 +114,7 @@ const CustomNode = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenNodeDialog(false)}>Cancel</Button>
-          <Button onClick={() => setOpenNodeDialog(false)}>Save</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
       <Handle type="source" position={Position.Bottom} id="a" isConnectable={isConnectable} />
@@ -94,4 +122,4 @@ const CustomNode = ({
   )
 }
 
-export default CustomNode
+export default EditableNode
