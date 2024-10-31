@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, IconButton, Skeleton } from '@mui/material'
+import { Box, Button, IconButton, Skeleton } from '@mui/material'
 import {
   type Node,
   type Edge,
@@ -28,13 +28,24 @@ import HelpIcon from '@mui/icons-material/Help'
 
 const nodeTypes = { editableNode: EditableNode }
 
+interface KnowledgeGraphInteractionProps {
+  nodesDraggable: boolean
+  nodesConnectable: boolean
+  elementsSelectable: boolean
+}
+
+const intialInteractionProps: KnowledgeGraphInteractionProps = {
+  nodesDraggable: false,
+  nodesConnectable: false,
+  elementsSelectable: false,
+}
+
 const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
 
   // I plan to use this state to show a warning message when a cycle is detected
   // const [hasCycle, setHasCycle] = useState<boolean>(false)
-
   const [reactFlowData, setReactFlowData] = useState<{
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
@@ -42,6 +53,9 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
     reactFlowNodes: [],
     reactFlowEdges: [],
   })
+  const [inEditMode, setInEditMode] = useState<boolean>(false)
+  const [interactionProps, setInteractionProps] =
+    useState<KnowledgeGraphInteractionProps>(intialInteractionProps)
 
   const { screenToFlowPosition, getNodes, getEdges } = useReactFlow()
 
@@ -50,6 +64,20 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const onConnect = useOnConnect({ setReactFlowData, setEdges })
   const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
   // const isValidConnection = useIsValidConnection(getNodes, getEdges, setHasCycle)
+
+  const enterEditMode = () => {
+    setInEditMode(true)
+    setInteractionProps({
+      nodesDraggable: true,
+      nodesConnectable: true,
+      elementsSelectable: true,
+    })
+  }
+
+  const exitEditMode = () => {
+    setInEditMode(false)
+    setInteractionProps(intialInteractionProps)
+  }
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
@@ -82,7 +110,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
     fetchClassGraphData()
   }, [className])
 
-  // console.log(reactFlowData.reactFlowNodes)
   return (
     <>
       {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
@@ -95,22 +122,14 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
             nodeTypes={nodeTypes}
+            nodesDraggable={interactionProps.nodesDraggable}
+            nodesConnectable={interactionProps.nodesConnectable}
+            elementsSelectable={interactionProps.elementsSelectable}
             colorMode="dark"
             nodeOrigin={[0.5, 0]}
             fitView
           >
-            <Background gap={20} />
-            <Box
-              id="controls"
-              sx={{
-                position: 'fixed',
-                bottom: 30,
-                left: 60,
-                zIndex: 100,
-              }}
-            >
-              <Controls />
-            </Box>
+            {inEditMode ? <Background gap={20} /> : ''}
           </ReactFlow>
         </>
       ) : (
@@ -137,7 +156,24 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           </Box>
         )}
       </Box>
-      <AddNodeForm />
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 45,
+          left: 80,
+        }}
+      >
+        {inEditMode ? (
+          <>
+            <Button onClick={exitEditMode}>Exit</Button>
+            <AddNodeForm />
+          </>
+        ) : (
+          <Button variant="contained" color="success" onClick={enterEditMode}>
+            Edit Graph
+          </Button>
+        )}
+      </Box>
     </>
   )
 }
