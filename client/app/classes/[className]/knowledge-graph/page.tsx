@@ -1,18 +1,17 @@
 'use client'
 
 import { Box, Button, IconButton, Skeleton } from '@mui/material'
+import { Help } from '@mui/icons-material'
 import {
   type Node,
   type Edge,
   ReactFlow,
-  Controls,
   Background,
   useReactFlow,
   ReactFlowProvider,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect } from 'react'
-import { AddNodeForm } from '@/app/classes/[className]/knowledge-graph/add-node'
 import {
   useOnNodesChange,
   useOnEdgesChange,
@@ -23,8 +22,8 @@ import {
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
+import AddNodeForm from '@/app/classes/[className]/knowledge-graph/add-node'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
-import HelpIcon from '@mui/icons-material/Help'
 
 const nodeTypes = { editableNode: EditableNode }
 
@@ -72,11 +71,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
       nodesConnectable: true,
       elementsSelectable: true,
     })
-  }
-
-  const exitEditMode = () => {
-    setInEditMode(false)
-    setInteractionProps(intialInteractionProps)
   }
 
   useEffect(() => {
@@ -150,7 +144,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           <Box id="button" sx={{ paddingTop: 1, paddingLeft: 1 }}>
             <Skeleton variant="circular">
               <IconButton>
-                <HelpIcon id="help-button" color="info" fontSize="large" />
+                <Help id="help-button" color="info" fontSize="large" />
               </IconButton>
             </Skeleton>
           </Box>
@@ -161,13 +155,11 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           position: 'fixed',
           bottom: 45,
           left: 80,
+          // right: 0,
         }}
       >
         {inEditMode ? (
-          <>
-            <Button onClick={exitEditMode}>Exit</Button>
-            <AddNodeForm />
-          </>
+          <AddNodeForm setInEditMode={setInEditMode} setInteractionProps={setInteractionProps} />
         ) : (
           <Button variant="contained" color="success" onClick={enterEditMode}>
             Edit Graph

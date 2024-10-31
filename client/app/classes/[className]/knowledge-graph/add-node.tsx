@@ -1,3 +1,4 @@
+import { Help, Add, Save, ExitToApp, Edit } from '@mui/icons-material'
 import {
   Dialog,
   DialogTitle,
@@ -6,32 +7,24 @@ import {
   Button,
   Box,
   TextField,
+  SpeedDial,
+  SpeedDialAction,
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { type Dispatch, type SetStateAction, useMemo, useState } from 'react'
 
-const Buttons = ({ handleOpenDialog }: { handleOpenDialog: () => void }) => {
-  return (
-    <Box
-      id="add-save-buttons"
-      sx={{
-        display: 'flex',
-        gap: 2,
-        position: 'fixed',
-        bottom: 45,
-        right: 20,
-      }}
-    >
-      <Button variant="contained" onClick={handleOpenDialog}>
-        Add
-      </Button>
-      <Button variant="contained" color="success" onClick={() => alert('will save graph later')}>
-        Save
-      </Button>
-    </Box>
-  )
-}
-
-export const AddNodeForm = () => {
+const AddNodeForm = ({
+  setInEditMode,
+  setInteractionProps,
+}: {
+  setInEditMode: Dispatch<SetStateAction<boolean>>
+  setInteractionProps: Dispatch<
+    SetStateAction<{
+      nodesDraggable: boolean
+      nodesConnectable: boolean
+      elementsSelectable: boolean
+    }>
+  >
+}) => {
   /**
    * ----------------------------------------------
    * Input states and functions
@@ -56,41 +49,36 @@ export const AddNodeForm = () => {
     setOpen(false)
     setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
-
-  /**
-   * ----------------------------------------------
-   * Form submission function
-   * ----------------------------------------------
-   * */
-  const addDataToGraph = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    // TODO: rework this to use server side
+  const exitEditMode = () => {
+    setInEditMode(false)
+    setInteractionProps({
+      nodesDraggable: false,
+      nodesConnectable: false,
+      elementsSelectable: false,
+    })
   }
+  const editActions = useMemo(
+    () => [
+      { icon: <Add />, name: 'Add Node', onClick: handleOpenDialog },
+      { icon: <Save />, name: 'Save Changes', onClick: () => alert('will save graph later') },
+      { icon: <ExitToApp />, name: 'Exit Edit Mode', onClick: exitEditMode },
+    ],
+    []
+  )
 
-  // TODO: move this to server side
-  //   const saveGraphData = async () => {
-  //     // TODO: use upsert instead of update
-  //     const { data, error } = await supabase.from('class_knowledge_graph').update({
-  //       nodes,
-  //       edges,
-  //       react_flow_data: [
-  //         {
-  //           reactFlowNodes: reactFlowData.reactFlowNodes,
-  //           reactFlowEdges: reactFlowData.reactFlowEdges,
-  //         },
-  //       ],
-  //     })
-  //     if (error) {
-  //       console.error('Error saving graph data: ', error)
-  //     } else {
-  //       alert('Graph data saved successfully')
-  //     }
-  //   }
+  const addDataToGraph = (e: React.FormEvent<HTMLFormElement>) => {
+    // TODO: rework this to use server side
+    e.preventDefault()
+    alert('will add node to graph later')
+  }
 
   return (
     <>
-      <Buttons handleOpenDialog={handleOpenDialog} />
+      <SpeedDial ariaLabel="Graph Edit Actions" icon={<Edit />} direction="right">
+        {editActions.map(({ icon, name, onClick }, index) => (
+          <SpeedDialAction key={index} icon={icon} tooltipTitle={name} onClick={onClick} />
+        ))}
+      </SpeedDial>
       <Dialog
         open={open}
         onClose={handleCloseDialog}
@@ -117,3 +105,5 @@ export const AddNodeForm = () => {
     </>
   )
 }
+
+export default AddNodeForm
