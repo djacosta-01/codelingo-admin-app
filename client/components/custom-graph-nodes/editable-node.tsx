@@ -15,7 +15,11 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
+import { useNodeLabelUpdate } from '@/hooks/knowledgeGraphHooks'
 
+/** custom react flow nodes have these props available to them:
+ * https://reactflow.dev/api-reference/types/node-props
+ * */
 const EditableNode = ({
   id,
   data,
@@ -24,7 +28,7 @@ const EditableNode = ({
   id: string
   data: {
     label: string
-    updateLabelHook: (nodeID: string, newLabel: string) => void
+    setReactFlowData: (data: { reactFlowNodes: any[]; reactFlowEdges: any[] }) => void
   }
   isConnectable: boolean
 }) => {
@@ -33,13 +37,18 @@ const EditableNode = ({
   const [openNodeDialog, setOpenNodeDialog] = useState(false)
   const [nodeName, setNodeName] = useState(data.label)
 
+  const updateNodeLabel = useNodeLabelUpdate(data.setReactFlowData, id, nodeName)
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setIsMenuOpen(true)
     setAnchorElement(event.currentTarget)
   }
 
   const handleSave = () => {
-    data.updateLabelHook(id, nodeName)
+    // console.log('handleSave')
+    // console.log(nodeName)
+    // console.log(id)
+    updateNodeLabel()
     handleMenuClose()
     handleCloseDialog()
   }

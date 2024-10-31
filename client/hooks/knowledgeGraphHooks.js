@@ -68,7 +68,7 @@ export const useOnConnect = ({ setReactFlowData, setEdges }) => {
   return onConnect
 }
 
-let id = 1
+let id = 5
 const getId = () => `${id++}`
 export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setReactFlowData) => {
   /* https://reactflow.dev/examples/nodes/add-node-on-edge-drop */
@@ -86,7 +86,7 @@ export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setRea
             x: clientX,
             y: clientY,
           }),
-          data: { label: `Node ${id}` },
+          data: { label: `Node ${id}`, setReactFlowData },
           origin: [0.5, 0.0],
         }
 
@@ -136,6 +136,8 @@ export const useIsValidConnection = (getNodes, getEdges, setHasCycle) => {
             // console.log('hasCycle(outgoer, visited) === true')
             return true
           }
+
+          return updateNodeLabel
         }
       }
 
@@ -150,4 +152,31 @@ export const useIsValidConnection = (getNodes, getEdges, setHasCycle) => {
   )
 
   return isValidConnection
+}
+
+export const useNodeLabelUpdate = (setReactFlowData, ...nodeData) => {
+  const updateNodeLabel = useCallback(() => {
+    // updates the label of the node based on the given nodeID
+    // console.log('in updateNodeLabel')
+    const [nodeID, newLabel] = nodeData
+    // console.log('nodeID', nodeID)
+    // console.log('newLabel', newLabel)
+    setReactFlowData(prev => ({
+      ...prev,
+      reactFlowNodes: prev.reactFlowNodes.map(node => {
+        // console.log('prev')
+        if (node.id === nodeID) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: newLabel,
+            },
+          }
+        }
+        return node
+      }),
+    }))
+  }, [setReactFlowData, nodeData])
+  return updateNodeLabel
 }

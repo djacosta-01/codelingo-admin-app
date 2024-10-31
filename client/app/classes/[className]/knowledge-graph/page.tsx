@@ -19,6 +19,7 @@ import {
   useOnConnect,
   useOnConnectEnd,
   useIsValidConnection,
+  // useNodeLabelUpdate,
 } from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
@@ -32,26 +33,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
   const [hasCycle, setHasCycle] = useState<boolean>(false)
-
-  const updateNodeLabel = (nodeID: string, newLabel: string) => {
-    // updates the label of the node with the given nodeID
-    console.log('updateNodeLabel')
-    setReactFlowData(prev => ({
-      ...prev,
-      reactFlowNodes: prev.reactFlowNodes.map(node => {
-        if (node.id === nodeID) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              label: newLabel,
-            },
-          }
-        }
-        return node
-      }),
-    }))
-  }
 
   const [reactFlowData, setReactFlowData] = useState<{
     reactFlowNodes: Node[]
@@ -67,7 +48,8 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const onEdgesChange = useOnEdgesChange({ setEdges, setReactFlowData })
   const onConnect = useOnConnect({ setReactFlowData, setEdges })
   const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
-  const isValidConnection = useIsValidConnection(getNodes, getEdges, setHasCycle)
+  // const isValidConnection = useIsValidConnection(getNodes, getEdges, setHasCycle)
+  // const updateLabelHook = useNodeLabelUpdate(setReactFlowData)
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
@@ -89,7 +71,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
             reactFlowNodes: data.reactFlowNodes.map(nodeData => ({
               ...nodeData,
               id: nodeData.id as string, // possibly unnecessary. need to check
-              data: { ...nodeData.data, updateLabelHook: updateNodeLabel },
+              data: { ...nodeData.data, setReactFlowData },
             })),
             reactFlowEdges: data.reactFlowEdges,
           }))
@@ -100,7 +82,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
     fetchClassGraphData()
   }, [className])
 
-  console.log(reactFlowData.reactFlowNodes)
+  // console.log(reactFlowData.reactFlowNodes)
   return (
     <>
       {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
@@ -112,7 +94,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
-            // isValidConnection={isValidConnection}
             nodeTypes={nodeTypes}
             colorMode="dark"
             nodeOrigin={[0.5, 0]}
