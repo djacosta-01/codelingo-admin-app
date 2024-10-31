@@ -1,6 +1,6 @@
 'use client'
 
-import { Box } from '@mui/material'
+import { Box, IconButton, Skeleton } from '@mui/material'
 import {
   type Node,
   type Edge,
@@ -24,6 +24,7 @@ import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
+import HelpIcon from '@mui/icons-material/Help'
 
 const nodeTypes = { editableNode: EditableNode }
 
@@ -32,50 +33,32 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const [edges, setEdges] = useState<string[]>([])
   const [hasCycle, setHasCycle] = useState<boolean>(false)
 
-  const updateLabel = (nodeID: string, newLabel: string) => {
-    console.log('updateLabel')
-    const updatedData = reactFlowData.reactFlowNodes.map(node => {
-      if (node.id === nodeID) {
-        const updatedNodeData = {
-          ...node,
-          data: {
-            ...node.data,
-            label: newLabel,
-          },
+  const updateNodeLabel = (nodeID: string, newLabel: string) => {
+    // updates the label of the node with the given nodeID
+    console.log('updateNodeLabel')
+    setReactFlowData(prev => ({
+      ...prev,
+      reactFlowNodes: prev.reactFlowNodes.map(node => {
+        if (node.id === nodeID) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: newLabel,
+            },
+          }
         }
-        setReactFlowData(prev => ({
-          ...prev,
-          reactFlowNodes: prev.reactFlowNodes.map(n => (n.id === nodeID ? updatedNodeData : n)),
-        }))
-        // setNodes(prev => prev.map(n => (n.id === nodeID ? updatedNodeData : n))
-      }
-      return node
-    })
+        return node
+      }),
+    }))
   }
-
-  const initialNodes: Node[] = [
-    {
-      id: '1',
-      type: 'editableNode',
-      position: { x: 100, y: 100 },
-      data: { label: 'Node 1', updateLabelHook: updateLabel },
-    },
-    {
-      id: '2',
-      type: 'editableNode',
-      position: { x: 200, y: 200 },
-      data: { label: 'Node 2', updateLabelHook: updateLabel },
-    },
-  ]
-
-  const initialEdges: Edge[] = [{ id: 'e1-2', source: '1', target: '2', animated: true }]
 
   const [reactFlowData, setReactFlowData] = useState<{
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
   }>({
-    reactFlowNodes: initialNodes,
-    reactFlowEdges: initialEdges,
+    reactFlowNodes: [],
+    reactFlowEdges: [],
   })
 
   const { screenToFlowPosition, getNodes, getEdges } = useReactFlow()
@@ -86,42 +69,43 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
   const isValidConnection = useIsValidConnection(getNodes, getEdges, setHasCycle)
 
-  // useEffect(() => {
-  //   const fetchClassGraphData = async () => {
-  //     const response = await getKnowledgeGraphData(className)
+  useEffect(() => {
+    const fetchClassGraphData = async () => {
+      const response = await getKnowledgeGraphData(className)
 
-  //     if (response.success) {
-  //       const { nodes, edges, react_flow_data } = response.graphData!
-  //       setNodes(nodes!)
-  //       setEdges(edges!)
+      if (response.success) {
+        const { nodes, edges, react_flow_data } = response.graphData!
+        setNodes(nodes!)
+        setEdges(edges!)
 
-  //       if (react_flow_data && Array.isArray(react_flow_data) && react_flow_data[0]) {
-  //         const data = react_flow_data[0] as unknown as {
-  //           reactFlowNodes: Node[]
-  //           reactFlowEdges: Edge[]
-  //         }
+        if (react_flow_data && Array.isArray(react_flow_data) && react_flow_data[0]) {
+          const data = react_flow_data[0] as unknown as {
+            reactFlowNodes: Node[]
+            reactFlowEdges: Edge[]
+          }
 
-  //         setReactFlowData(prev => ({
-  //           ...prev,
-  //           reactFlowNodes: data.reactFlowNodes,
-  //           reactFlowEdges: data.reactFlowEdges,
-  //         }))
-  //       }
-  //     }
-  //   }
+          setReactFlowData(prev => ({
+            ...prev,
+            reactFlowNodes: data.reactFlowNodes.map(nodeData => ({
+              ...nodeData,
+              id: nodeData.id as string, // possibly unnecessary. need to check
+              data: { ...nodeData.data, updateLabelHook: updateNodeLabel },
+            })),
+            reactFlowEdges: data.reactFlowEdges,
+          }))
+        }
+      }
+    }
 
-  //   fetchClassGraphData()
-  // }, [className])
+    fetchClassGraphData()
+  }, [className])
 
-  // console.log('hasCycle', hasCycle)
+  console.log(reactFlowData.reactFlowNodes)
   return (
     <>
-      {/* {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? ( */}
-      {true ? (
+      {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
         <>
           <ReactFlow
-            // nodes={initialNodes}
-            // edges={initialEdges}
             nodes={reactFlowData.reactFlowNodes}
             edges={reactFlowData.reactFlowEdges}
             onNodesChange={onNodesChange}
@@ -160,7 +144,17 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           left: 65,
         }}
       >
-        <HelperCard />
+        {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
+          <HelperCard />
+        ) : (
+          <Box id="button" sx={{ paddingTop: 1, paddingLeft: 1 }}>
+            <Skeleton variant="circular">
+              <IconButton>
+                <HelpIcon id="help-button" color="info" fontSize="large" />
+              </IconButton>
+            </Skeleton>
+          </Box>
+        )}
       </Box>
       <AddNodeForm />
     </>

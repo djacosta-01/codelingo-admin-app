@@ -34,46 +34,76 @@ import EditableNode from '../custom-graph-nodes/editable-node'
 //   },
 // ]
 
+const paperStyle = {
+  height: '9em',
+  width: '15em',
+}
+
 const KnowledgeGraphSkeleton = () => {
   return (
     <>
-      <Box id="button" sx={{ paddingTop: 1, paddingLeft: 1 }}>
-        <Skeleton variant="circular">
-          <IconButton>
-            <HelpIcon id="help-button" color="info" fontSize="large" />
-          </IconButton>
-        </Skeleton>
-      </Box>
-
       <Box
-        id="knowledge-graph"
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        sx={{
+          // backgroundColor: 'pink',
+          display: 'flex',
+          flexDirection: 'column',
+          // justifyContent: 'center',
+          alignItems: 'center',
+          // gap: 2,
+        }}
       >
-        {/* <Skeleton variant="rectangular" width={500} height={500} /> */}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+        </Box>
         <Box
           sx={{
+            width: 'calc(100vw - 80px)',
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            gap: 2,
             // backgroundColor: 'pink',
-            height: '80vh',
-            width: '80vw',
           }}
         >
           <Skeleton>
-            <Paper
-              elevation={8}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '3em',
-                width: '10em',
-                outline: 'solid 1px',
-              }}
-            >
-              <Typography variant="h6" />
-            </Paper>
+            <Paper elevation={8} sx={paperStyle} />
+          </Skeleton>
+          <Skeleton>
+            <Paper elevation={8} sx={paperStyle} />
           </Skeleton>
         </Box>
       </Box>
+
+      {/* </Box> */}
     </>
   )
 }

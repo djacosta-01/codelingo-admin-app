@@ -13,25 +13,9 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
 
-// TODO: when user clicks SAVE button, update the node name in the graph react flow data
-
-/**
- * 1.) Create a new hook in the hooks folder that takes in the following:
- * - node id
- * - new node name
- * - react flow data
- * - setReactFlowData
- * - setNodes
- *
- * 2.) In the hook, find the node with the given id in the react flow data and update the node name
- * 3.) Update the node name in the nodes array
- *
- * wrap the new hook in useCallback
- *
- */
 const EditableNode = ({
   id,
   data,
@@ -55,13 +39,11 @@ const EditableNode = ({
   }
 
   const handleSave = () => {
-    // alert('save clicked')
-    const updatedNodeName = data.updateLabelHook(id, nodeName)
-    console.log(updatedNodeName)
+    data.updateLabelHook(id, nodeName)
     handleMenuClose()
     handleCloseDialog()
-    // data.updateLabelHook(id, nodeName)
   }
+
   const handleMenuClose = () => {
     setIsMenuOpen(false)
     setAnchorElement(null)
