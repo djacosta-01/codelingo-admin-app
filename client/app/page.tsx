@@ -4,35 +4,34 @@ import { useState } from 'react'
 import {
   Box,
   TextField,
-  // Typography,
+  Typography,
   InputAdornment,
-  // Dialog,
-  // DialogTitle,
-  // DialogContent,
-  // DialogContentText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
   Button,
 } from '@mui/material'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import LockIcon from '@mui/icons-material/Lock'
 import logoImage from '@/assets/logo.png'
 import Image from 'next/image'
+import Link from 'next/link'
 import { login } from '@/app/auth/login/actions'
 
-export default function Home() {
-  // const [open, setOpen] = useState(false)
+export default function Login() {
+  const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  // const navigate = useNavigate()
+  const handleDialogOpen = () => {
+    setOpen(true)
+  }
 
-  // const handleDialogOpen = () => {
-  //   setOpen(true)
-  // }
-
-  // const handleDialogClose = () => {
-  //   setEmail('')
-  //   setOpen(false)
-  // }
+  const handleDialogClose = () => {
+    setEmail('')
+    setOpen(false)
+  }
 
   return (
     <Box
@@ -59,7 +58,6 @@ export default function Home() {
           }}
         >
           <TextField
-            variant="standard"
             id="email"
             name="email"
             type="email"
@@ -75,7 +73,6 @@ export default function Home() {
             }}
           />
           <TextField
-            variant="standard"
             id="password"
             name="password"
             type="password"
@@ -98,8 +95,7 @@ export default function Home() {
         </Box>
       </form>
 
-      {/* Forgot Password Logic */}
-      {/* <Typography
+      <Typography
         variant="caption"
         onClick={() => handleDialogOpen()}
         sx={{
@@ -137,12 +133,10 @@ export default function Home() {
           </DialogContent>
           <Button onClick={() => alert('COMING SOON...SORRY...')}>Reset Password</Button>
         </Box>
-      </Dialog> */}
-
-      {/* Registration */}
-      {/* <Typography>
-        Don't have an account? <Link to="/register">Register Here</Link>
-      </Typography> */}
+      </Dialog>
+      <Typography>
+        {`Don't have an account?`} <Link href="/register">Register Here</Link>
+      </Typography>
     </Box>
   )
 }

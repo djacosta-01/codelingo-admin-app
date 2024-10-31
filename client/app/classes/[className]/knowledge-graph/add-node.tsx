@@ -1,4 +1,12 @@
-import { Dialog, DialogTitle, DialogContent, Button, Box, TextField } from '@mui/material'
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
+  TextField,
+} from '@mui/material'
 import React, { useState } from 'react'
 
 const Buttons = ({ handleOpenDialog }: { handleOpenDialog: () => void }) => {
@@ -54,8 +62,8 @@ export const AddNodeForm = () => {
    * Form submission function
    * ----------------------------------------------
    * */
-  const addDataToGraph = (_event: React.FormEvent<HTMLFormElement>) => {
-    _event.preventDefault()
+  const addDataToGraph = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
     // TODO: rework this to use server side
   }
@@ -83,33 +91,28 @@ export const AddNodeForm = () => {
   return (
     <>
       <Buttons handleOpenDialog={handleOpenDialog} />
-      <Dialog open={open} onClose={handleCloseDialog}>
+      <Dialog
+        open={open}
+        onClose={handleCloseDialog}
+        PaperProps={{ component: 'form', onSubmit: addDataToGraph }}
+      >
         <DialogTitle>Adding Node</DialogTitle>
         <DialogContent>
           <Box>THIS IS UNDER CONSTRUCTION</Box>
-          <form onSubmit={addDataToGraph}>
-            <TextField
-              required
-              variant="standard"
-              type="search"
-              name={'nodeTopic'}
-              label="Node Name"
-              value={inputState.nodeTopic}
-              onChange={handleInputChange}
-            />
-
-            <Box
-              id="dialog-buttons"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Button onClick={handleCloseDialog}>Close</Button>
-              <Button type="submit">Add Node</Button>
-            </Box>
-          </form>
+          <TextField
+            required
+            variant="standard"
+            type="search"
+            name={'nodeTopic'}
+            label="Node Name"
+            value={inputState.nodeTopic}
+            onChange={handleInputChange}
+          />
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Close</Button>
+          <Button type="submit">Add Node</Button>
+        </DialogActions>
       </Dialog>
     </>
   )

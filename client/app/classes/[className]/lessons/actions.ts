@@ -1,13 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-
-export interface Lesson {
-  is_draft: boolean | null;
-  lesson_id: number;
-  name: string | null;
-  topics: string[] | null;
-}
+import { Lesson } from '@/types/content.types'
 
 export const getLessonData = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
@@ -43,7 +37,7 @@ export const getLessonData = async (className: string): Promise<Lesson[]> => {
     return []
   }
 
-  const { data: lessonData, error: lessonsError } = await supabase 
+  const { data: lessonData, error: lessonsError } = await supabase
     .from('lessons')
     .select('*')
     .in(
@@ -57,4 +51,91 @@ export const getLessonData = async (className: string): Promise<Lesson[]> => {
   }
 
   return lessonData
+}
+
+// Should work, but need to update RLS policies on the database for inserts
+export const addLesson = async (
+  className: string,
+  { name, topics }: { name: string; topics: string[] }
+) => {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const cleanedClassName = className.replace(/%20/g, ' ')
+
+  // TODO: make this into a function please bc we're doing this in multiple places
+  const { data: classID, error } = await supabase
+    .from('classes')
+    .select('class_id')
+    .eq('name', cleanedClassName)
+    .single()
+
+  if (error) {
+    console.error('Error fetching class ID: ', error)
+    return { success: false, error: error }
+  }
+
+  const { error: insertError } = await supabase.from('lessons').insert({
+    name,
+    topics,
+  })
+
+  if (insertError) {
+    console.error('Error inserting lesson: ', insertError)
+    return { success: false, error: insertError }
+  }
+
+  const { data: newLessonID, error: newLessonIDError } = await supabase
+    .from('lessons')
+    .select('lesson_id')
+    .eq('name', name)
+    .single()
+
+  if (!newLessonID?.lesson_id) {
+    console.error(newLessonIDError)
+    return { success: false, error: newLessonIDError }
+  }
+
+  const { error: insertIntoClassLessonBankError } = await supabase
+    .from('class_lesson_bank')
+    .insert({
+      owner_id: user.id,
+      class_id: classID.class_id,
+      lesson_id: newLessonID.lesson_id,
+    })
+
+  if (insertIntoClassLessonBankError) {
+    console.error('Error inserting into class_lesson_bank: ', insertIntoClassLessonBankError)
+    return { success: false, error: insertIntoClassLessonBankError }
+  }
+
+  return { success: true }
+}
+
+export const deleteLesson = async (lessonID: number) => {
+  const supabase = createClient()
+
+  const userResponse = await supabase.auth.getUser()
+  const user = userResponse.data.user
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error: deleteError } = await supabase.from('lessons').delete().eq('lesson_id', lessonID)
+
+  if (deleteError) {
+    console.error('Error deleting lesson: ', deleteError)
+    return { success: false, error: deleteError }
+  }
+
+  return { success: true }
 }

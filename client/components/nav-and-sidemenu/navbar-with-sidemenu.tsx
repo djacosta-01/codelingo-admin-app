@@ -8,11 +8,11 @@ import SideMenu from '@/components/nav-and-sidemenu/side-menu'
 const NavbarWithSideMenu = ({
   className,
   displaySideMenu,
-  currentPage,
-}: {
+}: // currentPage,
+{
   className: string
   displaySideMenu: boolean
-  currentPage: string
+  // currentPage: string
 }) => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
 
@@ -29,7 +29,7 @@ const NavbarWithSideMenu = ({
       <SideMenu
         displaySideMenu={displaySideMenu}
         isSideMenuOpen={isSideMenuOpen}
-        currentPage={currentPage}
+        // currentPage={currentPage}
         className={className}
         handleMenuClose={handleMenuClose}
       />

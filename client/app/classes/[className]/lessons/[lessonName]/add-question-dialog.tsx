@@ -23,6 +23,7 @@ import {
   insertQuestion,
   updateQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { Question } from '@/types/content.types'
 
 const AddQuestionDialog = ({
   lessonName,
@@ -38,28 +39,10 @@ const AddQuestionDialog = ({
   setOpen: Dispatch<SetStateAction<boolean>>
   alertOpen: boolean
   setAlertOpen: Dispatch<SetStateAction<boolean>>
-  prevQuestionData: {
-    questionId: number
-    questionType: string
-    prompt: string
-    snippet: string
-    topics: string[]
-    answerOptions: string[]
-    answer: string
-  } | null
-  resetPrevData: Dispatch<
-    SetStateAction<{
-      questionId: number
-      questionType: string
-      prompt: string
-      snippet: string
-      topics: string[]
-      answerOptions: string[]
-      answer: string
-    } | null>
-  >
+  prevQuestionData: Question | null
+  resetPrevData: Dispatch<SetStateAction<Question | null>>
 }) => {
-  const [questionId, setQuestionId] = useState<number>(0)
+  const [questionId, setQuestionId] = useState<number>(-1)
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
   const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
@@ -72,7 +55,7 @@ const AddQuestionDialog = ({
   useEffect(() => {
     if (prevQuestionData) {
       const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
-      setQuestionId(questionId)
+      setQuestionId(questionId ?? -1)
       setQuestionType(questionType)
       setQuestionPrompt(prompt)
       setTopicsCovered(topics)
@@ -86,7 +69,7 @@ const AddQuestionDialog = ({
       setCorrectAnswer(answer)
       setButtonOperation('Update Question')
     }
-  }, [open])
+  }, [open, prevQuestionData])
 
   const handleDialogClose = () => {
     setOpen(false)
@@ -117,7 +100,7 @@ const AddQuestionDialog = ({
             prompt: questionPrompt,
             snippet: '',
             topics: topicsCovered,
-            answer_options: Object.values(options),
+            answerOptions: Object.values(options),
             answer: correctAnswer,
           })
         : await updateQuestion(questionId, {
@@ -125,7 +108,7 @@ const AddQuestionDialog = ({
             prompt: questionPrompt,
             snippet: '',
             topics: topicsCovered,
-            answer_options: Object.values(options),
+            answerOptions: Object.values(options),
             answer: correctAnswer,
           })
 
@@ -237,7 +220,7 @@ const AddQuestionDialog = ({
               value={correctAnswer}
               onChange={handleCorrectAnswerSelect}
             >
-              {Array.from(Object.values(options)).map((option, index) => (
+              {Object.values(options).map((option, index) => (
                 <MenuItem key={index} value={option}>
                   {option}
                 </MenuItem>
