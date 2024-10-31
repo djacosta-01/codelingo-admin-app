@@ -19,7 +19,6 @@ import {
   useOnConnect,
   useOnConnectEnd,
   useIsValidConnection,
-  // useNodeLabelUpdate,
 } from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
@@ -32,7 +31,9 @@ const nodeTypes = { editableNode: EditableNode }
 const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
-  const [hasCycle, setHasCycle] = useState<boolean>(false)
+
+  // I plan to use this state to show a warning message when a cycle is detected
+  // const [hasCycle, setHasCycle] = useState<boolean>(false)
 
   const [reactFlowData, setReactFlowData] = useState<{
     reactFlowNodes: Node[]
@@ -49,7 +50,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const onConnect = useOnConnect({ setReactFlowData, setEdges })
   const onConnectEnd = useOnConnectEnd(screenToFlowPosition, setNodes, setEdges, setReactFlowData)
   // const isValidConnection = useIsValidConnection(getNodes, getEdges, setHasCycle)
-  // const updateLabelHook = useNodeLabelUpdate(setReactFlowData)
 
   useEffect(() => {
     const fetchClassGraphData = async () => {

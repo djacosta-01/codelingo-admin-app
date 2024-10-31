@@ -45,9 +45,6 @@ const EditableNode = ({
   }
 
   const handleSave = () => {
-    // console.log('handleSave')
-    // console.log(nodeName)
-    // console.log(id)
     updateNodeLabel()
     handleMenuClose()
     handleCloseDialog()
