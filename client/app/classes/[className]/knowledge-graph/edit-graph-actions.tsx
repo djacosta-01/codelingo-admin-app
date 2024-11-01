@@ -1,4 +1,4 @@
-import { Help, Add, Save, ExitToApp, Edit } from '@mui/icons-material'
+import { Add, Save, ExitToApp, Edit } from '@mui/icons-material'
 import {
   Dialog,
   DialogTitle,
@@ -10,11 +10,14 @@ import {
   SpeedDial,
   SpeedDialAction,
 } from '@mui/material'
+import { type Node, type Edge } from '@xyflow/react'
 import React, { type Dispatch, type SetStateAction, useMemo, useState } from 'react'
 
-const AddNodeForm = ({
+const EditGraphActions = ({
   setInEditMode,
   setInteractionProps,
+  initialReactFlowData,
+  setReactFlowData,
 }: {
   setInEditMode: Dispatch<SetStateAction<boolean>>
   setInteractionProps: Dispatch<
@@ -24,7 +27,12 @@ const AddNodeForm = ({
       elementsSelectable: boolean
     }>
   >
+  initialReactFlowData: {
+    reactFlowNodes: Node[]
+    reactFlowEdges: Edge[]
+  }
 }) => {
+  const [oldReactFlowData, setOldReactFlowData] = useState(initialReactFlowData)
   /**
    * ----------------------------------------------
    * Input states and functions
@@ -43,6 +51,8 @@ const AddNodeForm = ({
    * ----------------------------------------------
    * */
   const [open, setOpen] = useState(false)
+  const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false)
+
   const handleOpenDialog = () => setOpen(true)
 
   const handleCloseDialog = () => {
@@ -50,12 +60,18 @@ const AddNodeForm = ({
     setInputState({ parentNodes: '', nodeTopic: '', targetNodes: '' })
   }
   const exitEditMode = () => {
+    setOpenConfirmationDialog(true)
+  }
+
+  const handleExitWithoutSaving = () => {
+    setReactFlowData(oldReactFlowData)
     setInEditMode(false)
     setInteractionProps({
       nodesDraggable: false,
       nodesConnectable: false,
       elementsSelectable: false,
     })
+    setOpenConfirmationDialog(false)
   }
   const editActions = useMemo(
     () => [
@@ -102,8 +118,18 @@ const AddNodeForm = ({
           <Button type="submit">Add Node</Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={openConfirmationDialog} onClose={() => setOpenConfirmationDialog(false)}>
+        <DialogTitle>Exit without saving?</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmationDialog(false)}>No</Button>
+          <Button color="error" onClick={handleExitWithoutSaving}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
 
-export default AddNodeForm
+export default EditGraphActions

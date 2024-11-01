@@ -22,7 +22,7 @@ import {
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
-import AddNodeForm from '@/app/classes/[className]/knowledge-graph/add-node'
+import EditGraphActions from '@/app/classes/[className]/knowledge-graph/edit-graph-actions'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
 
 const nodeTypes = { editableNode: EditableNode }
@@ -159,7 +159,12 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
         }}
       >
         {inEditMode ? (
-          <AddNodeForm setInEditMode={setInEditMode} setInteractionProps={setInteractionProps} />
+          <EditGraphActions
+            setInEditMode={setInEditMode}
+            setInteractionProps={setInteractionProps}
+            initialReactFlowData={reactFlowData}
+            setReactFlowData={setReactFlowData}
+          />
         ) : (
           <Button variant="contained" color="success" onClick={enterEditMode}>
             Edit Graph
