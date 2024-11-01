@@ -86,7 +86,7 @@ export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setRea
             x: clientX,
             y: clientY,
           }),
-          data: { label: `Node ${id}`, setReactFlowData },
+          data: { label: `New Node`, setReactFlowData },
           origin: [0.5, 0.0],
         }
 

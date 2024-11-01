@@ -155,7 +155,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           position: 'fixed',
           bottom: 45,
           left: 80,
-          // right: 0,
         }}
       >
         {inEditMode ? (
@@ -165,10 +164,15 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
             initialReactFlowData={reactFlowData}
             setReactFlowData={setReactFlowData}
           />
-        ) : (
+        ) : reactFlowData.reactFlowNodes.length !== 0 ||
+          reactFlowData.reactFlowEdges.length !== 0 ? (
           <Button variant="contained" color="success" onClick={enterEditMode}>
             Edit Graph
           </Button>
+        ) : (
+          <Skeleton>
+            <Button variant="contained">Edit Graph</Button>
+          </Skeleton>
         )}
       </Box>
     </>

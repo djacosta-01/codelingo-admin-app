@@ -95,6 +95,7 @@ const EditableNode = ({
         <DialogTitle>Edit Node</DialogTitle>
         <DialogContent>
           <TextField
+            required
             label="Node Name"
             value={nodeName}
             onChange={e => setNodeName(e.target.value)}

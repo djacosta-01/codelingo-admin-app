@@ -31,6 +31,12 @@ const EditGraphActions = ({
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
   }
+  setReactFlowData: Dispatch<
+    React.SetStateAction<{
+      reactFlowNodes: Node[]
+      reactFlowEdges: Edge[]
+    }>
+  >
 }) => {
   const [oldReactFlowData, setOldReactFlowData] = useState(initialReactFlowData)
   /**
