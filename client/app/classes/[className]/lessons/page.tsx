@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Typography, Tooltip, IconButton, Skeleton } from '@mui/material'
+import { Box, Typography, Tooltip, IconButton } from '@mui/material'
 import { useState } from 'react'
 import { Lesson } from '@/types/content.types'
 import { AddCircleOutline } from '@mui/icons-material'

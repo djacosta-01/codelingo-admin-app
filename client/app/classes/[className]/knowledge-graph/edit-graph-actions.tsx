@@ -1,3 +1,5 @@
+'use client'
+
 import { Add, Save, ExitToApp, Edit } from '@mui/icons-material'
 import {
   Dialog,
@@ -11,14 +13,25 @@ import {
   SpeedDialAction,
 } from '@mui/material'
 import { type Node, type Edge } from '@xyflow/react'
-import React, { type Dispatch, type SetStateAction, useMemo, useState } from 'react'
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+} from 'react'
+import { updateKnowledgeGraph } from '@/app/classes/[className]/knowledge-graph/actions'
 
 const EditGraphActions = ({
+  className,
   setInEditMode,
   setInteractionProps,
-  initialReactFlowData,
+  currentReactFlowData,
   setReactFlowData,
 }: {
+  className: string
   setInEditMode: Dispatch<SetStateAction<boolean>>
   setInteractionProps: Dispatch<
     SetStateAction<{
@@ -27,7 +40,7 @@ const EditGraphActions = ({
       elementsSelectable: boolean
     }>
   >
-  initialReactFlowData: {
+  currentReactFlowData: {
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
   }
@@ -38,7 +51,13 @@ const EditGraphActions = ({
     }>
   >
 }) => {
-  const [oldReactFlowData, setOldReactFlowData] = useState(initialReactFlowData)
+  const updatedReactFlowData = useRef(currentReactFlowData)
+  const [oldReactFlowData, setOldReactFlowData] = useState(currentReactFlowData)
+
+  useEffect(() => {
+    updatedReactFlowData.current = currentReactFlowData
+  }, [currentReactFlowData])
+
   /**
    * ----------------------------------------------
    * Input states and functions
@@ -70,6 +89,7 @@ const EditGraphActions = ({
   }
 
   const handleExitWithoutSaving = () => {
+    console.log('Exiting without saving')
     setReactFlowData(oldReactFlowData)
     setInEditMode(false)
     setInteractionProps({
@@ -79,10 +99,25 @@ const EditGraphActions = ({
     })
     setOpenConfirmationDialog(false)
   }
+
+  const saveGraph = useCallback(async () => {
+    console.log('in save graph')
+    const { reactFlowNodes, reactFlowEdges } = updatedReactFlowData.current
+    console.log(reactFlowNodes)
+    console.log(reactFlowEdges)
+
+    const response = await updateKnowledgeGraph(className, {
+      reactFlowEdges: JSON.parse(JSON.stringify(reactFlowEdges)),
+      reactFlowNodes: JSON.parse(JSON.stringify(reactFlowNodes)),
+    })
+    if (response.success) alert('Graph saved successfully')
+    setOldReactFlowData(updatedReactFlowData.current)
+  }, [className])
+
   const editActions = useMemo(
     () => [
       { icon: <Add />, name: 'Add Node', onClick: handleOpenDialog },
-      { icon: <Save />, name: 'Save Changes', onClick: () => alert('will save graph later') },
+      { icon: <Save />, name: 'Save Changes', onClick: saveGraph },
       { icon: <ExitToApp />, name: 'Exit Edit Mode', onClick: exitEditMode },
     ],
     []
