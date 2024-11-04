@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/server'
 
 export const getClassData = async () => {
+  console.log('Getting class data')
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -12,7 +13,10 @@ export const getClassData = async () => {
     return []
   }
 
-  const {data:enrollments, error: enrollmentError} = await supabase.from('enrollments').select('class_id').eq('student_id', user.id)
+  const { data: enrollments, error: enrollmentError } = await supabase
+    .from('enrollments')
+    .select('class_id')
+    .eq('student_id', user.id)
 
   if (enrollmentError) {
     console.error('Error fetching class IDs: ', enrollmentError)
@@ -20,7 +24,7 @@ export const getClassData = async () => {
   }
 
   const enrolledClassIds = enrollments.map(enrollment => enrollment.class_id)
-  if (enrolledClassIds.length === 0){
+  if (enrolledClassIds.length === 0) {
     return []
   }
 
@@ -36,4 +40,3 @@ export const getClassData = async () => {
 
   return userClasses
 }
-
