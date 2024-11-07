@@ -3,7 +3,7 @@
 import { styled } from '@mui/material/styles'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import { Box, Toolbar, Typography, IconButton, Tooltip } from '@mui/material'
-import { Info, BugReport, Logout, Menu } from '@mui/icons-material'
+import { Info, Logout, Menu } from '@mui/icons-material'
 import { useRouter } from 'next/navigation'
 
 interface AppBarProps extends MuiAppBarProps {
@@ -73,18 +73,20 @@ const Navbar = ({
               },
             }}
           >
-            <Typography
-              variant="h5"
-              onClick={() => router.push('/classes')}
-              sx={{
-                '&:hover': {
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                },
-              }}
-            >
-              Codelingo
-            </Typography>
+            <Tooltip title="Home" arrow>
+              <Typography
+                variant="h5"
+                onClick={() => router.push('/classes')}
+                sx={{
+                  '&:hover': {
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                Codelingo
+              </Typography>
+            </Tooltip>
           </Box>
         </Box>
 
@@ -92,18 +94,6 @@ const Navbar = ({
           <Tooltip title="About" arrow>
             <IconButton sx={{ color: 'white' }} onClick={() => router.push('/about')}>
               <Info />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Report a Problem" arrow>
-            <IconButton
-              sx={{ color: 'white' }}
-              onClick={() =>
-                alert(
-                  "Report a problem page in development...I guess you can say that's a problem (sorry, I'll see myself out)"
-                )
-              }
-            >
-              <BugReport />
             </IconButton>
           </Tooltip>
           <Tooltip title="Sign Out" arrow>
