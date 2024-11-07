@@ -101,16 +101,15 @@ const EditGraphActions = ({
   }
 
   const saveGraph = useCallback(async () => {
-    console.log('in save graph')
     const { reactFlowNodes, reactFlowEdges } = updatedReactFlowData.current
-    console.log(reactFlowNodes)
-    console.log(reactFlowEdges)
 
     const response = await updateKnowledgeGraph(className, {
       reactFlowEdges: JSON.parse(JSON.stringify(reactFlowEdges)),
       reactFlowNodes: JSON.parse(JSON.stringify(reactFlowNodes)),
     })
+
     if (response.success) alert('Graph saved successfully')
+
     setOldReactFlowData(updatedReactFlowData.current)
   }, [className])
 

@@ -41,7 +41,6 @@ export const getKnowledgeGraphData = async (className: string) => {
   return { success: true, graphData }
 }
 
-// TODO: add server action for adding nodes and stuff
 export const updateKnowledgeGraph = async (
   className: string,
   {
@@ -52,8 +51,6 @@ export const updateKnowledgeGraph = async (
     reactFlowEdges: Edge[]
   }
 ) => {
-  console.log('in updateKnowledgeGraph')
-  // console.log(className)
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -71,11 +68,6 @@ export const updateKnowledgeGraph = async (
     .eq('name', cleanedClassName)
     .single()
 
-  // console.log('classID: ', classID?.class_id)
-
-  // console.log('reactFlowNodes: ', reactFlowNodes)
-  // console.log('reactFlowEdges: ', reactFlowEdges)
-
   if (error) {
     console.error('Error fetching class ID: ', error)
     return { success: false, error, graphData: null }
@@ -88,7 +80,6 @@ export const updateKnowledgeGraph = async (
     },
   ]
 
-  console.log('updatedGraphData nodes: ', updatedGraphData[0])
   const { error: updateError } = await supabase
     .from('class_knowledge_graph')
     .update({
