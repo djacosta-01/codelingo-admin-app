@@ -48,10 +48,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
   const [reactFlowData, setReactFlowData] = useState<{
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
-  }>({
-    reactFlowNodes: [],
-    reactFlowEdges: [],
-  })
+  } | null>(null)
   const [inEditMode, setInEditMode] = useState<boolean>(false)
   const [interactionProps, setInteractionProps] =
     useState<KnowledgeGraphInteractionProps>(intialInteractionProps)
@@ -106,25 +103,29 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
 
   return (
     <>
-      {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
+      {reactFlowData ? (
         <>
-          <ReactFlow
-            nodes={reactFlowData.reactFlowNodes}
-            edges={reactFlowData.reactFlowEdges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onConnectEnd={onConnectEnd}
-            nodeTypes={nodeTypes}
-            nodesDraggable={interactionProps.nodesDraggable}
-            nodesConnectable={interactionProps.nodesConnectable}
-            elementsSelectable={interactionProps.elementsSelectable}
-            colorMode="dark"
-            nodeOrigin={[0.5, 0]}
-            fitView
-          >
-            {inEditMode ? <Background gap={20} /> : ''}
-          </ReactFlow>
+          {reactFlowData.reactFlowNodes.length === 0 ? (
+            'No Graph Found'
+          ) : (
+            <ReactFlow
+              nodes={reactFlowData.reactFlowNodes}
+              edges={reactFlowData.reactFlowEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onConnectEnd={onConnectEnd}
+              nodeTypes={nodeTypes}
+              nodesDraggable={interactionProps.nodesDraggable}
+              nodesConnectable={interactionProps.nodesConnectable}
+              elementsSelectable={interactionProps.elementsSelectable}
+              colorMode="dark"
+              nodeOrigin={[0.5, 0]}
+              fitView
+            >
+              {inEditMode ? <Background gap={20} /> : ''}
+            </ReactFlow>
+          )}
         </>
       ) : (
         <KnowledgeGraphSkeleton />
@@ -138,7 +139,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           left: 65,
         }}
       >
-        {reactFlowData.reactFlowNodes.length !== 0 || reactFlowData.reactFlowEdges.length !== 0 ? (
+        {reactFlowData ? (
           <HelperCard />
         ) : (
           <Box id="button" sx={{ paddingTop: 1, paddingLeft: 1 }}>
@@ -155,7 +156,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
           position: 'fixed',
           bottom: 45,
           left: 80,
-          // right: 0,
         }}
       >
         {inEditMode ? (
@@ -166,8 +166,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
             currentReactFlowData={reactFlowData}
             setReactFlowData={setReactFlowData}
           />
-        ) : reactFlowData.reactFlowNodes.length !== 0 ||
-          reactFlowData.reactFlowEdges.length !== 0 ? (
+        ) : reactFlowData ? (
           <Button variant="contained" color="success" onClick={enterEditMode}>
             Edit Graph
           </Button>

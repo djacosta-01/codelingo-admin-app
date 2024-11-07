@@ -43,12 +43,12 @@ const EditGraphActions = ({
   currentReactFlowData: {
     reactFlowNodes: Node[]
     reactFlowEdges: Edge[]
-  }
+  } | null
   setReactFlowData: Dispatch<
     React.SetStateAction<{
       reactFlowNodes: Node[]
       reactFlowEdges: Edge[]
-    }>
+    } | null>
   >
 }) => {
   const updatedReactFlowData = useRef(currentReactFlowData)
@@ -101,7 +101,10 @@ const EditGraphActions = ({
   }
 
   const saveGraph = useCallback(async () => {
-    const { reactFlowNodes, reactFlowEdges } = updatedReactFlowData.current
+    const { reactFlowNodes, reactFlowEdges } = updatedReactFlowData.current || {
+      reactFlowNodes: [],
+      reactFlowEdges: [],
+    }
 
     const response = await updateKnowledgeGraph(className, {
       reactFlowEdges: JSON.parse(JSON.stringify(reactFlowEdges)),
