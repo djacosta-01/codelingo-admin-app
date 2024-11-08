@@ -77,11 +77,13 @@ const EditableNode = ({
         elevation={8}
         onClick={e => handleClick(e)}
         sx={{
+          padding: 1,
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '3em',
-          width: '10em',
+          minHeight: '3em',
+          minWidth: '10em',
           outline: 'solid 1px',
         }}
       >

@@ -20,7 +20,7 @@ const Register = () => {
 
     // checking if user signed up with LMU email
     const response = await signup(formData)
-    if (response.error) {
+    if (response?.error) {
       console.error(response.error)
       setRegistrationError(true)
     }
@@ -61,6 +61,7 @@ const Register = () => {
           }}
         >
           <TextField
+            required
             id="displayName"
             label="Display Name"
             name="displayName"

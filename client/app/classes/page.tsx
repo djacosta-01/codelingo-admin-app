@@ -12,7 +12,7 @@ import {
   TextField,
   Button,
 } from '@mui/material'
-import { AddCircleOutline } from '@mui/icons-material'
+import { AddCircleOutline, QrCode2 } from '@mui/icons-material'
 import { getClassData, createNewClass } from '@/app/classes/actions'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -24,6 +24,7 @@ const Classes = () => {
   const [newClassName, setNewClassName] = useState<string>('')
 
   const handleOpenAddClassDialog = () => setAddClassDialogOpen(true)
+
   const handleCloseAddClassDialog = () => setAddClassDialogOpen(false)
   const handleCancelAddClass = () => {
     setNewClassName('')
@@ -53,6 +54,7 @@ const Classes = () => {
     setAddClassDialogOpen(false)
     alert('Class created successfully!')
   }
+
   const router = useRouter()
 
   useEffect(() => {
@@ -90,8 +92,9 @@ const Classes = () => {
               }}
               sx={{
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 width: '15em',
                 height: '10em',
                 margin: 3,

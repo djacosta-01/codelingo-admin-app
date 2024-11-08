@@ -30,7 +30,6 @@ const LessonDataGrid = ({
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const [rows, setRows] = useState<GridRowsProp>([])
-
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState<boolean>(false)
   const [lessonId, setLessonId] = useState<number | null>(null)
 
@@ -146,7 +145,7 @@ const LessonDataGrid = ({
             onRowClick={routeToLesson}
             disableColumnSelector
             ignoreDiacritics
-            getRowClassName={() => 'custom-row'} // Add custom class to rows
+            getRowClassName={() => 'custom-row'}
             slots={{ toolbar: GridToolbar }}
             slotProps={{
               toolbar: {
@@ -155,7 +154,7 @@ const LessonDataGrid = ({
             }}
             sx={{
               '& .custom-row:hover': {
-                cursor: 'pointer', // Change cursor to pointer on hover
+                cursor: 'pointer',
               },
             }}
           />
