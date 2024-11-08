@@ -75,5 +75,27 @@ export const createNewClass = async (newClassName: string) => {
     return { success: false, error: professorCoursesError.message }
   }
 
+  // each class needs its own knowledge graph
+  const initialNode = {
+    id: '1',
+    data: { label: 'Initial Node' },
+    type: 'editableNode',
+    position: { x: 150, y: 150 },
+  }
+
+  const { error: knowledgeGraphError } = await supabase.from('class_knowledge_graph').insert([
+    {
+      class_id: classID,
+      nodes: [initialNode.data.label],
+      edges: [],
+      react_flow_data: [{ reactFlowNodes: [initialNode], reactFlowEdges: [] }],
+    },
+  ])
+
+  if (knowledgeGraphError) {
+    console.error('Error creating knowledge graph entry: ', knowledgeGraphError)
+    return { success: false, error: knowledgeGraphError.message }
+  }
+
   return { success: true }
 }
