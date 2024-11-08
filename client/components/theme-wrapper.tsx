@@ -4,9 +4,16 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { Box, IconButton, Tooltip } from '@mui/material'
 import { LightMode, DarkMode } from '@mui/icons-material'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { ViewModeContext } from '@/components/contexts/viewmode-context'
 
-const ToggleTheme = ({ mode, toggleMode }: { mode: 'light' | 'dark'; toggleMode: () => void }) => {
+const ToggleThemeButton = ({
+  mode,
+  toggleMode,
+}: {
+  mode: 'light' | 'dark'
+  toggleMode: () => void
+}) => {
   return (
     <Box
       id="mode-toggler"
@@ -29,9 +36,14 @@ const ToggleTheme = ({ mode, toggleMode }: { mode: 'light' | 'dark'; toggleMode:
 
 const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   const [mode, setMode] = useState<'light' | 'dark'>('dark')
+  const { settings, dispatch } = useContext(ViewModeContext)
 
   const toggleMode = () => {
     setMode(prevMode => (prevMode === 'light' ? 'dark' : 'light'))
+    dispatch({
+      field: 'viewMode',
+      value: mode === 'light' ? 'dark' : 'light',
+    })
   }
 
   const theme = createTheme({
@@ -43,7 +55,7 @@ const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <ToggleTheme mode={mode} toggleMode={toggleMode} />
+      <ToggleThemeButton mode={mode} toggleMode={toggleMode} />
       {children}
     </ThemeProvider>
   )

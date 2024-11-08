@@ -11,7 +11,7 @@ import {
   ReactFlowProvider,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   useOnNodesChange,
   useOnEdgesChange,
@@ -24,6 +24,7 @@ import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import EditGraphActions from '@/app/classes/[className]/knowledge-graph/edit-graph-actions'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
+import { ViewModeContext } from '@/components/contexts/viewmode-context'
 
 const nodeTypes = { editableNode: EditableNode }
 
@@ -42,6 +43,7 @@ const intialInteractionProps: KnowledgeGraphInteractionProps = {
 const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
+  const { settings, dispatch } = useContext(ViewModeContext)
 
   // I plan to use this state to show a warning message when a cycle is detected
   // const [hasCycle, setHasCycle] = useState<boolean>(false)
@@ -128,7 +130,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
               nodesDraggable={interactionProps.nodesDraggable}
               nodesConnectable={interactionProps.nodesConnectable}
               elementsSelectable={interactionProps.elementsSelectable}
-              colorMode="dark"
+              colorMode={settings.viewMode}
               nodeOrigin={[0.5, 0]}
               fitView
             >

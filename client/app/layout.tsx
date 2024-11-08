@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 // import './globals.css'
 import ThemeWrapper from '@/components/theme-wrapper'
+import { ViewModeProvider } from '@/components/contexts/viewmode-context'
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeWrapper>{children}</ThemeWrapper>
+        <ViewModeProvider>
+          <ThemeWrapper>{children}</ThemeWrapper>
+        </ViewModeProvider>
       </body>
     </html>
   )
