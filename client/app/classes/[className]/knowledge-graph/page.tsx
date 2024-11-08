@@ -106,7 +106,16 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
       {reactFlowData ? (
         <>
           {reactFlowData.reactFlowNodes.length === 0 ? (
-            'No Graph Found'
+            <Box
+              sx={{
+                height: '80vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <h1>No graph found</h1>
+            </Box>
           ) : (
             <ReactFlow
               nodes={reactFlowData.reactFlowNodes}
