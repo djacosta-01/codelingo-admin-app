@@ -16,7 +16,6 @@ export const getLessonQuestions = async (
     answer: string | null
   }[]
 > => {
-  // console.log('HEREHREHREHR')
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -26,6 +25,7 @@ export const getLessonQuestions = async (
     console.error('No user found')
     return []
   }
+
   // TODO: like it was stated in other functions, make a class_slug column so we don't have to clean the class name
   // SAME goes for the lesson name
   const cleanedClassName = className.replace(/%20/g, ' ')

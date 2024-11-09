@@ -88,6 +88,7 @@ const QuestionDataGrid = ({
           col4: answer,
         })
       )
+      console.log(tableRows)
       setRows(tableRows)
       setDataLoading(false)
     }
