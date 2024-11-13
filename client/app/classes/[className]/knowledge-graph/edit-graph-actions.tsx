@@ -101,6 +101,7 @@ const EditGraphActions = ({
   }
 
   const saveGraph = useCallback(async () => {
+    // TODO: need to also update nodes and edges in the database
     const { reactFlowNodes, reactFlowEdges } = updatedReactFlowData.current || {
       reactFlowNodes: [],
       reactFlowEdges: [],
