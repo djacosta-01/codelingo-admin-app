@@ -163,7 +163,8 @@ const EditGraphActions = ({
       </Dialog>
 
       <Dialog open={openConfirmationDialog} onClose={() => setOpenConfirmationDialog(false)}>
-        <DialogTitle>Exit without saving?</DialogTitle>
+        <DialogTitle>Finished Editing?</DialogTitle>
+        <DialogContent>{`Don't forget to save changes before exiting!`}</DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirmationDialog(false)}>No</Button>
           <Button color="error" onClick={handleExitWithoutSaving}>
