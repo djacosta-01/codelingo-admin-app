@@ -89,7 +89,6 @@ const EditGraphActions = ({
   }
 
   const handleExitWithoutSaving = () => {
-    console.log('Exiting without saving')
     setReactFlowData(oldReactFlowData)
     setInEditMode(false)
     setInteractionProps({
@@ -136,7 +135,7 @@ const EditGraphActions = ({
     <>
       <SpeedDial ariaLabel="Graph Edit Actions" icon={<Edit />} direction="right">
         {editActions.map(({ icon, name, onClick }, index) => (
-          <SpeedDialAction key={index} icon={icon} tooltipTitle={name} onClick={onClick} />
+          <SpeedDialAction key={index} icon={icon} tooltipTitle={name} arrow onClick={onClick} />
         ))}
       </SpeedDial>
       <Dialog

@@ -103,8 +103,6 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
     fetchClassGraphData()
   }, [className])
 
-  // console.log('reactFlowData', reactFlowData)
-
   return (
     <>
       {reactFlowData ? (

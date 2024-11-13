@@ -69,38 +69,44 @@ export const useOnConnect = ({ setReactFlowData, setEdges }) => {
 }
 
 // TODO: instead of this stupid id generator, take the max ID from the react flow data and increment it by 1
-let id = 4
-const getId = () => `${id++}`
+
 export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setReactFlowData) => {
   /* https://reactflow.dev/examples/nodes/add-node-on-edge-drop */
   const onConnectEnd = useCallback(
     (event, connectionState) => {
-      console.log('in onConnectEnd')
       // when a connection is dropped on the pane it's not valid
       if (!connectionState.isValid) {
         // we need to remove the wrapper bounds, in order to get the correct position
-        const id = getId()
         const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
-        const newNode = {
-          id,
-          type: 'editableNode',
-          position: screenToFlowPosition({
-            x: clientX,
-            y: clientY,
-          }),
-          data: { label: `New Node`, setReactFlowData },
-          origin: [0.5, 0.0],
-        }
 
-        setNodes(nds => [...nds, newNode.id])
-        setEdges(eds => [...eds, [connectionState.fromNode.id, id]])
+        // TODO: update nodes and edges states in backend
+        // setNodes(nds => [...nds, newNode.id])
+        // setEdges(eds => [...eds, [connectionState.fromNode.id, id]])
         setReactFlowData(prev => {
+          const id = `${Math.max(...prev.reactFlowNodes.map(node => parseInt(node.id))) + 1}`
           return {
             ...prev,
-            reactFlowNodes: [...prev.reactFlowNodes, newNode],
+            reactFlowNodes: [
+              ...prev.reactFlowNodes,
+              {
+                id,
+                type: 'editableNode',
+                position: screenToFlowPosition({
+                  x: clientX,
+                  y: clientY,
+                }),
+                data: { label: `New Node`, setReactFlowData },
+                origin: [0.5, 0.0],
+              },
+            ],
             reactFlowEdges: [
               ...prev.reactFlowEdges,
-              { id, source: connectionState.fromNode.id, target: id, animated: true },
+              {
+                id,
+                source: connectionState.fromNode.id,
+                target: id,
+                animated: true,
+              },
             ],
           }
         })
