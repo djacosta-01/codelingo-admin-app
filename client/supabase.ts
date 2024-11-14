@@ -1,12 +1,31 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       class_knowledge_graph: {
@@ -33,12 +52,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "class_knowledge_graph_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'class_knowledge_graph_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: true
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
-          },
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          }
         ]
       }
       class_lesson_bank: {
@@ -59,26 +78,26 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "class_lesson_bank_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'class_lesson_bank_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
           },
           {
-            foreignKeyName: "class_lesson_bank_lesson_id_fkey"
-            columns: ["lesson_id"]
+            foreignKeyName: 'class_lesson_bank_lesson_id_fkey'
+            columns: ['lesson_id']
             isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["lesson_id"]
+            referencedRelation: 'lessons'
+            referencedColumns: ['lesson_id']
           },
           {
-            foreignKeyName: "class_lesson_bank_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'class_lesson_bank_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "professors"
-            referencedColumns: ["professor_id"]
-          },
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          }
         ]
       }
       class_question_bank: {
@@ -99,26 +118,26 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "class_question_bank_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'class_question_bank_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
           },
           {
-            foreignKeyName: "class_question_bank_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'class_question_bank_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "professors"
-            referencedColumns: ["professor_id"]
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
           },
           {
-            foreignKeyName: "class_question_bank_question_id_fkey"
-            columns: ["question_id"]
+            foreignKeyName: 'class_question_bank_question_id_fkey'
+            columns: ['question_id']
             isOneToOne: false
-            referencedRelation: "questions"
-            referencedColumns: ["question_id"]
-          },
+            referencedRelation: 'questions'
+            referencedColumns: ['question_id']
+          }
         ]
       }
       classes: {
@@ -145,31 +164,31 @@ export type Database = {
       enrollments: {
         Row: {
           class_id: number
-          student_id: number
+          student_id: string
         }
         Insert: {
           class_id: number
-          student_id: number
+          student_id: string
         }
         Update: {
           class_id?: number
-          student_id?: number
+          student_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "enrollments_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'enrollments_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
           },
           {
-            foreignKeyName: "enrollments_student_id_fkey"
-            columns: ["student_id"]
+            foreignKeyName: 'enrollments_student_id_fkey'
+            columns: ['student_id']
             isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["student_id"]
-          },
+            referencedRelation: 'students'
+            referencedColumns: ['student_id']
+          }
         ]
       }
       lesson_question_bank: {
@@ -190,26 +209,26 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "lesson_question_bank_lesson_id_fkey"
-            columns: ["lesson_id"]
+            foreignKeyName: 'lesson_question_bank_lesson_id_fkey'
+            columns: ['lesson_id']
             isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["lesson_id"]
+            referencedRelation: 'lessons'
+            referencedColumns: ['lesson_id']
           },
           {
-            foreignKeyName: "lesson_question_bank_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'lesson_question_bank_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "professors"
-            referencedColumns: ["professor_id"]
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
           },
           {
-            foreignKeyName: "lesson_question_bank_question_id_fkey"
-            columns: ["question_id"]
+            foreignKeyName: 'lesson_question_bank_question_id_fkey'
+            columns: ['question_id']
             isOneToOne: false
-            referencedRelation: "questions"
-            referencedColumns: ["question_id"]
-          },
+            referencedRelation: 'questions'
+            referencedColumns: ['question_id']
+          }
         ]
       }
       lessons: {
@@ -248,19 +267,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "professor_courses_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'professor_courses_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
           },
           {
-            foreignKeyName: "professor_courses_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'professor_courses_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "professors"
-            referencedColumns: ["professor_id"]
-          },
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          }
         ]
       }
       professors: {
@@ -276,15 +295,7 @@ export type Database = {
           name?: string | null
           professor_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "professors_professor_id_fkey"
-            columns: ["professor_id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       questions: {
         Row: {
@@ -323,7 +334,7 @@ export type Database = {
           graph_id: number
           nodes: string[] | null
           react_flow_data: Json[] | null
-          student_id: number | null
+          student_id: string | null
         }
         Insert: {
           class_id?: number | null
@@ -331,7 +342,7 @@ export type Database = {
           graph_id?: never
           nodes?: string[] | null
           react_flow_data?: Json[] | null
-          student_id?: number | null
+          student_id?: string | null
         }
         Update: {
           class_id?: number | null
@@ -339,37 +350,37 @@ export type Database = {
           graph_id?: never
           nodes?: string[] | null
           react_flow_data?: Json[] | null
-          student_id?: number | null
+          student_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "student_knowledge_graph_class_id_fkey"
-            columns: ["class_id"]
+            foreignKeyName: 'student_knowledge_graph_class_id_fkey'
+            columns: ['class_id']
             isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["class_id"]
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
           },
           {
-            foreignKeyName: "student_knowledge_graph_student_id_fkey"
-            columns: ["student_id"]
+            foreignKeyName: 'student_knowledge_graph_student_id_fkey'
+            columns: ['student_id']
             isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["student_id"]
-          },
+            referencedRelation: 'students'
+            referencedColumns: ['student_id']
+          }
         ]
       }
       students: {
         Row: {
           name: string | null
-          student_id: number
+          student_id: string
         }
         Insert: {
           name?: string | null
-          student_id?: never
+          student_id: string
         }
         Update: {
           name?: string | null
-          student_id?: never
+          student_id?: string
         }
         Relationships: []
       }
@@ -389,84 +400,91 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, 'public'>]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+        Database[PublicTableNameOrOptions['schema']]['Views'])
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+  ? (PublicSchema['Tables'] & PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
+  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
-    | { schema: keyof Database },
+  PublicTableNameOrOptions extends keyof PublicSchema['Tables'] | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
-    | { schema: keyof Database },
+  PublicEnumNameOrOptions extends keyof PublicSchema['Enums'] | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+    : never = never
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
+  ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+  : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema['CompositeTypes']
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
+  ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  : never
