@@ -33,6 +33,20 @@ export default function Login() {
     setOpen(false)
   }
 
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData()
+    formData.append('email', email)
+    formData.append('password', password)
+
+    const response = await login(formData)
+
+    if (response?.error) {
+      alert(response.error)
+      return
+    }
+  }
+
   return (
     <Box
       className="login-container"
@@ -46,7 +60,7 @@ export default function Login() {
       }}
     >
       <Image src={logoImage} alt="CodeLingo" width="200" height="200" />
-      <form>
+      <form onSubmit={handleLogin}>
         <Box
           id="form-container"
           sx={{
@@ -88,7 +102,7 @@ export default function Login() {
             }}
           />
           <Box>
-            <Button variant="contained" formAction={login} type="submit">
+            <Button variant="contained" type="submit">
               Log In
             </Button>
           </Box>

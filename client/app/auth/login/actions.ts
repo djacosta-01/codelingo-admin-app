@@ -19,18 +19,21 @@ export async function login(formData: FormData) {
 
   if (error) {
     // console.error(error)
-    redirect('/error')
+    return { error: 'Invalid email or password' }
   }
 
+  // TODO: DONT FORGET TO REMOVE THIS ONCE THE APP IS READY FOR PRODUCTION
+  const developmentAccount = data.email.trim() === process.env.NEXT_DEVELOPMENT_ACCOUNT!
+
+  const isProfessor = data.email.trim().endsWith('@lmu.edu') || developmentAccount
+
   revalidatePath('/', 'layout')
-  redirect('/classes')
+
+  isProfessor ? redirect('/classes') : redirect('/student')
+  // redirect('/classes')
 }
 
 export async function signup(formData: FormData) {
-  /**
-   * Currently only students can sign up. Need to add a way to differentiate between
-   * professor and student sign ups
-   */
   const supabase = createClient()
 
   // type-casting here for convenience
@@ -42,7 +45,7 @@ export async function signup(formData: FormData) {
   }
 
   // using student email for now for testing purposes
-  if (!data.email.includes('@lion.lmu.edu')) {
+  if (!data.email.trim().endsWith('@lion.lmu.edu')) {
     return { error: 'Invalid email. Please use your LMU email.' }
   }
 
