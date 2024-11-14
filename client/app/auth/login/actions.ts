@@ -44,8 +44,11 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  // using student email for now for testing purposes
-  if (!data.email.trim().endsWith('@lion.lmu.edu')) {
+  const isProfessorEmail = data.email.trim().endsWith('@lmu.edu')
+  const isStudentEmail = data.email.trim().endsWith('@lion.lmu.edu')
+
+  if (!isProfessorEmail && !isStudentEmail) {
+    console.error('Invalid email')
     return { error: 'Invalid email. Please use your LMU email.' }
   }
 
@@ -61,9 +64,28 @@ export async function signup(formData: FormData) {
 
   if (error) {
     console.error(error)
-    redirect('/error')
+    return { error: `Error signing up: ${error.message}` }
+  }
+
+  const { data: userData, error: userFetchError } = await supabase.auth.getUser()
+
+  if (userFetchError) {
+    console.error(userFetchError)
+    return { error: `Error signing up: ${userFetchError.message}` }
+  }
+
+  const userID = userData.user.id
+
+  // add users to the appropriate table
+  const { error: insertError } = isProfessorEmail
+    ? await supabase.from('professors').insert([{ professor_id: userID }])
+    : await supabase.from('students').insert([{ student_id: userID }])
+
+  if (insertError) {
+    console.error(insertError)
+    return { error: `Error signing up: ${insertError.message}` }
   }
 
   revalidatePath('/', 'layout')
-  redirect('/classes')
+  isProfessorEmail ? redirect('/classes') : redirect('/student')
 }
