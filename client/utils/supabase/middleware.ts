@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { Database } from '@/supabase'
 
 export async function updateSession(request: NextRequest) {
   // console.log('in the supabase middleware')
@@ -8,7 +9,7 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -37,13 +38,22 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && request.nextUrl.pathname !== '/') {
-    // no user and they wants to register
-    const registerURL = request.url.includes('/register')
-    if (registerURL) return supabaseResponse
+  console.log('\nin middleware')
+  console.log('requested url: ', request.nextUrl.pathname)
 
+  if (!user && request.nextUrl.pathname !== '/') {
     const url = request.nextUrl.clone()
+
+    // no user and they wants to register
+    const registerURL = request.nextUrl.pathname === '/register'
+    if (registerURL) {
+      console.log('redirecting to: ', url.pathname)
+      return NextResponse.next()
+    }
+
+    // no user and they wants to login
     url.pathname = '/'
+    console.log('redirecting to: ', url.pathname)
     return NextResponse.redirect(url)
   }
 
