@@ -38,6 +38,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const studentRoute = request.nextUrl.pathname === '/student'
   console.log('\nin middleware')
   console.log('requested url: ', request.nextUrl.pathname)
 
@@ -55,6 +56,28 @@ export async function updateSession(request: NextRequest) {
     url.pathname = '/'
     console.log('redirecting to: ', url.pathname)
     return NextResponse.redirect(url)
+  }
+  // user signed in, but they want to go to login or register page
+  else if (user && (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/register')) {
+    const url = request.nextUrl.clone()
+    url.pathname = studentRoute ? '/student' : '/classes'
+    console.log('redirecting to: ', url.pathname)
+    return NextResponse.redirect(url)
+  } else if (user && studentRoute) {
+    // user is a professor and they want to go to a student page
+    const { data: studentData } = await supabase
+      .from('students')
+      .select('student_id')
+      .eq('student_id', user.id)
+      .single()
+
+    if (!studentData) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/unauthorized'
+      console.log('redirecting to: ', url.pathname)
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next()
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
