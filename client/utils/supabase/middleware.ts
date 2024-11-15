@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Database } from '@/supabase'
 
 export async function updateSession(request: NextRequest) {
-  // console.log('in the supabase middleware')
-  // console.log(request)
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -39,8 +37,6 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const studentRoute = request.nextUrl.pathname === '/student'
-  console.log('\nin middleware')
-  console.log('requested url: ', request.nextUrl.pathname)
 
   if (!user && request.nextUrl.pathname !== '/') {
     const url = request.nextUrl.clone()
@@ -48,20 +44,17 @@ export async function updateSession(request: NextRequest) {
     // no user and they wants to register
     const registerURL = request.nextUrl.pathname === '/register'
     if (registerURL) {
-      console.log('redirecting to: ', url.pathname)
       return NextResponse.next()
     }
 
     // no user and they wants to login
     url.pathname = '/'
-    console.log('redirecting to: ', url.pathname)
     return NextResponse.redirect(url)
   }
   // user signed in, but they want to go to login or register page
   else if (user && (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/register')) {
     const url = request.nextUrl.clone()
     url.pathname = studentRoute ? '/student' : '/classes'
-    console.log('redirecting to: ', url.pathname)
     return NextResponse.redirect(url)
   } else if (user && studentRoute) {
     // user is a professor and they want to go to a student page
@@ -74,7 +67,6 @@ export async function updateSession(request: NextRequest) {
     if (!studentData) {
       const url = request.nextUrl.clone()
       url.pathname = '/unauthorized'
-      console.log('redirecting to: ', url.pathname)
       return NextResponse.redirect(url)
     }
     return NextResponse.next()
