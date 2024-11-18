@@ -38,9 +38,16 @@ const Classes = () => {
         justifyContent: 'flex-start',
       }}
     >
-      {classes?.map(({ name, description, section_number }, index) => (
-        <Box key={index} sx={{ minWidth: '50%' }}>
-          <Paper>
+      {classes?.map(({ class_id, name, description, section_number }, index) => (
+        <Box 
+          key={index} 
+          sx={{ minWidth: '50%' }}>
+          <Paper
+            onClick={() => {
+              router.push(`/student/${class_id}/lessons`)
+            }}
+            sx={{ cursor: 'pointer', p: 2 }}
+          >
             {name}: {section_number}
             <h3>
               <i>{description}</i>
