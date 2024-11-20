@@ -27,7 +27,7 @@ export const getLessonData = async (class_id: number): Promise<Lesson[]> => {
     console.error('No user found')
     return []
   }
-  console.log('user', user)
+  // console.log('user', user)
 
   const { data: enrollments, error: enrollmentError } = await supabase
     .from('enrollments')
@@ -47,7 +47,7 @@ export const getLessonData = async (class_id: number): Promise<Lesson[]> => {
     .select('lesson_id')
     .eq('class_id', class_id)
 
-  console.log('classLessons', classLessons)
+  // console.log('classLessons', classLessons)
   if (lessonsIdError) {
     console.error('Error fetching lesson IDs:', lessonsIdError)
     return []
@@ -70,7 +70,7 @@ export const getLessonData = async (class_id: number): Promise<Lesson[]> => {
     return []
   }
 
-  console.log("What is", lessonData)
+  // console.log("What is", lessonData)
 
 return lessonData
 }
