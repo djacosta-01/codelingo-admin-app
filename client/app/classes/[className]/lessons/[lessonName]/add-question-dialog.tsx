@@ -45,7 +45,7 @@ const AddQuestionDialog = ({
   const [questionId, setQuestionId] = useState<number>(-1)
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
-  const [options, setOptions] = useState({ option1: '', option2: '', option3: '', option4: '' })
+  const [options, setOptions] = useState({ option1: '', option2: '' })
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
   const [correctAnswer, setCorrectAnswer] = useState<string>('')
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
@@ -63,8 +63,8 @@ const AddQuestionDialog = ({
         ...prev,
         option1: answerOptions[0],
         option2: answerOptions[1],
-        option3: answerOptions[2],
-        option4: answerOptions[3],
+        // option3: answerOptions[2],
+        // option4: answerOptions[3],
       }))
       setCorrectAnswer(answer)
       setButtonOperation('Update Question')
@@ -73,10 +73,15 @@ const AddQuestionDialog = ({
 
   const handleDialogClose = () => {
     setOpen(false)
+
     // reset form values
     setQuestionType('')
     setQuestionPrompt('')
-    setOptions({ option1: '', option2: '', option3: '', option4: '' })
+    setOptions({
+      option1: '',
+      option2: '',
+      // option3: '', option4: ''
+    })
     setCorrectAnswer('')
     setTopicsCovered([])
     setButtonOperation('Add Question')
@@ -163,52 +168,37 @@ const AddQuestionDialog = ({
               width: '25%',
             }}
           >
-            <TextField
-              required
-              label="Option 1"
-              name="option1"
-              variant="standard"
-              value={options.option1}
-              onChange={handleOptionInput}
-              sx={{
-                flexBasis: 'calc(50% - 12px)',
-              }}
-            />
-            <TextField
-              required
-              label="Option 2"
-              name="option2"
-              variant="standard"
-              value={options.option2}
-              onChange={handleOptionInput}
-              sx={{
-                flexBasis: 'calc(50% - 12px)',
-              }}
-            />
-            <TextField
-              required
-              label="Option 3"
-              name="option3"
-              variant="standard"
-              value={options.option3}
-              onChange={handleOptionInput}
-              sx={{
-                flexBasis: 'calc(50% - 12px)',
-              }}
-            />
-            <TextField
-              required
-              label="Option 4"
-              name="option4"
-              variant="standard"
-              value={options.option4}
-              onChange={handleOptionInput}
-              sx={{
-                flexBasis: 'calc(50% - 12px)',
-              }}
-            />
+            {Object.values(options).map((option, index) => {
+              // console.log(`option --> ${option}`)
+              return (
+                <TextField
+                  key={index}
+                  required
+                  label={`Option ${index + 1}`}
+                  name={`option${index + 1}`}
+                  variant="standard"
+                  value={option}
+                  onChange={handleOptionInput}
+                  sx={{
+                    flexBasis: 'calc(50% - 12px)',
+                  }}
+                />
+              )
+            })}
           </Box>
-
+          <Box id="add-new-question-button">
+            <Button
+              variant="contained"
+              disabled={Object.values(options).length === 10}
+              onClick={() =>
+                setOptions(prev => {
+                  return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+                })
+              }
+            >
+              add new textbox
+            </Button>
+          </Box>
           <FormControl>
             <InputLabel id="correct-answer">Correct Answer</InputLabel>
             <Select
