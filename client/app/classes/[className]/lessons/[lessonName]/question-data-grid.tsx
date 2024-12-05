@@ -76,7 +76,6 @@ const QuestionDataGrid = ({
 
   useEffect(() => {
     const fetchLessonQuestions = async () => {
-      console.log('fetching lesson questions')
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
         ({ question_id, prompt, snippet, topics, answer_options, answer }) => ({
@@ -88,7 +87,6 @@ const QuestionDataGrid = ({
           col4: answer,
         })
       )
-      console.log(tableRows)
       setRows(tableRows)
       setDataLoading(false)
     }

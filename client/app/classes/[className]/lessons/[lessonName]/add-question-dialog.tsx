@@ -55,16 +55,22 @@ const AddQuestionDialog = ({
   useEffect(() => {
     if (prevQuestionData) {
       const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
+
       setQuestionId(questionId ?? -1)
       setQuestionType(questionType)
       setQuestionPrompt(prompt)
       setTopicsCovered(topics)
+
+      const prevAnswerOptions = answerOptions.reduce(
+        (acc: Record<string, string>, option, index) => {
+          acc[`option${index + 1}`] = option
+          return acc
+        },
+        {}
+      )
       setOptions(prev => ({
         ...prev,
-        option1: answerOptions[0],
-        option2: answerOptions[1],
-        // option3: answerOptions[2],
-        // option4: answerOptions[3],
+        ...prevAnswerOptions,
       }))
       setCorrectAnswer(answer)
       setButtonOperation('Update Question')
@@ -80,7 +86,6 @@ const AddQuestionDialog = ({
     setOptions({
       option1: '',
       option2: '',
-      // option3: '', option4: ''
     })
     setCorrectAnswer('')
     setTopicsCovered([])
@@ -169,7 +174,6 @@ const AddQuestionDialog = ({
             }}
           >
             {Object.values(options).map((option, index) => {
-              // console.log(`option --> ${option}`)
               return (
                 <TextField
                   key={index}
