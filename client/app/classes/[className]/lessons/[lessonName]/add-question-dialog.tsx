@@ -45,7 +45,7 @@ const AddQuestionDialog = ({
   const [questionId, setQuestionId] = useState<number>(-1)
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
-  const [options, setOptions] = useState({ option1: '', option2: '' })
+  const [options, setOptions] = useState<{ [key: string]: string }>({ option1: '', option2: '' })
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
   const [correctAnswer, setCorrectAnswer] = useState<string>('')
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
@@ -61,13 +61,8 @@ const AddQuestionDialog = ({
       setQuestionPrompt(prompt)
       setTopicsCovered(topics)
 
-      const prevAnswerOptions = answerOptions.reduce(
-        (acc: Record<string, string>, option, index) => {
-          acc[`option${index + 1}`] = option
-          return acc
-        },
-        {}
-      )
+      const prevAnswerOptions = convertToObject(answerOptions)
+
       setOptions(prev => ({
         ...prev,
         ...prevAnswerOptions,
@@ -76,6 +71,13 @@ const AddQuestionDialog = ({
       setButtonOperation('Update Question')
     }
   }, [open, prevQuestionData])
+
+  const convertToObject = (values: string[]) => {
+    return values.reduce((acc: Record<string, string>, option, index) => {
+      acc[`option${index + 1}`] = option
+      return acc
+    }, {})
+  }
 
   const handleDialogClose = () => {
     setOpen(false)
@@ -99,6 +101,16 @@ const AddQuestionDialog = ({
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
     setCorrectAnswer(e.target.value)
+  }
+
+  const deleteAnswerFromForm = (key: string) => {
+    const mapping = new Map(Object.entries(options))
+    mapping.delete(key)
+
+    // necessary to keep state updates in sync (specifically textfield onChange)
+    const values = Object.values(Object.fromEntries(mapping))
+    const updatedOptions = convertToObject(values)
+    setOptions(updatedOptions)
   }
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -174,19 +186,28 @@ const AddQuestionDialog = ({
             }}
           >
             {Object.values(options).map((option, index) => {
+              const optionKey = `option${index + 1}`
               return (
-                <TextField
-                  key={index}
-                  required
-                  label={`Option ${index + 1}`}
-                  name={`option${index + 1}`}
-                  variant="standard"
-                  value={option}
-                  onChange={handleOptionInput}
-                  sx={{
-                    flexBasis: 'calc(50% - 12px)',
-                  }}
-                />
+                <Box key={index}>
+                  <TextField
+                    required
+                    label={`Option ${index + 1}`}
+                    name={optionKey}
+                    variant="standard"
+                    value={option}
+                    onChange={handleOptionInput}
+                    sx={{
+                      flexBasis: 'calc(50% - 12px)',
+                    }}
+                  />
+                  <Button
+                    disabled={Object.values(options).length === 2}
+                    color="error"
+                    onClick={() => deleteAnswerFromForm(optionKey)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
               )
             })}
           </Box>
@@ -200,7 +221,7 @@ const AddQuestionDialog = ({
                 })
               }
             >
-              add new textbox
+              Add Option
             </Button>
           </Box>
           <FormControl>
@@ -211,7 +232,7 @@ const AddQuestionDialog = ({
               label="Correct Answer"
               variant="standard"
               sx={{ width: '15em' }}
-              value={correctAnswer}
+              value={Object.values(options).includes(correctAnswer) ? correctAnswer : ''}
               onChange={handleCorrectAnswerSelect}
             >
               {Object.values(options).map((option, index) => (
