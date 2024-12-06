@@ -16,8 +16,10 @@ import {
   FormControl,
   Alert,
   Fade,
+  Icon,
+  Tooltip,
 } from '@mui/material'
-import { Close } from '@mui/icons-material'
+import { Close, RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import {
   insertQuestion,
@@ -96,7 +98,8 @@ const AddQuestionDialog = ({
   }
 
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOptions({ ...options, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setOptions({ ...options, [name]: value })
   }
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
@@ -136,6 +139,9 @@ const AddQuestionDialog = ({
 
     if (response.success) {
       handleDialogClose()
+    } else if (response.error === 'Duplicate answer options found') {
+      alert(response.error)
+      return
     }
     setAlertOpen(true)
   }
@@ -188,7 +194,7 @@ const AddQuestionDialog = ({
             {Object.values(options).map((option, index) => {
               const optionKey = `option${index + 1}`
               return (
-                <Box key={index}>
+                <Box key={index} sx={{ display: 'flex' }}>
                   <TextField
                     required
                     label={`Option ${index + 1}`}
@@ -200,13 +206,15 @@ const AddQuestionDialog = ({
                       flexBasis: 'calc(50% - 12px)',
                     }}
                   />
-                  <Button
-                    disabled={Object.values(options).length === 2}
-                    color="error"
-                    onClick={() => deleteAnswerFromForm(optionKey)}
-                  >
-                    Delete
-                  </Button>
+                  <Tooltip title="Remove Option" arrow>
+                    <IconButton
+                      disabled={Object.values(options).length === 2}
+                      color="error"
+                      onClick={() => deleteAnswerFromForm(optionKey)}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               )
             })}

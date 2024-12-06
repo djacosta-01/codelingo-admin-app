@@ -72,6 +72,12 @@ export async function insertQuestion(
   lessonName: string,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
+  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
+  if (hasDuplicates) {
+    console.error('Duplicate answer options found')
+    return { success: false, error: 'Duplicate answer options found' }
+  }
+
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -135,6 +141,8 @@ export async function insertQuestion(
     return { success: false, error: lessonQuestionBankError }
   }
 
+  // TODO: need to add question to class_question_bank table as well
+
   return { success: true }
 }
 
@@ -142,6 +150,12 @@ export async function updateQuestion(
   id: number,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
+  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
+  if (hasDuplicates) {
+    console.error('Duplicate answer options found')
+    return { success: false, error: 'Duplicate answer options found' }
+  }
+
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -191,4 +205,20 @@ export async function deleteQuestion(id: number) {
   }
 
   return { success: true }
+}
+
+// ------------------
+// Helper Functions
+// ------------------
+
+const checkAnswersForDuplicates = (answerOptions: string[]) => {
+  const seen = new Set()
+  for (const option of answerOptions) {
+    const trimmedOption = option.trim()
+    if (seen.has(trimmedOption)) {
+      return true
+    }
+    seen.add(trimmedOption)
+  }
+  return false
 }
