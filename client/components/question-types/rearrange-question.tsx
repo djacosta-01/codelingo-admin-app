@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Menu, MenuItem, Paper } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const RearrangeQuestion = () => {
   const [selectedText, setSelectedText] = useState('')
