@@ -1,5 +1,6 @@
 'use client'
 
+import Editor from '@monaco-editor/react'
 import {
   type SelectChangeEvent,
   Box,
@@ -16,7 +17,6 @@ import {
   FormControl,
   Alert,
   Fade,
-  Icon,
   Tooltip,
 } from '@mui/material'
 import { Close, RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
@@ -26,6 +26,7 @@ import {
   updateQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { Question } from '@/types/content.types'
+import RearrangeQuestion from '@/components/question-types/rearrange-question'
 
 const AddQuestionDialog = ({
   lessonName,
@@ -53,6 +54,8 @@ const AddQuestionDialog = ({
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
   )
+
+  // const [selectedTect]
 
   useEffect(() => {
     if (prevQuestionData) {
@@ -116,6 +119,10 @@ const AddQuestionDialog = ({
     setOptions(updatedOptions)
   }
 
+  const handleEditorChange = (value: string, event: any) => {
+    setQuestionPrompt(value)
+  }
+
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const response =
@@ -146,6 +153,7 @@ const AddQuestionDialog = ({
     setAlertOpen(true)
   }
 
+  // console.log(questionPrompt.split('\n'))
   return (
     <Dialog open={open} fullScreen PaperProps={{ component: 'form', onSubmit: submitForm }}>
       <DialogTitle>Add Question</DialogTitle>
@@ -172,14 +180,42 @@ const AddQuestionDialog = ({
               onChange={e => setQuestionType(e.target.value)}
             >
               <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
+              <MenuItem value="rearrange">Rearrange</MenuItem>
             </Select>
           </FormControl>
+
           <TextField
+            autoFocus
             required
+            multiline
+            rows={4}
+            maxRows={8}
+            placeholder="Enter your question prompt"
             label="Question Prompt"
             variant="standard"
             value={questionPrompt}
             onChange={e => setQuestionPrompt(e.target.value)}
+            sx={{ width: '30rem' }}
+          />
+          <Editor
+            theme="vs-dark"
+            height="50vh"
+            width="50vw"
+            defaultLanguage="python"
+            value={questionPrompt}
+            onChange={handleEditorChange}
+          />
+          <RearrangeQuestion />
+          {/* <TextField
+            required
+            multiline
+            rows={4}
+            maxRows={8}
+            label="Question Prompt"
+            variant="standard"
+            value={questionPrompt}
+            onChange={e => setQuestionPrompt(e.target.value)}
+            sx={{ width: '30rem' }}
           />
           <Box
             id="options"
@@ -188,13 +224,13 @@ const AddQuestionDialog = ({
               justifyContent: 'center',
               gap: 3,
               flexWrap: 'wrap',
-              width: '25%',
+              width: '50%',
             }}
           >
             {Object.values(options).map((option, index) => {
               const optionKey = `option${index + 1}`
               return (
-                <Box key={index} sx={{ display: 'flex' }}>
+                <Box key={index}>
                   <TextField
                     required
                     label={`Option ${index + 1}`}
@@ -202,9 +238,6 @@ const AddQuestionDialog = ({
                     variant="standard"
                     value={option}
                     onChange={handleOptionInput}
-                    sx={{
-                      flexBasis: 'calc(50% - 12px)',
-                    }}
                   />
                   <Tooltip title="Remove Option" arrow>
                     <IconButton
@@ -249,7 +282,7 @@ const AddQuestionDialog = ({
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
           <Fade in={alertOpen}>
             <Alert
               severity="error"

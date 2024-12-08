@@ -49,16 +49,24 @@ const QuestionDataGrid = ({
 
   const handleEditClick = (id: number) => () => {
     const row = rows?.find(row => row.id === id)
-    const { id: rowId, col0, col1, col2, col3, col4 } = row!
+    const {
+      id: rowId,
+      promptColumn,
+      questionTypeColumn,
+      snippetColumn,
+      unitsCoveredColumn,
+      optionsColumn,
+      answerColumn,
+    } = row!
     setPrevQuestionData(prev => ({
       ...prev,
       questionId: rowId,
-      questionType: 'multiple-choice',
-      prompt: col0,
-      snippet: col1,
-      topics: col2.split(', '),
-      answerOptions: col3.split(', '),
-      answer: col4,
+      questionType: questionTypeColumn,
+      prompt: promptColumn,
+      snippet: snippetColumn,
+      topics: unitsCoveredColumn.split(', '),
+      answerOptions: optionsColumn.split(', '),
+      answer: answerColumn,
     }))
     setOpen(true)
   }
@@ -80,44 +88,50 @@ const QuestionDataGrid = ({
       const tableRows = lessonQuestions.map(
         ({ question_id, prompt, snippet, topics, answer_options, answer }) => ({
           id: question_id,
-          col0: prompt,
-          col1: snippet,
-          col2: topics?.join(', '),
-          col3: answer_options?.join(', '),
-          col4: answer,
+          promptColumn: prompt,
+          snippetColumn: snippet,
+          unitsCoveredColumn: topics?.join(', '),
+          optionsColumn: answer_options?.join(', '),
+          answerColumn: answer,
         })
       )
       setRows(tableRows)
       setDataLoading(false)
     }
     fetchLessonQuestions()
-  }, [params.className, params.lessonName, setOpen])
+  }, [params.className, params.lessonName, setDataLoading, setOpen])
 
   const columns: GridColDef[] = [
-    { field: 'col0', headerName: 'Questions', width: 180, align: 'center', headerAlign: 'center' },
     {
-      field: 'col1',
+      field: 'promptColumn',
+      headerName: 'Question',
+      width: 180,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'snippetColumn',
       headerName: 'Snippet',
       width: 180,
       align: 'center',
       headerAlign: 'center',
     },
     {
-      field: 'col2',
+      field: 'unitsCoveredColumn',
       headerName: 'Units Covered',
       width: 180,
       align: 'center',
       headerAlign: 'center',
     },
     {
-      field: 'col3',
+      field: 'optionsColumn',
       headerName: 'Options',
       width: 220,
       align: 'center',
       headerAlign: 'center',
     },
     {
-      field: 'col4',
+      field: 'answerColumn',
       headerName: 'Answer',
       width: 220,
       align: 'center',
