@@ -119,8 +119,8 @@ const AddQuestionDialog = ({
     setOptions(updatedOptions)
   }
 
-  const handleEditorChange = (value: string, event: any) => {
-    setQuestionPrompt(value)
+  const handleEditorChange = (value: string | undefined, event: any) => {
+    setQuestionPrompt(value ?? '')
   }
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -203,7 +203,7 @@ const AddQuestionDialog = ({
             width="50vw"
             defaultLanguage="python"
             value={questionPrompt}
-            onChange={handleEditorChange}
+            onChange={(value, event) => handleEditorChange(value, event)}
           />
           <RearrangeQuestion />
           {/* <TextField
