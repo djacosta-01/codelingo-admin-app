@@ -1,6 +1,5 @@
 'use client'
 
-import Editor from '@monaco-editor/react'
 import {
   type SelectChangeEvent,
   Box,
@@ -119,10 +118,6 @@ const AddQuestionDialog = ({
     setOptions(updatedOptions)
   }
 
-  const handleEditorChange = (value: string | undefined, event: any) => {
-    setQuestionPrompt(value ?? '')
-  }
-
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const response =
@@ -196,14 +191,6 @@ const AddQuestionDialog = ({
             value={questionPrompt}
             onChange={e => setQuestionPrompt(e.target.value)}
             sx={{ width: '30rem' }}
-          />
-          <Editor
-            theme="vs-dark"
-            height="50vh"
-            width="50vw"
-            defaultLanguage="python"
-            value={questionPrompt}
-            onChange={(value, event) => handleEditorChange(value, event)}
           />
           <RearrangeQuestion />
           {/* <TextField
