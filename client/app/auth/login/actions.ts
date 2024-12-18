@@ -25,11 +25,14 @@ export async function login(formData: FormData) {
   // TODO: DONT FORGET TO REMOVE THIS ONCE THE APP IS READY FOR PRODUCTION
   const developmentAccount = data.email.trim() === process.env.NEXT_DEVELOPMENT_ACCOUNT!
 
+  // const isProfessor = data.email.trim().endsWith('@lmu.edu') || developmentAccount
   const isProfessor = data.email.trim().endsWith('@lmu.edu') || developmentAccount
 
   revalidatePath('/', 'layout')
 
-  isProfessor ? redirect('/classes') : redirect('/student')
+  // if (isProfessor) redirect('/classes')
+  if (developmentAccount) return { message: 'hi, you logged in from the api! 😊', error: false }
+  // else return { message: 'hi, you logged in from the api! 😊', error: false }
   // redirect('/classes')
 }
 
