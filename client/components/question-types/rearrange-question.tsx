@@ -1,8 +1,8 @@
 'use client'
 
 import Editor from '@monaco-editor/react'
-import { Box, Menu, MenuItem, Paper, Button, IconButton, Icon } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { Box, Menu, MenuItem, Paper, Button, IconButton } from '@mui/material'
+import { useState } from 'react'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 
 const RearrangeQuestion = () => {
