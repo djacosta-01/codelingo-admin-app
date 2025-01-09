@@ -45,7 +45,9 @@ export const createNewClass = async (newClassName: string) => {
     return { success: false, error: 'No user found' }
   }
 
-  const { error } = await supabase.from('classes').insert([{ name: newClassName }])
+  const { error } = await supabase
+    .from('classes')
+    .insert([{ name: newClassName, section_number: '', description: '' }])
 
   if (error) {
     console.error('Error creating new class: ', error)

@@ -56,7 +56,7 @@ export const getLessonData = async (className: string): Promise<Lesson[]> => {
 // Should work, but need to update RLS policies on the database for inserts
 export const addLesson = async (
   className: string,
-  { name, topics }: { name: string; topics: string[] }
+  { lessonName, topics }: { lessonName: string; topics: string[] }
 ) => {
   const supabase = createClient()
 
@@ -77,26 +77,32 @@ export const addLesson = async (
     .eq('name', cleanedClassName)
     .single()
 
+  console.log('classID: ', classID)
+
   if (error) {
     console.error('Error fetching class ID: ', error)
     return { success: false, error: error }
   }
 
-  const { error: insertError } = await supabase.from('lessons').insert({
-    name,
-    topics,
-  })
+  // const { error: insertError } = await supabase.from('lessons').insert({
+  //   lessonName,
+  //   topics,
+  // })
 
-  if (insertError) {
-    console.error('Error inserting lesson: ', insertError)
-    return { success: false, error: insertError }
-  }
+  // if (insertError) {
+  //   console.error('Error inserting lesson: ', insertError)
+  //   return { success: false, error: insertError }
+  // }
+
+  console.log('lessonName: ', lessonName)
 
   const { data: newLessonID, error: newLessonIDError } = await supabase
     .from('lessons')
     .select('lesson_id')
-    .eq('name', name)
+    .eq('name', lessonName)
     .single()
+
+  console.log('newLessonID: ', newLessonID)
 
   if (!newLessonID?.lesson_id) {
     console.error(newLessonIDError)

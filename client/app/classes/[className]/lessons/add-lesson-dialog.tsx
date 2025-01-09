@@ -64,7 +64,7 @@ const AddLessonDialog = ({
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const response = await addLesson(className, { name: newLessonName, topics: lessonTopics })
+    const response = await addLesson(className, { lessonName: newLessonName, topics: lessonTopics })
     if (response.success) {
       // handleLessonDiaglogClose()
       alert('Lesson added successfully')

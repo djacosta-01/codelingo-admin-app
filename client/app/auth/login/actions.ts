@@ -48,9 +48,9 @@ export async function signup(formData: FormData) {
   }
 
   const isProfessorEmail = data.email.trim().endsWith('@lmu.edu')
-  const isStudentEmail = data.email.trim().endsWith('@lion.lmu.edu')
+  // const isStudentEmail = data.email.trim().endsWith('@lion.lmu.edu')
 
-  if (!isProfessorEmail && !isStudentEmail) {
+  if (!isProfessorEmail) {
     console.error('Invalid email')
     return { error: 'Invalid email. Please use your LMU email.' }
   }
@@ -71,7 +71,6 @@ export async function signup(formData: FormData) {
   }
 
   const { data: userData, error: userFetchError } = await supabase.auth.getUser()
-
   if (userFetchError) {
     console.error(userFetchError)
     return { error: `Error signing up: ${userFetchError.message}` }
@@ -79,15 +78,40 @@ export async function signup(formData: FormData) {
 
   const userID = userData.user.id
 
-  // add users to the appropriate table
-  const { error: insertError } = isProfessorEmail
-    ? await supabase.from('professors').insert([{ professor_id: userID }])
-    : await supabase.from('students').insert([{ student_id: userID }])
+  console.log('------------> calling rpc function')
+  const { data: profInsert, error: profInsertError } = await supabase.rpc(
+    'insert_user_into_respective_table',
+    { user_type: 'professor', user_id: userID }
+  )
 
-  if (insertError) {
-    console.error(insertError)
-    return { error: `Error signing up: ${insertError.message}` }
+  if (profInsertError) {
+    console.error(profInsertError)
+    return { error: `Error signing up: ${profInsertError.message}` }
   }
+
+  console.log('-----------------> should be a boolean:', profInsert)
+
+  // const { data, error } = await supabase.rpc('echo', { say: '👋' })
+
+  // const { data: userData, error: userFetchError } = await supabase.auth.getUser()
+
+  // if (userFetchError) {
+  //   console.error(userFetchError)
+  //   return { error: `Error signing up: ${userFetchError.message}` }
+  // }
+
+  // const userID = userData.user.id
+
+  // TODO: DONT FORGET TO DELETE THIS
+  // add users to the appropriate table
+  // const { error: insertError } = isProfessorEmail
+  //   ? await supabase.from('professors').insert([{ professor_id: userID }])
+  //   : await supabase.from('students').insert([{ student_id: userID }])
+
+  // if (insertError) {
+  //   console.error(insertError)
+  //   return { error: `Error signing up: ${insertError.message}` }
+  // }
 
   revalidatePath('/', 'layout')
   isProfessorEmail ? redirect('/classes') : redirect('/student')
