@@ -17,23 +17,25 @@ import {
   ListItemText,
   type SelectChangeEvent,
 } from '@mui/material'
-import { addLesson } from '@/app/classes/[className]/lessons/actions'
+import { createNewLesson, updateLesson } from '@/app/classes/[className]/lessons/actions'
 import { Lesson } from '@/types/content.types'
 
 const AddLessonDialog = ({
   className,
   open,
   setOpen,
+  setRefreshGrid,
   prevLessonData,
   resetPrevLessonData,
 }: {
   className: string
   open: boolean
+  setRefreshGrid: Dispatch<SetStateAction<number>>
   setOpen: Dispatch<SetStateAction<boolean>>
   prevLessonData: Lesson | null
   resetPrevLessonData: Dispatch<SetStateAction<Lesson | null>>
 }) => {
-  const [lessonID, setLessonID] = useState<number | null>(null)
+  const [lessonID, setLessonID] = useState<number>(-1)
   const [newLessonName, setNewLessonName] = useState<string>('')
   const [lessonTopics, setLessonTopics] = useState<string[]>([])
   const [buttonOperation, setButtonOperation] = useState<'Add Lesson' | 'Update Lesson'>(
@@ -42,8 +44,9 @@ const AddLessonDialog = ({
 
   useEffect(() => {
     if (prevLessonData) {
+      console.log('prevLessonData: ', prevLessonData)
       const { lesson_id, name, topics } = prevLessonData
-      setLessonID(lesson_id ?? null)
+      setLessonID(lesson_id ?? -1)
       setNewLessonName(name ?? '')
       setLessonTopics(topics ?? [])
       setButtonOperation('Update Lesson')
@@ -64,12 +67,25 @@ const AddLessonDialog = ({
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const response = await addLesson(className, { lessonName: newLessonName, topics: lessonTopics })
+
+    const addingLesson = buttonOperation === 'Add Lesson'
+
+    const response = addingLesson
+      ? await createNewLesson(className, {
+          lessonName: newLessonName,
+          topics: lessonTopics,
+        })
+      : await updateLesson(lessonID, { lessonName: newLessonName, topics: lessonTopics })
+
     if (response.success) {
-      // handleLessonDiaglogClose()
-      alert('Lesson added successfully')
+      handleLessonDiaglogClose()
+      const message = addingLesson ? 'Lesson added successfully' : 'Lesson updated successfully'
+      alert(message)
+      setRefreshGrid(prev => prev + 1)
+      return
     }
-    // handleLessonDiaglogClose()
+
+    alert('Error adding lesson')
   }
 
   return (

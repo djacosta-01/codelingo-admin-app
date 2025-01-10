@@ -21,7 +21,7 @@ import {
 import { Close, RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import {
-  insertQuestion,
+  createNewQuestion,
   updateQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { Question } from '@/types/content.types'
@@ -122,7 +122,7 @@ const AddQuestionDialog = ({
     e.preventDefault()
     const response =
       buttonOperation === 'Add Question'
-        ? await insertQuestion(lessonName, {
+        ? await createNewQuestion(lessonName, {
             questionType,
             prompt: questionPrompt,
             snippet: '',

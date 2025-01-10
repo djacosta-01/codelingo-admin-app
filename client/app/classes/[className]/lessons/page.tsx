@@ -10,6 +10,7 @@ import ClassConentHeaderSkeleton from '@/components/skeletons/class-content-head
 
 const Lessons = ({ params }: { params: { className: string } }) => {
   const [open, setOpen] = useState<boolean>(false)
+  const [refreshGrid, setRefreshGrid] = useState<number>(1)
   const [prevLessonData, setPrevLessonData] = useState<Lesson | null>(null)
   const [dataLoading, setDataLoading] = useState<boolean>(true)
 
@@ -48,12 +49,15 @@ const Lessons = ({ params }: { params: { className: string } }) => {
         className={params.className}
         open={open}
         setOpen={setOpen}
+        setRefreshGrid={setRefreshGrid}
         prevLessonData={prevLessonData}
         resetPrevLessonData={setPrevLessonData}
       />
       <LessonDataGrid
         className={params.className}
+        refreshGrid={refreshGrid}
         setPrevLessonData={setPrevLessonData}
+        dataLoading={dataLoading}
         setDataLoading={setDataLoading}
         setOpen={setOpen}
       />
