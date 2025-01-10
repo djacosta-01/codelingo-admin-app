@@ -123,7 +123,6 @@ const LessonDataGrid = ({
   ]
 
   useEffect(() => {
-    console.log('refreshGrid: ', refreshGrid)
     const fetchLessons = async () => {
       const lessons = await getLessonData(className)
       setRows(

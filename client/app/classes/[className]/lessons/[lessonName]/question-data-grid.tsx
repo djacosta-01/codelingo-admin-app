@@ -22,16 +22,20 @@ import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 const QuestionDataGrid = ({
   params,
   setPrevQuestionData,
+  dataLoading,
   setDataLoading,
   setOpen,
+  refreshGrid,
 }: {
   params: {
     className: string
     lessonName: string
   }
   setPrevQuestionData: Dispatch<SetStateAction<Question | null>>
+  dataLoading: boolean
   setDataLoading: Dispatch<SetStateAction<boolean>>
   setOpen: Dispatch<SetStateAction<boolean>>
+  refreshGrid: number
 }) => {
   const [rows, setRows] = useState<GridRowsProp>([])
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState<boolean>(false)
@@ -83,6 +87,7 @@ const QuestionDataGrid = ({
   }
 
   useEffect(() => {
+    console.log('fetching lesson questions')
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
@@ -99,7 +104,7 @@ const QuestionDataGrid = ({
       setDataLoading(false)
     }
     fetchLessonQuestions()
-  }, [params.className, params.lessonName, setDataLoading, setOpen])
+  }, [params.className, params.lessonName, setDataLoading, setOpen, refreshGrid])
 
   const columns: GridColDef[] = [
     {
@@ -182,7 +187,7 @@ const QuestionDataGrid = ({
         },
       }}
     >
-      {rows.length === 0 ? (
+      {dataLoading ? (
         <DataGridSkeleton columns={columns} />
       ) : (
         <>

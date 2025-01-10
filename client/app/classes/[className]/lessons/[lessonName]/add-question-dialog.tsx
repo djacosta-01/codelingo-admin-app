@@ -35,6 +35,7 @@ const AddQuestionDialog = ({
   setAlertOpen,
   prevQuestionData,
   resetPrevData,
+  setRefreshGrid,
 }: {
   lessonName: string
   open: boolean
@@ -43,6 +44,7 @@ const AddQuestionDialog = ({
   setAlertOpen: Dispatch<SetStateAction<boolean>>
   prevQuestionData: Question | null
   resetPrevData: Dispatch<SetStateAction<Question | null>>
+  setRefreshGrid: Dispatch<SetStateAction<number>>
 }) => {
   const [questionId, setQuestionId] = useState<number>(-1)
   const [questionType, setQuestionType] = useState<string>('')
@@ -141,6 +143,7 @@ const AddQuestionDialog = ({
 
     if (response.success) {
       handleDialogClose()
+      setRefreshGrid(prev => prev + 1)
     } else if (response.error === 'Duplicate answer options found') {
       alert(response.error)
       return
@@ -148,7 +151,6 @@ const AddQuestionDialog = ({
     setAlertOpen(true)
   }
 
-  // console.log(questionPrompt.split('\n'))
   return (
     <Dialog open={open} fullScreen PaperProps={{ component: 'form', onSubmit: submitForm }}>
       <DialogTitle>Add Question</DialogTitle>
@@ -184,7 +186,6 @@ const AddQuestionDialog = ({
             required
             multiline
             rows={4}
-            maxRows={8}
             placeholder="Enter your question prompt"
             label="Question Prompt"
             variant="standard"
@@ -192,18 +193,7 @@ const AddQuestionDialog = ({
             onChange={e => setQuestionPrompt(e.target.value)}
             sx={{ width: '30rem' }}
           />
-          <RearrangeQuestion />
-          {/* <TextField
-            required
-            multiline
-            rows={4}
-            maxRows={8}
-            label="Question Prompt"
-            variant="standard"
-            value={questionPrompt}
-            onChange={e => setQuestionPrompt(e.target.value)}
-            sx={{ width: '30rem' }}
-          />
+          {/* <RearrangeQuestion /> */}
           <Box
             id="options"
             sx={{
@@ -226,15 +216,15 @@ const AddQuestionDialog = ({
                     value={option}
                     onChange={handleOptionInput}
                   />
-                  <Tooltip title="Remove Option" arrow>
-                    <IconButton
-                      disabled={Object.values(options).length === 2}
-                      color="error"
-                      onClick={() => deleteAnswerFromForm(optionKey)}
-                    >
-                      <RemoveIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {/* <Tooltip title="Remove Option" arrow> */}
+                  <IconButton
+                    disabled={Object.values(options).length === 2}
+                    color="error"
+                    onClick={() => deleteAnswerFromForm(optionKey)}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+                  {/* </Tooltip> */}
                 </Box>
               )
             })}
@@ -269,7 +259,7 @@ const AddQuestionDialog = ({
                 </MenuItem>
               ))}
             </Select>
-          </FormControl> */}
+          </FormControl>
           <Fade in={alertOpen}>
             <Alert
               severity="error"
