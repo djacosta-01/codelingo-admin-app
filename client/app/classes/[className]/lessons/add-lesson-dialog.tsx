@@ -44,7 +44,6 @@ const AddLessonDialog = ({
 
   useEffect(() => {
     if (prevLessonData) {
-      console.log('prevLessonData: ', prevLessonData)
       const { lesson_id, name, topics } = prevLessonData
       setLessonID(lesson_id ?? -1)
       setNewLessonName(name ?? '')

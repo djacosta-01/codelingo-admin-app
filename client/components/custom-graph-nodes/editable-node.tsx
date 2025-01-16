@@ -59,6 +59,14 @@ const EditableNode = ({
     setOpenNodeDialog(true)
   }
 
+  const handleDeleteNode = () => {
+    data.setReactFlowData(prev => {
+      const newNodes = prev.reactFlowNodes.filter(node => node.id !== id)
+      const newEdges = prev.reactFlowEdges.filter(edge => edge.source !== id && edge.target !== id)
+      return { reactFlowNodes: newNodes, reactFlowEdges: newEdges }
+    })
+  }
+
   const handleCloseDialog = () => setOpenNodeDialog(false)
 
   return (
@@ -91,7 +99,7 @@ const EditableNode = ({
       </Paper>
       <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorElement}>
         <MenuItem onClick={handleEditNode}>Edit</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+        <MenuItem onClick={handleDeleteNode}>Delete</MenuItem>
       </Menu>
       <Dialog open={openNodeDialog} onClose={() => setOpenNodeDialog(false)}>
         <DialogTitle>Edit Node</DialogTitle>

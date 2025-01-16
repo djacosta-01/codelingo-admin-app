@@ -87,7 +87,6 @@ const QuestionDataGrid = ({
   }
 
   useEffect(() => {
-    console.log('fetching lesson questions')
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(

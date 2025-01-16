@@ -47,7 +47,6 @@ const RearrangeQuestion = () => {
   return (
     <>
       <Box onContextMenu={handleContextMenu} sx={{ cursor: 'context-menu' }}>
-        <div>UNDER CONSTRUCTION</div>
         {snippetIncluded ? (
           <>
             <Editor

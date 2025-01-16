@@ -25,7 +25,8 @@ import {
   updateQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { Question } from '@/types/content.types'
-import RearrangeQuestion from '@/components/question-types/rearrange-question'
+import RearrangeQuestion from '@/components/question-types/rearrange'
+import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
 
 const AddQuestionDialog = ({
   lessonName,
@@ -55,8 +56,6 @@ const AddQuestionDialog = ({
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
   )
-
-  // const [selectedTect]
 
   useEffect(() => {
     if (prevQuestionData) {
@@ -145,141 +144,66 @@ const AddQuestionDialog = ({
       handleDialogClose()
       setRefreshGrid(prev => prev + 1)
     } else if (response.error === 'Duplicate answer options found') {
+      // move this error check to the frontend??
       alert(response.error)
       return
     }
     setAlertOpen(true)
   }
 
+  const componentMap: { [key: string]: JSX.Element } = {
+    multipleChoice: <MultipleChoiceQuestion />,
+    rearrange: <RearrangeQuestion />,
+  }
+
   return (
     <Dialog open={open} fullScreen PaperProps={{ component: 'form', onSubmit: submitForm }}>
       <DialogTitle>Add Question</DialogTitle>
-      <DialogContent>
-        <Box
-          id="add-question-form"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            justifyContent: 'space-evenly',
-            height: '80vh',
-            alignItems: 'center',
-          }}
-        >
-          <FormControl id-="question-type">
-            <InputLabel>Question Type</InputLabel>
-            <Select
-              required
-              label="Question Type"
-              variant="standard"
-              sx={{ width: '15em' }}
-              value={questionType}
-              onChange={e => setQuestionType(e.target.value)}
-            >
-              <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
-              <MenuItem value="rearrange">Rearrange</MenuItem>
-            </Select>
-          </FormControl>
-
-          <TextField
-            autoFocus
+      <DialogContent
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+        }}
+      >
+        <FormControl id-="question-type">
+          <InputLabel>Question Type</InputLabel>
+          <Select
             required
-            multiline
-            rows={4}
-            placeholder="Enter your question prompt"
-            label="Question Prompt"
+            label="Question Type"
             variant="standard"
-            value={questionPrompt}
-            onChange={e => setQuestionPrompt(e.target.value)}
-            sx={{ width: '30rem' }}
-          />
-          {/* <RearrangeQuestion /> */}
-          <Box
-            id="options"
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 3,
-              flexWrap: 'wrap',
-              width: '50%',
-            }}
+            sx={{ width: '15em' }}
+            value={questionType}
+            onChange={e => setQuestionType(e.target.value)}
           >
-            {Object.values(options).map((option, index) => {
-              const optionKey = `option${index + 1}`
-              return (
-                <Box key={index}>
-                  <TextField
-                    required
-                    label={`Option ${index + 1}`}
-                    name={optionKey}
-                    variant="standard"
-                    value={option}
-                    onChange={handleOptionInput}
-                  />
-                  {/* <Tooltip title="Remove Option" arrow> */}
-                  <IconButton
-                    disabled={Object.values(options).length === 2}
-                    color="error"
-                    onClick={() => deleteAnswerFromForm(optionKey)}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  {/* </Tooltip> */}
-                </Box>
-              )
-            })}
-          </Box>
-          <Box id="add-new-question-button">
-            <Button
-              variant="contained"
-              disabled={Object.values(options).length === 10}
-              onClick={() =>
-                setOptions(prev => {
-                  return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
-                })
-              }
-            >
-              Add Option
-            </Button>
-          </Box>
-          <FormControl>
-            <InputLabel id="correct-answer">Correct Answer</InputLabel>
-            <Select
-              required
-              labelId="correct-answer"
-              label="Correct Answer"
-              variant="standard"
-              sx={{ width: '15em' }}
-              value={Object.values(options).includes(correctAnswer) ? correctAnswer : ''}
-              onChange={handleCorrectAnswerSelect}
-            >
-              {Object.values(options).map((option, index) => (
-                <MenuItem key={index} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Fade in={alertOpen}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setAlertOpen(false)
-                  }}
-                >
-                  <Close fontSize="inherit" />
-                </IconButton>
-              }
-            >
-              Failed to add question. Please review your input and try again
-            </Alert>
-          </Fade>
-        </Box>
+            <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
+            <MenuItem value="rearrange">Rearrange</MenuItem>
+          </Select>
+        </FormControl>
+
+        {componentMap[questionType]}
+
+        <Fade in={alertOpen}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setAlertOpen(false)
+                }}
+              >
+                <Close fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Failed to add question. Please review your input and try again
+          </Alert>
+        </Fade>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleDialogClose}>Cancel</Button>
