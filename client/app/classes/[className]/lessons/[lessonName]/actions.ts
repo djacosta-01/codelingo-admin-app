@@ -9,6 +9,7 @@ export const getLessonQuestions = async (
 ): Promise<
   {
     question_id: number
+    question_type: string
     prompt: string | null
     snippet: string | null
     topics: string[] | null

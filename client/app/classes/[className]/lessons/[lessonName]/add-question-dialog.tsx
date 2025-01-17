@@ -2,23 +2,20 @@
 
 import {
   type SelectChangeEvent,
-  Box,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   Select,
   MenuItem,
   InputLabel,
   FormControl,
   Alert,
   Fade,
-  Tooltip,
 } from '@mui/material'
-import { Close, RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
+import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import {
   createNewQuestion,
@@ -59,6 +56,8 @@ const AddQuestionDialog = ({
 
   useEffect(() => {
     if (prevQuestionData) {
+      setAlertOpen(false)
+
       const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
 
       setQuestionId(questionId ?? -1)
@@ -100,6 +99,10 @@ const AddQuestionDialog = ({
     resetPrevData(null)
   }
 
+  const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestionPrompt(e.target.value)
+  }
+
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setOptions({ ...options, [name]: value })
@@ -107,6 +110,12 @@ const AddQuestionDialog = ({
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
     setCorrectAnswer(e.target.value)
+  }
+
+  const handleAddNewOption = () => {
+    setOptions(prev => {
+      return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+    })
   }
 
   const deleteAnswerFromForm = (key: string) => {
@@ -152,8 +161,19 @@ const AddQuestionDialog = ({
   }
 
   const componentMap: { [key: string]: JSX.Element } = {
-    multipleChoice: <MultipleChoiceQuestion />,
-    rearrange: <RearrangeQuestion />,
+    ['Multiple Choice']: (
+      <MultipleChoiceQuestion
+        questionPrompt={questionPrompt}
+        options={options}
+        correctAnswer={correctAnswer}
+        handleQuestionPromptInput={handleQuestionPromptInput}
+        handleOptionInput={handleOptionInput}
+        deleteAnswerFromForm={deleteAnswerFromForm}
+        handleAddNewOption={handleAddNewOption}
+        handleCorrectAnswerSelect={handleCorrectAnswerSelect}
+      />
+    ),
+    ['Rearrange']: <RearrangeQuestion />,
   }
 
   return (
@@ -178,8 +198,8 @@ const AddQuestionDialog = ({
             value={questionType}
             onChange={e => setQuestionType(e.target.value)}
           >
-            <MenuItem value="multipleChoice">Multiple Choice</MenuItem>
-            <MenuItem value="rearrange">Rearrange</MenuItem>
+            <MenuItem value="Multiple Choice">Multiple Choice</MenuItem>
+            <MenuItem value="Rearrange">Rearrange</MenuItem>
           </Select>
         </FormControl>
 

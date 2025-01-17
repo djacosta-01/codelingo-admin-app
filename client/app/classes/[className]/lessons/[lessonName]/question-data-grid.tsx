@@ -90,9 +90,10 @@ const QuestionDataGrid = ({
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
       const tableRows = lessonQuestions.map(
-        ({ question_id, prompt, snippet, topics, answer_options, answer }) => ({
+        ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => ({
           id: question_id,
           promptColumn: prompt,
+          questionTypeColumn: question_type,
           snippetColumn: snippet,
           unitsCoveredColumn: topics?.join(', '),
           optionsColumn: answer_options?.join(', '),
@@ -109,6 +110,13 @@ const QuestionDataGrid = ({
     {
       field: 'promptColumn',
       headerName: 'Question',
+      width: 180,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'questionTypeColumn',
+      headerName: 'Question Type',
       width: 180,
       align: 'center',
       headerAlign: 'center',
