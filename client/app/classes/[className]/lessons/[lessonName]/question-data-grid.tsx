@@ -62,6 +62,7 @@ const QuestionDataGrid = ({
       optionsColumn,
       answerColumn,
     } = row!
+
     setPrevQuestionData(prev => ({
       ...prev,
       questionId: rowId,
@@ -72,6 +73,7 @@ const QuestionDataGrid = ({
       answerOptions: optionsColumn.split(', '),
       answer: answerColumn,
     }))
+
     setOpen(true)
   }
 
@@ -89,6 +91,7 @@ const QuestionDataGrid = ({
   useEffect(() => {
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
+
       const tableRows = lessonQuestions.map(
         ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => ({
           id: question_id,
@@ -100,9 +103,11 @@ const QuestionDataGrid = ({
           answerColumn: answer,
         })
       )
+
       setRows(tableRows)
       setDataLoading(false)
     }
+
     fetchLessonQuestions()
   }, [params.className, params.lessonName, setDataLoading, setOpen, refreshGrid])
 

@@ -53,26 +53,34 @@ const Questions = ({
           </Box>
         </>
       )}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Fade in={alertOpen}>
+          <Alert
+            severity="success"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setAlertOpen(false)
+                }}
+              >
+                <Close fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Success!
+          </Alert>
+        </Fade>
+      </Box>
 
-      <Fade in={alertOpen}>
-        <Alert
-          severity="success"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setAlertOpen(false)
-              }}
-            >
-              <Close fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          Question added successfully
-        </Alert>
-      </Fade>
       <QuestionDataGrid
         params={{ className: params.className, lessonName: params.lessonName }}
         setPrevQuestionData={setPrevQuestionData}
@@ -85,7 +93,7 @@ const Questions = ({
         lessonName={params.lessonName}
         open={open}
         setOpen={setOpen}
-        alertOpen={alertOpen}
+        // alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
         prevQuestionData={prevQuestionData}
         resetPrevData={setPrevQuestionData}

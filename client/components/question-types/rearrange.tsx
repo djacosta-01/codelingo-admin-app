@@ -8,7 +8,6 @@ import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 const RearrangeQuestion = () => {
   const [selectedText, setSelectedText] = useState('')
   const [snippetIncluded, setSnippetIncluded] = useState(false)
-  const [snippet, setSnippet] = useState('')
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
   const [tokens, setTokens] = useState<string[]>([])

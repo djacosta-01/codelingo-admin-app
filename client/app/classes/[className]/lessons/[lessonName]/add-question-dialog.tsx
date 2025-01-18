@@ -29,7 +29,7 @@ const AddQuestionDialog = ({
   lessonName,
   open,
   setOpen,
-  alertOpen,
+  // alertOpen,
   setAlertOpen,
   prevQuestionData,
   resetPrevData,
@@ -38,13 +38,15 @@ const AddQuestionDialog = ({
   lessonName: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
-  alertOpen: boolean
+  // alertOpen: boolean
   setAlertOpen: Dispatch<SetStateAction<boolean>>
   prevQuestionData: Question | null
   resetPrevData: Dispatch<SetStateAction<Question | null>>
   setRefreshGrid: Dispatch<SetStateAction<number>>
 }) => {
+  const [error, setError] = useState<boolean>(false)
   const [questionId, setQuestionId] = useState<number>(-1)
+  const [questionSnippet, setQuestionSnippet] = useState('')
   const [questionType, setQuestionType] = useState<string>('')
   const [questionPrompt, setQuestionPrompt] = useState<string>('')
   const [options, setOptions] = useState<{ [key: string]: string }>({ option1: '', option2: '' })
@@ -56,11 +58,11 @@ const AddQuestionDialog = ({
 
   useEffect(() => {
     if (prevQuestionData) {
-      setAlertOpen(false)
-
-      const { questionId, questionType, prompt, topics, answerOptions, answer } = prevQuestionData
+      const { questionId, questionType, snippet, prompt, topics, answerOptions, answer } =
+        prevQuestionData
 
       setQuestionId(questionId ?? -1)
+      setQuestionSnippet(snippet)
       setQuestionType(questionType)
       setQuestionPrompt(prompt)
       setTopicsCovered(topics)
@@ -71,10 +73,11 @@ const AddQuestionDialog = ({
         ...prev,
         ...prevAnswerOptions,
       }))
+
       setCorrectAnswer(answer)
       setButtonOperation('Update Question')
     }
-  }, [open, prevQuestionData])
+  }, [open])
 
   const convertToObject = (values: string[]) => {
     return values.reduce((acc: Record<string, string>, option, index) => {
@@ -89,6 +92,7 @@ const AddQuestionDialog = ({
     // reset form values
     setQuestionType('')
     setQuestionPrompt('')
+    setQuestionSnippet('')
     setOptions({
       option1: '',
       option2: '',
@@ -101,6 +105,10 @@ const AddQuestionDialog = ({
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
+  }
+
+  const handleSnippetInput = (value: string) => {
+    setQuestionSnippet(value ?? '')
   }
 
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,14 +136,22 @@ const AddQuestionDialog = ({
     setOptions(updatedOptions)
   }
 
+  const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = e
+    setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
+  }
+
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const response =
       buttonOperation === 'Add Question'
         ? await createNewQuestion(lessonName, {
             questionType,
             prompt: questionPrompt,
-            snippet: '',
+            snippet: questionSnippet,
             topics: topicsCovered,
             answerOptions: Object.values(options),
             answer: correctAnswer,
@@ -143,20 +159,19 @@ const AddQuestionDialog = ({
         : await updateQuestion(questionId, {
             questionType,
             prompt: questionPrompt,
-            snippet: '',
+            snippet: questionSnippet,
             topics: topicsCovered,
             answerOptions: Object.values(options),
             answer: correctAnswer,
           })
 
-    if (response.success) {
-      handleDialogClose()
-      setRefreshGrid(prev => prev + 1)
-    } else if (response.error === 'Duplicate answer options found') {
-      // move this error check to the frontend??
-      alert(response.error)
+    if (!response.success) {
+      setError(true)
       return
     }
+
+    handleDialogClose()
+    setRefreshGrid(prev => prev + 1)
     setAlertOpen(true)
   }
 
@@ -164,13 +179,17 @@ const AddQuestionDialog = ({
     ['Multiple Choice']: (
       <MultipleChoiceQuestion
         questionPrompt={questionPrompt}
+        snippet={questionSnippet}
         options={options}
         correctAnswer={correctAnswer}
+        topicsCovered={topicsCovered}
         handleQuestionPromptInput={handleQuestionPromptInput}
+        handleSnippetInput={handleSnippetInput}
         handleOptionInput={handleOptionInput}
         deleteAnswerFromForm={deleteAnswerFromForm}
         handleAddNewOption={handleAddNewOption}
         handleCorrectAnswerSelect={handleCorrectAnswerSelect}
+        handleTopicsCoveredSelect={handleTopicsCovered}
       />
     ),
     ['Rearrange']: <RearrangeQuestion />,
@@ -205,7 +224,7 @@ const AddQuestionDialog = ({
 
         {componentMap[questionType]}
 
-        <Fade in={alertOpen}>
+        <Fade in={error}>
           <Alert
             severity="error"
             action={
@@ -214,7 +233,7 @@ const AddQuestionDialog = ({
                 color="inherit"
                 size="small"
                 onClick={() => {
-                  setAlertOpen(false)
+                  setError(false)
                 }}
               >
                 <Close fontSize="inherit" />
