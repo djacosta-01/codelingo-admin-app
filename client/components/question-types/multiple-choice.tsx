@@ -79,7 +79,7 @@ const MultipleChoiceQuestion = ({
         sx={{ width: '30rem' }}
       />
       {snippetIncluded || snippet !== '' ? (
-        <>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <Editor
             theme="vs-dark"
             height="50vh"
@@ -92,7 +92,7 @@ const MultipleChoiceQuestion = ({
           <IconButton color="error" onClick={resetSnippet}>
             <RemoveIcon />
           </IconButton>
-        </>
+        </Box>
       ) : (
         <Button onClick={() => setSnippetIncluded(true)}>Add Snippet</Button>
       )}
