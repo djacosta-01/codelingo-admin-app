@@ -17,19 +17,16 @@ import {
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
-import {
-  createNewQuestion,
-  updateQuestion,
-} from '@/app/classes/[className]/lessons/[lessonName]/actions'
+
 import { Question } from '@/types/content.types'
 import RearrangeQuestion from '@/components/question-types/rearrange'
 import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
+import { useQuestionContext } from '@/contexts/question-context'
 
 const AddQuestionDialog = ({
   lessonName,
   open,
   setOpen,
-  // alertOpen,
   setAlertOpen,
   prevQuestionData,
   resetPrevData,
@@ -38,7 +35,6 @@ const AddQuestionDialog = ({
   lessonName: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
-  // alertOpen: boolean
   setAlertOpen: Dispatch<SetStateAction<boolean>>
   prevQuestionData: Question | null
   resetPrevData: Dispatch<SetStateAction<Question | null>>
@@ -46,16 +42,22 @@ const AddQuestionDialog = ({
 }) => {
   const [error, setError] = useState<boolean>(false)
   const [questionId, setQuestionId] = useState<number>(-1)
-  const [questionSnippet, setQuestionSnippet] = useState('')
-  const [questionType, setQuestionType] = useState<string>('')
-  const [questionPrompt, setQuestionPrompt] = useState<string>('')
-  const [options, setOptions] = useState<{ [key: string]: string }>({ option1: '', option2: '' })
-  const [topicsCovered, setTopicsCovered] = useState<string[]>([])
-  const [correctAnswer, setCorrectAnswer] = useState<string>('')
+  const {
+    questionType,
+    setQuestionType,
+    setQuestionPrompt,
+    setQuestionSnippet,
+    setQuestionOptions,
+    setCorrectAnswer,
+    setTopicsCovered,
+    submitQuestion,
+  } = useQuestionContext()
+
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
   )
 
+  // probably don't need this anymore since we're using context??
   useEffect(() => {
     if (prevQuestionData) {
       const { questionId, questionType, snippet, prompt, topics, answerOptions, answer } =
@@ -69,7 +71,7 @@ const AddQuestionDialog = ({
 
       const prevAnswerOptions = convertToObject(answerOptions)
 
-      setOptions(prev => ({
+      setQuestionOptions(prev => ({
         ...prev,
         ...prevAnswerOptions,
       }))
@@ -93,77 +95,60 @@ const AddQuestionDialog = ({
     setQuestionType('')
     setQuestionPrompt('')
     setQuestionSnippet('')
-    setOptions({
-      option1: '',
-      option2: '',
-    })
+    setQuestionOptions({})
     setCorrectAnswer('')
     setTopicsCovered([])
     setButtonOperation('Add Question')
     resetPrevData(null)
   }
 
-  const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuestionPrompt(e.target.value)
-  }
+  // const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setQuestionPrompt(e.target.value)
+  // }
 
-  const handleSnippetInput = (value: string) => {
-    setQuestionSnippet(value ?? '')
-  }
+  // const handleSnippetInput = (value: string) => {
+  //   setQuestionSnippet(value ?? '')
+  // }
 
-  const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setOptions({ ...options, [name]: value })
-  }
+  // const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target
+  //   setQuestionOptions({ ...questionOptions, [name]: value })
+  // }
 
-  const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
-    setCorrectAnswer(e.target.value)
-  }
+  // const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
+  //   setCorrectAnswer(e.target.value)
+  // }
 
-  const handleAddNewOption = () => {
-    setOptions(prev => {
-      return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
-    })
-  }
+  // const handleAddNewOption = () => {
+  //   setQuestionOptions(prev => {
+  //     return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+  //   })
+  // }
 
-  const deleteAnswerFromForm = (key: string) => {
-    const mapping = new Map(Object.entries(options))
-    mapping.delete(key)
+  // const deleteAnswerFromForm = (key: string) => {
+  //   const mapping = new Map(Object.entries(questionOptions))
+  //   mapping.delete(key)
 
-    // necessary to keep state updates in sync (specifically textfield onChange)
-    const values = Object.values(Object.fromEntries(mapping))
-    const updatedOptions = convertToObject(values)
-    setOptions(updatedOptions)
-  }
+  //   // necessary to keep state updates in sync (specifically textfield onChange)
+  //   const values = Object.values(Object.fromEntries(mapping))
+  //   const updatedOptions = convertToObject(values)
+  //   setQuestionOptions(updatedOptions)
+  // }
 
-  const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
-    const {
-      target: { value },
-    } = e
-    setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
-  }
+  // const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
+  //   const {
+  //     target: { value },
+  //   } = e
+  //   setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
+  // }
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const response =
       buttonOperation === 'Add Question'
-        ? await createNewQuestion(lessonName, {
-            questionType,
-            prompt: questionPrompt,
-            snippet: questionSnippet,
-            topics: topicsCovered,
-            answerOptions: Object.values(options),
-            answer: correctAnswer,
-          })
-        : await updateQuestion(questionId, {
-            questionType,
-            prompt: questionPrompt,
-            snippet: questionSnippet,
-            topics: topicsCovered,
-            answerOptions: Object.values(options),
-            answer: correctAnswer,
-          })
+        ? await submitQuestion({ lessonName })
+        : await submitQuestion({ questionId })
 
     if (!response.success) {
       setError(true)
@@ -178,36 +163,36 @@ const AddQuestionDialog = ({
   const componentMap: { [key: string]: JSX.Element } = {
     ['Multiple Choice']: (
       <MultipleChoiceQuestion
-        questionPrompt={questionPrompt}
-        snippet={questionSnippet}
-        options={options}
-        correctAnswer={correctAnswer}
-        topicsCovered={topicsCovered}
-        handleQuestionPromptInput={handleQuestionPromptInput}
-        handleSnippetInput={handleSnippetInput}
-        handleOptionInput={handleOptionInput}
-        deleteAnswerFromForm={deleteAnswerFromForm}
-        handleAddNewOption={handleAddNewOption}
-        handleCorrectAnswerSelect={handleCorrectAnswerSelect}
-        handleTopicsCoveredSelect={handleTopicsCovered}
+      // questionPrompt={questionPrompt}
+      // snippet={questionSnippet}
+      // options={options}
+      // correctAnswer={correctAnswer}
+      // topicsCovered={topicsCovered}
+      // handleQuestionPromptInput={handleQuestionPromptInput}
+      // handleSnippetInput={handleSnippetInput}
+      // handleOptionInput={handleOptionInput}
+      // deleteAnswerFromForm={deleteAnswerFromForm}
+      // handleAddNewOption={handleAddNewOption}
+      // handleCorrectAnswerSelect={handleCorrectAnswerSelect}
+      // handleTopicsCoveredSelect={handleTopicsCovered}
       />
     ),
-    ['Rearrange']: (
-      <RearrangeQuestion
-        questionPrompt={questionPrompt}
-        snippet={questionSnippet}
-        options={options}
-        correctAnswer={correctAnswer}
-        topicsCovered={topicsCovered}
-        handleQuestionPromptInput={handleQuestionPromptInput}
-        handleSnippetInput={handleSnippetInput}
-        handleOptionInput={handleOptionInput}
-        deleteAnswerFromForm={deleteAnswerFromForm}
-        handleAddNewOption={handleAddNewOption}
-        handleCorrectAnswerSelect={handleCorrectAnswerSelect}
-        handleTopicsCoveredSelect={handleTopicsCovered}
-      />
-    ),
+    // ['Rearrange']: (
+    //   <RearrangeQuestion
+    //   // questionPrompt={questionPrompt}
+    //   // snippet={questionSnippet}
+    //   // options={options}
+    //   // correctAnswer={correctAnswer}
+    //   // topicsCovered={topicsCovered}
+    //   // handleQuestionPromptInput={handleQuestionPromptInput}
+    //   // handleSnippetInput={handleSnippetInput}
+    //   // handleOptionInput={handleOptionInput}
+    //   // deleteAnswerFromForm={deleteAnswerFromForm}
+    //   // handleAddNewOption={handleAddNewOption}
+    //   // handleCorrectAnswerSelect={handleCorrectAnswerSelect}
+    //   // handleTopicsCoveredSelect={handleTopicsCovered}
+    //   />
+    // ),
   }
 
   return (

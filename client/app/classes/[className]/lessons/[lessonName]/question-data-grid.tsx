@@ -17,11 +17,18 @@ import {
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
 import { Question } from '@/types/content.types'
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
+import { useQuestionContext } from '@/contexts/question-context'
+
+const convertToObject = (values: string[]) => {
+  return values.reduce((acc: Record<string, string>, option, index) => {
+    acc[`option${index + 1}`] = option
+    return acc
+  }, {})
+}
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
   params,
-  setPrevQuestionData,
   dataLoading,
   setDataLoading,
   setOpen,
@@ -31,7 +38,6 @@ const QuestionDataGrid = ({
     className: string
     lessonName: string
   }
-  setPrevQuestionData: Dispatch<SetStateAction<Question | null>>
   dataLoading: boolean
   setDataLoading: Dispatch<SetStateAction<boolean>>
   setOpen: Dispatch<SetStateAction<boolean>>
@@ -39,15 +45,24 @@ const QuestionDataGrid = ({
 }) => {
   const [rows, setRows] = useState<GridRowsProp>([])
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState<boolean>(false)
-  const [questionId, setQuestionId] = useState<number | null>(null)
+  const {
+    questionID,
+    setQuestionID,
+    setQuestionType,
+    setQuestionPrompt,
+    setQuestionSnippet,
+    setQuestionOptions,
+    setCorrectAnswer,
+    setTopicsCovered,
+  } = useQuestionContext()
 
   const handleConfimationDialogOpen = (id: number) => {
-    setQuestionId(id)
+    setQuestionID(id)
     setConfirmationDialogOpen(true)
   }
 
   const handleConfimationDialogClose = () => {
-    setQuestionId(null)
+    setQuestionID(null)
     setConfirmationDialogOpen(false)
   }
 
@@ -63,17 +78,13 @@ const QuestionDataGrid = ({
       answerColumn,
     } = row!
 
-    setPrevQuestionData(prev => ({
-      ...prev,
-      questionId: rowId,
-      questionType: questionTypeColumn,
-      prompt: promptColumn,
-      snippet: snippetColumn,
-      topics: unitsCoveredColumn.split(', '),
-      answerOptions: optionsColumn.split(', '),
-      answer: answerColumn,
-    }))
-
+    setQuestionID(rowId)
+    setQuestionType(questionTypeColumn)
+    setQuestionPrompt(promptColumn)
+    setQuestionSnippet(snippetColumn)
+    setQuestionOptions(convertToObject(optionsColumn.split(', ')))
+    setCorrectAnswer(answerColumn)
+    setTopicsCovered(unitsCoveredColumn.split(', '))
     setOpen(true)
   }
 
@@ -219,7 +230,7 @@ const QuestionDataGrid = ({
             <DialogContent>Are you sure you want to delete this question?</DialogContent>
             <DialogActions>
               <Button onClick={handleConfimationDialogClose}>Cancel</Button>
-              <Button color="error" onClick={handleDeleteQuestion(questionId as number)}>
+              <Button color="error" onClick={handleDeleteQuestion(questionID as number)}>
                 Delete
               </Button>
             </DialogActions>

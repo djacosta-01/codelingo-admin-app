@@ -15,21 +15,7 @@ import {
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 import { useState } from 'react'
 import Editor from '@monaco-editor/react'
-
-interface MCQuestionProps {
-  questionPrompt: string
-  snippet: string
-  options: { [key: string]: string }
-  correctAnswer: string
-  topicsCovered: string[]
-  handleQuestionPromptInput: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleSnippetInput: (value: string) => void
-  handleOptionInput: (e: React.ChangeEvent<HTMLInputElement>) => void
-  deleteAnswerFromForm: (optionKey: string) => void
-  handleAddNewOption: () => void
-  handleCorrectAnswerSelect: (e: SelectChangeEvent) => void
-  handleTopicsCoveredSelect: (e: SelectChangeEvent<string[]>) => void
-}
+import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 
@@ -44,25 +30,16 @@ const MenuProps = {
   },
 }
 
-const MultipleChoiceQuestion = ({
-  questionPrompt,
-  snippet,
-  options,
-  correctAnswer,
-  topicsCovered,
-  handleQuestionPromptInput,
-  handleSnippetInput,
-  handleOptionInput,
-  deleteAnswerFromForm,
-  handleAddNewOption,
-  handleCorrectAnswerSelect,
-  handleTopicsCoveredSelect,
-}: MCQuestionProps) => {
+const MultipleChoiceQuestion = () => {
   const [snippetIncluded, setSnippetIncluded] = useState(false)
+  const { questionPrompt, setQuestionPrompt } = useQuestionContext()
+  // const resetSnippet = () => {
+  //   setSnippetIncluded(false)
+  //   handleSnippetInput('')
+  // }
 
-  const resetSnippet = () => {
-    setSnippetIncluded(false)
-    handleSnippetInput('')
+  const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestionPrompt(e.target.value)
   }
 
   return (
@@ -79,7 +56,7 @@ const MultipleChoiceQuestion = ({
         onChange={handleQuestionPromptInput}
         sx={{ width: '30rem' }}
       />
-      {snippetIncluded || snippet !== '' ? (
+      {/* {snippetIncluded || snippet !== '' ? (
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <Editor
             theme="vs-dark"
@@ -178,7 +155,7 @@ const MultipleChoiceQuestion = ({
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
     </>
   )
 }

@@ -8,6 +8,8 @@ import {
 import { PostgrestError } from '@supabase/supabase-js'
 
 interface QuestionContextType {
+  questionID: number | null
+  setQuestionID: React.Dispatch<React.SetStateAction<number | null>>
   questionType: string
   setQuestionType: React.Dispatch<React.SetStateAction<string>>
   questionPrompt: string
@@ -30,6 +32,8 @@ interface QuestionContextType {
 }
 
 const initialContext: QuestionContextType = {
+  questionID: null,
+  setQuestionID: () => {},
   questionType: '',
   setQuestionType: () => {},
   questionPrompt: '',
@@ -50,6 +54,7 @@ const QuestionContext = createContext<QuestionContextType>(initialContext)
 export const useQuestionContext = () => useContext(QuestionContext)
 
 export const QuestionContextProvider = ({ children }: { children: React.ReactNode }) => {
+  const [questionID, setQuestionID] = useState<number | null>(null)
   const [questionType, setQuestionType] = useState('')
   const [questionPrompt, setQuestionPrompt] = useState('')
   const [questionSnippet, setQuestionSnippet] = useState('')
@@ -89,6 +94,8 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
   return (
     <QuestionContext.Provider
       value={{
+        questionID,
+        setQuestionID,
         questionType,
         setQuestionType,
         questionPrompt,

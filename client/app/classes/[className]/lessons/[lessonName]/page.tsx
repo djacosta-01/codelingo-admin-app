@@ -83,7 +83,6 @@ const Questions = ({
 
       <QuestionDataGrid
         params={{ className: params.className, lessonName: params.lessonName }}
-        setPrevQuestionData={setPrevQuestionData}
         dataLoading={dataLoading}
         setDataLoading={setDataLoading}
         setOpen={setOpen}
