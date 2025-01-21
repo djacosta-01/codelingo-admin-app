@@ -53,7 +53,10 @@ const MultipleChoiceQuestion = () => {
   } = useQuestionContext()
 
   useEffect(() => {
-    if (Object.keys(questionOptions).length === 0) setQuestionOptions({ option1: '', option2: '' })
+    if (Array.isArray(questionOptions) || Object.keys(questionOptions).length === 0) {
+      // console.log('in useEffect for multiple choice')
+      setQuestionOptions({ option1: '', option2: '' })
+    }
   }, [])
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,6 +65,10 @@ const MultipleChoiceQuestion = () => {
 
   const handleSnippetInput = (value: string) => {
     setQuestionSnippet(value)
+  }
+
+  const showSnippet = () => {
+    setSnippetIncluded(true)
   }
 
   const hideSnippet = () => {
@@ -101,6 +108,8 @@ const MultipleChoiceQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  // console.log(questionOptions)
+
   return (
     <>
       <TextField
@@ -131,7 +140,7 @@ const MultipleChoiceQuestion = () => {
           </IconButton>
         </Box>
       ) : (
-        <Button onClick={() => setSnippetIncluded(true)}>Add Snippet</Button>
+        <Button onClick={showSnippet}>Add Snippet</Button>
       )}
 
       <Box

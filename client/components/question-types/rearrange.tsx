@@ -15,23 +15,9 @@ import {
   Select,
   type SelectChangeEvent,
 } from '@mui/material'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
-
-interface QuestionProps {
-  questionPrompt: string
-  snippet: string
-  options: { [key: string]: string }
-  correctAnswer: string
-  topicsCovered: string[]
-  handleQuestionPromptInput: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleSnippetInput: (value: string) => void
-  handleOptionInput: (e: React.ChangeEvent<HTMLInputElement>) => void
-  deleteAnswerFromForm: (optionKey: string) => void
-  handleAddNewOption: () => void
-  handleCorrectAnswerSelect: (e: SelectChangeEvent) => void
-  handleTopicsCoveredSelect: (e: SelectChangeEvent<string[]>) => void
-}
+import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 const ITEM_HEIGHT = 48
@@ -45,36 +31,58 @@ const MenuProps = {
   },
 }
 
-const RearrangeQuestion = ({
-  questionPrompt,
-  snippet,
-  options,
-  correctAnswer,
-  topicsCovered,
-  handleQuestionPromptInput,
-  handleSnippetInput,
-  handleOptionInput,
-  deleteAnswerFromForm,
-  handleAddNewOption,
-  handleCorrectAnswerSelect,
-  handleTopicsCoveredSelect,
-}: QuestionProps) => {
+const RearrangeQuestion = () => {
   const [selectedText, setSelectedText] = useState('')
   const [snippetIncluded, setSnippetIncluded] = useState(false)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
-  // const [questionPrompt, setQuestionPrompt] = useState<string>('')
-  const [tokens, setTokens] = useState<string[]>([])
+  // const [tokens, setTokens] = useState<string[]>([])
+  const {
+    questionPrompt,
+    setQuestionPrompt,
+    questionSnippet,
+    setQuestionSnippet,
+    questionOptions,
+    setQuestionOptions,
+  } = useQuestionContext()
 
-  const handleSelectionChange = () => {
+  useEffect(() => {
+    if (!Array.isArray(questionOptions)) {
+      // console.log('in useEffect for rearrange')
+      setQuestionOptions([] as string[])
+    }
+  }, [])
+
+  const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuestionPrompt(e.target.value)
+  }
+
+  const handleSnippetInput = (value: string) => {
+    setQuestionSnippet(value)
+  }
+
+  const showSnippet = () => {
+    setSnippetIncluded(true)
+  }
+
+  const hideSnippet = () => {
+    setQuestionSnippet('')
+    setSnippetIncluded(false)
+  }
+
+  const handleTokenCreation = () => {
     const selection = window.getSelection()
 
     if (selection && selection.toString().length > 0) {
       // setSelectedText(selection.toString())
-      setTokens(prev => [...prev, selection.toString()])
+      setQuestionOptions(prev => [...(prev as string[]), selection.toString()])
     } else {
       alert('No text selected')
       setSelectedText('')
     }
+  }
+
+  const handleTokenReset = () => {
+    setQuestionOptions([])
   }
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -94,6 +102,8 @@ const RearrangeQuestion = ({
     setContextMenu(null)
   }
 
+  // console.log(questionOptions)
+
   return (
     <>
       <TextField
@@ -108,18 +118,21 @@ const RearrangeQuestion = ({
         onChange={handleQuestionPromptInput}
         sx={{ width: '30rem' }}
       />
-      {snippetIncluded ? (
-        <Box onContextMenu={handleContextMenu} sx={{ cursor: 'context-menu' }}>
+      {snippetIncluded || questionSnippet !== '' ? (
+        <Box
+          onContextMenu={handleContextMenu}
+          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, cursor: 'context-menu' }}
+        >
           <Editor
             theme="vs-dark"
             height="50vh"
             width="50vw"
             defaultLanguage="python"
             options={{ contextmenu: false }}
-            value={snippet}
+            value={questionSnippet}
             onChange={value => handleSnippetInput(value ?? '')}
           />
-          <IconButton color="error" onClick={() => setSnippetIncluded(false)}>
+          <IconButton color="error" onClick={hideSnippet}>
             <RemoveIcon />
           </IconButton>
           <Menu
@@ -132,33 +145,35 @@ const RearrangeQuestion = ({
                 : undefined
             }
           >
-            <MenuItem onClick={handleSelectionChange}>Create Token</MenuItem>
+            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
           </Menu>
         </Box>
       ) : (
-        <Button onClick={() => setSnippetIncluded(true)}>Add Snippet</Button>
+        <Button onClick={showSnippet}>Add Snippet</Button>
       )}
       <Box sx={{ display: 'flex', gap: 2 }}>
-        {tokens.map((token, index) => (
-          <Paper
-            elevation={4}
-            key={index}
-            sx={{
-              padding: 1,
-              height: '5em',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            {token}
-          </Paper>
-        ))}
+        {!Array.isArray(questionOptions)
+          ? ''
+          : questionOptions.map((token, index) => (
+              <Paper
+                elevation={4}
+                key={index}
+                sx={{
+                  padding: 1,
+                  height: '5em',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {token}
+              </Paper>
+            ))}
       </Box>
-      <Button onClick={() => setTokens([])}>CLEAR</Button>
+      <Button onClick={handleTokenReset}>CLEAR</Button>
 
-      <FormControl>
+      {/* <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
           required
@@ -178,7 +193,7 @@ const RearrangeQuestion = ({
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+      </FormControl> */}
     </>
   )
 }
