@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { Box, IconButton, Tooltip } from '@mui/material'
 import { LightMode, DarkMode } from '@mui/icons-material'
 import { useState, useContext } from 'react'
-import { ViewModeContext } from '@/components/contexts/viewmode-context'
+import { ViewModeContext } from '@/contexts/viewmode-context'
 
 const ToggleThemeButton = ({
   mode,
@@ -36,7 +36,7 @@ const ToggleThemeButton = ({
 
 const ThemeWrapper = ({ children }: { children: React.ReactNode }) => {
   const [mode, setMode] = useState<'light' | 'dark'>('dark')
-  const { settings, dispatch } = useContext(ViewModeContext)
+  const { dispatch } = useContext(ViewModeContext)
 
   const toggleMode = () => {
     setMode(prevMode => (prevMode === 'light' ? 'dark' : 'light'))

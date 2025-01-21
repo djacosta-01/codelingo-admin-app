@@ -25,7 +25,7 @@ import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import EditGraphActions from '@/app/classes/[className]/knowledge-graph/edit-graph-actions'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
-import { ViewModeContext } from '@/components/contexts/viewmode-context'
+import { ViewModeContext } from '@/contexts/viewmode-context'
 
 const nodeTypes = { editableNode: EditableNode }
 
