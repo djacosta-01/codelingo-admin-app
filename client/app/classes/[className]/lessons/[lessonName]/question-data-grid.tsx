@@ -15,7 +15,6 @@ import {
   getLessonQuestions,
   deleteQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
-import { Question } from '@/types/content.types'
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 import { useQuestionContext } from '@/contexts/question-context'
 

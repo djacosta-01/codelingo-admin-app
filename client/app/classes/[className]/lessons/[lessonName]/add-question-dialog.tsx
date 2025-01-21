@@ -28,30 +28,17 @@ const AddQuestionDialog = ({
   open,
   setOpen,
   setAlertOpen,
-  prevQuestionData,
-  resetPrevData,
   setRefreshGrid,
 }: {
   lessonName: string
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   setAlertOpen: Dispatch<SetStateAction<boolean>>
-  prevQuestionData: Question | null
-  resetPrevData: Dispatch<SetStateAction<Question | null>>
   setRefreshGrid: Dispatch<SetStateAction<number>>
 }) => {
   const [error, setError] = useState<boolean>(false)
-  const [questionId, setQuestionId] = useState<number>(-1)
-  const {
-    questionType,
-    setQuestionType,
-    setQuestionPrompt,
-    setQuestionSnippet,
-    setQuestionOptions,
-    setCorrectAnswer,
-    setTopicsCovered,
-    submitQuestion,
-  } = useQuestionContext()
+  const { questionType, questionID, setQuestionType, submitQuestion, resetStates } =
+    useQuestionContext()
 
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
@@ -59,47 +46,15 @@ const AddQuestionDialog = ({
 
   // probably don't need this anymore since we're using context??
   useEffect(() => {
-    if (prevQuestionData) {
-      const { questionId, questionType, snippet, prompt, topics, answerOptions, answer } =
-        prevQuestionData
-
-      setQuestionId(questionId ?? -1)
-      setQuestionSnippet(snippet)
-      setQuestionType(questionType)
-      setQuestionPrompt(prompt)
-      setTopicsCovered(topics)
-
-      const prevAnswerOptions = convertToObject(answerOptions)
-
-      setQuestionOptions(prev => ({
-        ...prev,
-        ...prevAnswerOptions,
-      }))
-
-      setCorrectAnswer(answer)
-      setButtonOperation('Update Question')
-    }
+    if (questionID) setButtonOperation('Update Question')
   }, [open])
-
-  const convertToObject = (values: string[]) => {
-    return values.reduce((acc: Record<string, string>, option, index) => {
-      acc[`option${index + 1}`] = option
-      return acc
-    }, {})
-  }
 
   const handleDialogClose = () => {
     setOpen(false)
 
     // reset form values
-    setQuestionType('')
-    setQuestionPrompt('')
-    setQuestionSnippet('')
-    setQuestionOptions({})
-    setCorrectAnswer('')
-    setTopicsCovered([])
+    resetStates()
     setButtonOperation('Add Question')
-    resetPrevData(null)
   }
 
   // const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +103,7 @@ const AddQuestionDialog = ({
     const response =
       buttonOperation === 'Add Question'
         ? await submitQuestion({ lessonName })
-        : await submitQuestion({ questionId })
+        : await submitQuestion({ questionID: questionID! }) // questionID guaranteed to be defined here
 
     if (!response.success) {
       setError(true)

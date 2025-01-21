@@ -3,7 +3,6 @@
 import { Box, IconButton, Tooltip, Typography, Alert, Fade } from '@mui/material'
 import { AddCircleOutline, Close } from '@mui/icons-material'
 import { useState } from 'react'
-import { Question } from '@/types/content.types'
 import QuestionDataGrid from '@/app/classes/[className]/lessons/[lessonName]/question-data-grid'
 import AddQuestionDialog from '@/app/classes/[className]/lessons/[lessonName]/add-question-dialog'
 import ClassConentHeaderSkeleton from '@/components/skeletons/class-content-header-skeleton'
@@ -19,7 +18,6 @@ const Questions = ({
   const [open, setOpen] = useState<boolean>(false)
   const [refreshGrid, setRefreshGrid] = useState<number>(1)
   const [alertOpen, setAlertOpen] = useState<boolean>(false)
-  const [prevQuestionData, setPrevQuestionData] = useState<Question | null>(null)
   const [dataLoading, setDataLoading] = useState<boolean>(true)
 
   const handleDialogOpen = () => {
@@ -92,10 +90,7 @@ const Questions = ({
         lessonName={params.lessonName}
         open={open}
         setOpen={setOpen}
-        // alertOpen={alertOpen}
         setAlertOpen={setAlertOpen}
-        prevQuestionData={prevQuestionData}
-        resetPrevData={setPrevQuestionData}
         setRefreshGrid={setRefreshGrid}
       />
     </>

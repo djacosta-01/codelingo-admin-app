@@ -32,14 +32,20 @@ const MenuProps = {
 
 const MultipleChoiceQuestion = () => {
   const [snippetIncluded, setSnippetIncluded] = useState(false)
-  const { questionPrompt, setQuestionPrompt } = useQuestionContext()
-  // const resetSnippet = () => {
-  //   setSnippetIncluded(false)
-  //   handleSnippetInput('')
-  // }
+  const { questionPrompt, setQuestionPrompt, questionSnippet, setQuestionSnippet } =
+    useQuestionContext()
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
+  }
+
+  const handleSnippetInput = (value: string) => {
+    setQuestionSnippet(value)
+  }
+
+  const hideSnippet = () => {
+    setQuestionSnippet('')
+    setSnippetIncluded(false)
   }
 
   return (
@@ -56,7 +62,7 @@ const MultipleChoiceQuestion = () => {
         onChange={handleQuestionPromptInput}
         sx={{ width: '30rem' }}
       />
-      {/* {snippetIncluded || snippet !== '' ? (
+      {snippetIncluded || questionSnippet !== '' ? (
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <Editor
             theme="vs-dark"
@@ -64,10 +70,10 @@ const MultipleChoiceQuestion = () => {
             width="50vw"
             defaultLanguage="python"
             options={{ contextmenu: false }}
-            value={snippet}
+            value={questionSnippet}
             onChange={value => handleSnippetInput(value || '')}
           />
-          <IconButton color="error" onClick={resetSnippet}>
+          <IconButton color="error" onClick={hideSnippet}>
             <RemoveIcon />
           </IconButton>
         </Box>
@@ -75,7 +81,7 @@ const MultipleChoiceQuestion = () => {
         <Button onClick={() => setSnippetIncluded(true)}>Add Snippet</Button>
       )}
 
-      <Box
+      {/* <Box
         id="options"
         sx={{
           display: 'flex',
@@ -107,8 +113,8 @@ const MultipleChoiceQuestion = () => {
             </Box>
           )
         })}
-      </Box>
-      <Box id="add-new-option-button">
+      </Box> */}
+      {/* <Box id="add-new-option-button">
         <Button
           variant="contained"
           disabled={Object.values(options).length === 10}
@@ -116,8 +122,8 @@ const MultipleChoiceQuestion = () => {
         >
           Add Option
         </Button>
-      </Box>
-      <FormControl>
+      </Box> */}
+      {/* <FormControl>
         <InputLabel id="correct-answer">Correct Answer</InputLabel>
         <Select
           required
@@ -134,8 +140,8 @@ const MultipleChoiceQuestion = () => {
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
-      <FormControl>
+      </FormControl> */}
+      {/* <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
           required
