@@ -16,7 +16,6 @@ import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { useQuestionContext } from '@/contexts/question-context'
-import { useEdges } from '@xyflow/react'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 

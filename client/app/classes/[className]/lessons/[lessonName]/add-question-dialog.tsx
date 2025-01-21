@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  type SelectChangeEvent,
   IconButton,
   Dialog,
   DialogTitle,
@@ -18,7 +17,6 @@ import {
 import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 
-import { Question } from '@/types/content.types'
 import RearrangeQuestion from '@/components/question-types/rearrange'
 import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
 import { useQuestionContext } from '@/contexts/question-context'
