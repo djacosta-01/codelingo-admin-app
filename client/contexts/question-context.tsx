@@ -24,11 +24,12 @@ interface QuestionContextType {
   setTopicsCovered: React.Dispatch<React.SetStateAction<string[]>>
   submitQuestion: ({
     lessonName,
-    questionId,
+    questionID,
   }: {
     lessonName?: string
-    questionId?: number
+    questionID?: number
   }) => Promise<{ success: boolean; error?: string | PostgrestError }>
+  resetStates: () => void
 }
 
 const initialContext: QuestionContextType = {
@@ -47,6 +48,7 @@ const initialContext: QuestionContextType = {
   topicsCovered: [],
   setTopicsCovered: () => {},
   submitQuestion: async () => ({ success: false, error: 'Not implemented' }),
+  resetStates: () => {},
 }
 
 const QuestionContext = createContext<QuestionContextType>(initialContext)
@@ -62,12 +64,22 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
 
+  const resetStates = () => {
+    setQuestionID(null)
+    setQuestionType('')
+    setQuestionPrompt('')
+    setQuestionSnippet('')
+    setQuestionOptions({})
+    setCorrectAnswer('')
+    setTopicsCovered([])
+  }
+
   const submitQuestion = async ({
     lessonName,
-    questionId,
+    questionID,
   }: {
     lessonName?: string
-    questionId?: number
+    questionID?: number
   }) => {
     if (lessonName) {
       return await createNewQuestion(lessonName!, {
@@ -81,7 +93,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
       })
     }
 
-    return await updateQuestion(questionId!, {
+    return await updateQuestion(questionID!, {
       questionType,
       prompt: questionPrompt,
       snippet: questionSnippet,
@@ -109,6 +121,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
         topicsCovered,
         setTopicsCovered,
         submitQuestion,
+        resetStates,
       }}
     >
       {children}
