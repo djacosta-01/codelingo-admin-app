@@ -43,6 +43,7 @@ const MenuProps = {
     },
   },
 }
+
 const MultipleChoiceQuestion = ({
   questionPrompt,
   snippet,
