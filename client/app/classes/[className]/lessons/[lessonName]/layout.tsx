@@ -1,22 +1,11 @@
-import { Box } from '@mui/material'
+import { QuestionContextProvider } from '@/contexts/question-context'
 
 const QuestionPageLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        width: '100vw',
-      }}
-    >
-      {children}
-    </Box>
-  )
+  return <QuestionContextProvider>{children}</QuestionContextProvider>
 }
 
 export default QuestionPageLayout
