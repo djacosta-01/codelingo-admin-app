@@ -13,9 +13,10 @@ import {
   Checkbox,
 } from '@mui/material'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { useQuestionContext } from '@/contexts/question-context'
+import { useEdges } from '@xyflow/react'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 
@@ -30,10 +31,31 @@ const MenuProps = {
   },
 }
 
+const convertToObject = (values: string[]) => {
+  return values.reduce((acc: Record<string, string>, option, index) => {
+    acc[`option${index + 1}`] = option
+    return acc
+  }, {})
+}
+
 const MultipleChoiceQuestion = () => {
   const [snippetIncluded, setSnippetIncluded] = useState(false)
-  const { questionPrompt, setQuestionPrompt, questionSnippet, setQuestionSnippet } =
-    useQuestionContext()
+  const {
+    questionPrompt,
+    setQuestionPrompt,
+    questionSnippet,
+    setQuestionSnippet,
+    questionOptions,
+    setQuestionOptions,
+    correctAnswer,
+    setCorrectAnswer,
+    topicsCovered,
+    setTopicsCovered,
+  } = useQuestionContext()
+
+  useEffect(() => {
+    if (Object.keys(questionOptions).length === 0) setQuestionOptions({ option1: '', option2: '' })
+  }, [])
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
@@ -46,6 +68,38 @@ const MultipleChoiceQuestion = () => {
   const hideSnippet = () => {
     setQuestionSnippet('')
     setSnippetIncluded(false)
+  }
+
+  const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setQuestionOptions({ ...questionOptions, [name]: value })
+  }
+
+  const handleAddNewOption = () => {
+    setQuestionOptions(prev => {
+      return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+    })
+  }
+
+  const deleteQuestionOption = (key: string) => {
+    const mapping = new Map(Object.entries(questionOptions))
+    mapping.delete(key)
+
+    // necessary to keep state updates in sync (specifically textfield onChange)
+    const values = Object.values(Object.fromEntries(mapping))
+    const updatedOptions = convertToObject(values)
+    setQuestionOptions(updatedOptions)
+  }
+
+  const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
+    setCorrectAnswer(e.target.value)
+  }
+
+  const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = e
+    setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
   return (
@@ -81,7 +135,7 @@ const MultipleChoiceQuestion = () => {
         <Button onClick={() => setSnippetIncluded(true)}>Add Snippet</Button>
       )}
 
-      {/* <Box
+      <Box
         id="options"
         sx={{
           display: 'flex',
@@ -91,7 +145,7 @@ const MultipleChoiceQuestion = () => {
           width: '50%',
         }}
       >
-        {Object.values(options).map((option, index) => {
+        {Object.values(questionOptions).map((option, index) => {
           const optionKey = `option${index + 1}`
           return (
             <Box key={index}>
@@ -104,44 +158,44 @@ const MultipleChoiceQuestion = () => {
                 onChange={handleOptionInput}
               />
               <IconButton
-                disabled={Object.values(options).length === 2}
+                disabled={Object.values(questionOptions).length === 2}
                 color="error"
-                onClick={() => deleteAnswerFromForm(optionKey)}
+                onClick={() => deleteQuestionOption(optionKey)}
               >
                 <RemoveIcon />
               </IconButton>
             </Box>
           )
         })}
-      </Box> */}
-      {/* <Box id="add-new-option-button">
+      </Box>
+      <Box id="add-new-option-button">
         <Button
           variant="contained"
-          disabled={Object.values(options).length === 10}
+          disabled={Object.values(questionOptions).length === 10}
           onClick={handleAddNewOption}
         >
           Add Option
         </Button>
-      </Box> */}
-      {/* <FormControl>
+      </Box>
+      <FormControl>
         <InputLabel id="correct-answer">Correct Answer</InputLabel>
         <Select
           required
           labelId="correct-answer"
           label="Correct Answer"
           variant="standard"
-          value={Object.values(options).includes(correctAnswer) ? correctAnswer : ''}
+          value={Object.values(questionOptions).includes(correctAnswer) ? correctAnswer : ''}
           onChange={handleCorrectAnswerSelect}
           sx={{ width: '15em' }}
         >
-          {Object.values(options).map((option, index) => (
+          {Object.values(questionOptions).map((option, index) => (
             <MenuItem key={index} value={option}>
               {option}
             </MenuItem>
           ))}
         </Select>
-      </FormControl> */}
-      {/* <FormControl>
+      </FormControl>
+      <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
           required
@@ -149,7 +203,7 @@ const MultipleChoiceQuestion = () => {
           variant="standard"
           multiple
           value={topicsCovered}
-          onChange={handleTopicsCoveredSelect}
+          onChange={handleTopicsCovered}
           renderValue={(selected: string[]) => selected.join(', ')}
           sx={{ width: '15em' }}
           MenuProps={MenuProps}
@@ -161,7 +215,7 @@ const MultipleChoiceQuestion = () => {
             </MenuItem>
           ))}
         </Select>
-      </FormControl> */}
+      </FormControl>
     </>
   )
 }

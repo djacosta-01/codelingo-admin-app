@@ -57,46 +57,6 @@ const AddQuestionDialog = ({
     setButtonOperation('Add Question')
   }
 
-  // const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setQuestionPrompt(e.target.value)
-  // }
-
-  // const handleSnippetInput = (value: string) => {
-  //   setQuestionSnippet(value ?? '')
-  // }
-
-  // const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target
-  //   setQuestionOptions({ ...questionOptions, [name]: value })
-  // }
-
-  // const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
-  //   setCorrectAnswer(e.target.value)
-  // }
-
-  // const handleAddNewOption = () => {
-  //   setQuestionOptions(prev => {
-  //     return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
-  //   })
-  // }
-
-  // const deleteAnswerFromForm = (key: string) => {
-  //   const mapping = new Map(Object.entries(questionOptions))
-  //   mapping.delete(key)
-
-  //   // necessary to keep state updates in sync (specifically textfield onChange)
-  //   const values = Object.values(Object.fromEntries(mapping))
-  //   const updatedOptions = convertToObject(values)
-  //   setQuestionOptions(updatedOptions)
-  // }
-
-  // const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
-  //   const {
-  //     target: { value },
-  //   } = e
-  //   setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
-  // }
-
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
