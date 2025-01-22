@@ -37,7 +37,6 @@ const AddQuestionDialog = ({
   const [error, setError] = useState<boolean>(false)
   const { questionType, questionID, setQuestionType, submitQuestion, resetStates } =
     useQuestionContext()
-
   const [buttonOperation, setButtonOperation] = useState<'Add Question' | 'Update Question'>(
     'Add Question'
   )

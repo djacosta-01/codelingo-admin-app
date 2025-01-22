@@ -37,17 +37,21 @@ const RearrangeQuestion = () => {
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
   // const [tokens, setTokens] = useState<string[]>([])
   const {
+    questionType,
     questionPrompt,
     setQuestionPrompt,
     questionSnippet,
     setQuestionSnippet,
     questionOptions,
     setQuestionOptions,
+    correctAnswer,
+    setCorrectAnswer,
+    topicsCovered,
+    setTopicsCovered,
   } = useQuestionContext()
 
   useEffect(() => {
     if (!Array.isArray(questionOptions)) {
-      // console.log('in useEffect for rearrange')
       setQuestionOptions([] as string[])
     }
   }, [])
@@ -58,6 +62,7 @@ const RearrangeQuestion = () => {
 
   const handleSnippetInput = (value: string) => {
     setQuestionSnippet(value)
+    setCorrectAnswer(value)
   }
 
   const showSnippet = () => {
@@ -98,11 +103,16 @@ const RearrangeQuestion = () => {
     )
   }
 
-  const handleClose = () => {
+  const handleContextMenuClose = () => {
     setContextMenu(null)
   }
 
-  // console.log(questionOptions)
+  const handleTopicsCovered = (e: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = e
+    setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
+  }
 
   return (
     <>
@@ -137,7 +147,7 @@ const RearrangeQuestion = () => {
           </IconButton>
           <Menu
             open={contextMenu !== null}
-            onClose={handleClose}
+            onClose={handleContextMenuClose}
             anchorReference="anchorPosition"
             anchorPosition={
               contextMenu !== null
@@ -173,7 +183,7 @@ const RearrangeQuestion = () => {
       </Box>
       <Button onClick={handleTokenReset}>CLEAR</Button>
 
-      {/* <FormControl>
+      <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
           required
@@ -181,7 +191,7 @@ const RearrangeQuestion = () => {
           variant="standard"
           multiple
           value={topicsCovered}
-          onChange={handleTopicsCoveredSelect}
+          onChange={handleTopicsCovered}
           renderValue={(selected: string[]) => selected.join(', ')}
           sx={{ width: '15em' }}
           MenuProps={MenuProps}
@@ -193,7 +203,7 @@ const RearrangeQuestion = () => {
             </MenuItem>
           ))}
         </Select>
-      </FormControl> */}
+      </FormControl>
     </>
   )
 }

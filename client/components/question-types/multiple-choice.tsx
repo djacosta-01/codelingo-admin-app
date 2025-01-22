@@ -53,9 +53,10 @@ const MultipleChoiceQuestion = () => {
   } = useQuestionContext()
 
   useEffect(() => {
-    if (Array.isArray(questionOptions) || Object.keys(questionOptions).length === 0) {
+    if (Array.isArray(questionOptions)) {
       // console.log('in useEffect for multiple choice')
-      setQuestionOptions({ option1: '', option2: '' })
+      // setQuestionOptions({ option1: '', option2: '' })
+      setQuestionOptions(convertToObject(questionOptions))
     }
   }, [])
 
@@ -108,8 +109,6 @@ const MultipleChoiceQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
-  // console.log(questionOptions)
-
   return (
     <>
       <TextField
@@ -127,7 +126,7 @@ const MultipleChoiceQuestion = () => {
       {snippetIncluded || questionSnippet !== '' ? (
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <Editor
-            theme="vs-dark"
+            theme="vs-light"
             height="50vh"
             width="50vw"
             defaultLanguage="python"

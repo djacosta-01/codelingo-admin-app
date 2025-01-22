@@ -18,12 +18,12 @@ import {
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 import { useQuestionContext } from '@/contexts/question-context'
 
-const convertToObject = (values: string[]) => {
-  return values.reduce((acc: Record<string, string>, option, index) => {
-    acc[`option${index + 1}`] = option
-    return acc
-  }, {})
-}
+// const convertToObject = (values: string[]) => {
+//   return values.reduce((acc: Record<string, string>, option, index) => {
+//     acc[`option${index + 1}`] = option
+//     return acc
+//   }, {})
+// }
 
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
@@ -81,7 +81,7 @@ const QuestionDataGrid = ({
     setQuestionType(questionTypeColumn)
     setQuestionPrompt(promptColumn)
     setQuestionSnippet(snippetColumn)
-    setQuestionOptions(convertToObject(optionsColumn.split(', ')))
+    setQuestionOptions(optionsColumn.split(', '))
     setCorrectAnswer(answerColumn)
     setTopicsCovered(unitsCoveredColumn.split(', '))
     setOpen(true)
