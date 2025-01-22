@@ -9,6 +9,7 @@ import {
   Background,
   useReactFlow,
   ReactFlowProvider,
+  MiniMap,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import React, { useState, useEffect, useContext } from 'react'
@@ -17,14 +18,14 @@ import {
   useOnEdgesChange,
   useOnConnect,
   useOnConnectEnd,
-  useIsValidConnection,
+  // useIsValidConnection,
 } from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
 import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import EditGraphActions from '@/app/classes/[className]/knowledge-graph/edit-graph-actions'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
-import { ViewModeContext } from '@/components/contexts/viewmode-context'
+import { ViewModeContext } from '@/contexts/viewmode-context'
 
 const nodeTypes = { editableNode: EditableNode }
 
@@ -135,6 +136,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
               fitView
             >
               {inEditMode ? <Background gap={20} /> : ''}
+              <MiniMap />
             </ReactFlow>
           )}
         </>

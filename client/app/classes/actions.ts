@@ -45,56 +45,13 @@ export const createNewClass = async (newClassName: string) => {
     return { success: false, error: 'No user found' }
   }
 
-  const { error } = await supabase.from('classes').insert([{ name: newClassName }])
+  const { error } = await supabase
+    .from('classes')
+    .insert([{ name: newClassName, section_number: '', description: '' }])
 
   if (error) {
     console.error('Error creating new class: ', error)
     return { success: false, error: error.message }
-  }
-
-  // fethcing newly created class ID
-  const { data, error: classError } = await supabase
-    .from('classes')
-    .select('class_id')
-    .eq('name', newClassName)
-    .single()
-
-  if (classError) {
-    console.error('Error fetching class ID: ', classError)
-    return { success: false, error: classError.message }
-  }
-
-  // inserting into professor_courses linking table
-  const classID = data.class_id
-  const { error: professorCoursesError } = await supabase
-    .from('professor_courses')
-    .insert({ owner_id: user.id, class_id: classID })
-
-  if (professorCoursesError) {
-    console.error('Error creating professor_courses entry: ', professorCoursesError)
-    return { success: false, error: professorCoursesError.message }
-  }
-
-  // each class needs its own knowledge graph
-  const initialNode = {
-    id: '1',
-    data: { label: 'Initial Node' },
-    type: 'editableNode',
-    position: { x: 150, y: 150 },
-  }
-
-  const { error: knowledgeGraphError } = await supabase.from('class_knowledge_graph').insert([
-    {
-      class_id: classID,
-      nodes: [initialNode.data.label],
-      edges: [],
-      react_flow_data: [{ reactFlowNodes: [initialNode], reactFlowEdges: [] }],
-    },
-  ])
-
-  if (knowledgeGraphError) {
-    console.error('Error creating knowledge graph entry: ', knowledgeGraphError)
-    return { success: false, error: knowledgeGraphError.message }
   }
 
   return { success: true }

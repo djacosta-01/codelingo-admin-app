@@ -54,20 +54,22 @@ export const getLessonData = async (className: string): Promise<Lesson[]> => {
 }
 
 // Should work, but need to update RLS policies on the database for inserts
-export const addLesson = async (
+export const createNewLesson = async (
   className: string,
-  { name, topics }: { name: string; topics: string[] }
+  { lessonName, topics }: { lessonName: string; topics: string[] }
 ) => {
   const supabase = createClient()
 
-  const userResponse = await supabase.auth.getUser()
-  const user = userResponse.data.user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user?.id) {
     console.error('No user found')
     return { success: false, error: 'No user found' }
   }
 
+  console.log('className: ', className)
   const cleanedClassName = className.replace(/%20/g, ' ')
 
   // TODO: make this into a function please bc we're doing this in multiple places
@@ -79,26 +81,23 @@ export const addLesson = async (
 
   if (error) {
     console.error('Error fetching class ID: ', error)
-    return { success: false, error: error }
+    return { success: false, error }
   }
 
-  const { error: insertError } = await supabase.from('lessons').insert({
-    name,
-    topics,
-  })
+  const { error: insertError } = await supabase.from('lessons').insert({ name: lessonName, topics })
 
   if (insertError) {
-    console.error('Error inserting lesson: ', insertError)
+    console.error(insertError)
     return { success: false, error: insertError }
   }
 
   const { data: newLessonID, error: newLessonIDError } = await supabase
     .from('lessons')
     .select('lesson_id')
-    .eq('name', name)
+    .eq('name', lessonName)
     .single()
 
-  if (!newLessonID?.lesson_id) {
+  if (newLessonIDError) {
     console.error(newLessonIDError)
     return { success: false, error: newLessonIDError }
   }
@@ -119,6 +118,37 @@ export const addLesson = async (
   return { success: true }
 }
 
+export const updateLesson = async (
+  id: number,
+  { lessonName, topics }: { lessonName: string; topics: string[] }
+) => {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user?.id) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { error } = await supabase
+    .from('lessons')
+    .update({
+      name: lessonName,
+      topics,
+    })
+    .eq('lesson_id', id)
+
+  if (error) {
+    console.error('Error updating lesson: ', error)
+    return { success: false, error }
+  }
+
+  return { success: true }
+}
+
 export const deleteLesson = async (lessonID: number) => {
   const supabase = createClient()
 
@@ -130,6 +160,8 @@ export const deleteLesson = async (lessonID: number) => {
     return { success: false, error: 'No user found' }
   }
 
+  // NOTE: this also deletes lesson in class lesson bank table
+  // TODO: give user option to keep the lesson for later and pass that decision in as a param
   const { error: deleteError } = await supabase.from('lessons').delete().eq('lesson_id', lessonID)
 
   if (deleteError) {

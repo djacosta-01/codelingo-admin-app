@@ -68,8 +68,6 @@ export const useOnConnect = ({ setReactFlowData, setEdges }) => {
   return onConnect
 }
 
-// TODO: instead of this stupid id generator, take the max ID from the react flow data and increment it by 1
-
 export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setReactFlowData) => {
   /* https://reactflow.dev/examples/nodes/add-node-on-edge-drop */
   const onConnectEnd = useCallback(
@@ -84,6 +82,7 @@ export const useOnConnectEnd = (screenToFlowPosition, setNodes, setEdges, setRea
         // setEdges(eds => [...eds, [connectionState.fromNode.id, id]])
         setReactFlowData(prev => {
           const id = `${Math.max(...prev.reactFlowNodes.map(node => parseInt(node.id))) + 1}`
+          console.log('id:', id)
           return {
             ...prev,
             reactFlowNodes: [

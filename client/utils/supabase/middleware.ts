@@ -28,6 +28,13 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
+  // FOR API TESTING PURPOSES ONLY
+  if (request.nextUrl.pathname === '/student_api/auth/login') {
+    // console.log('API WAS CALLED FROM MOBILE APP\n')
+    // console.log('url', request.nextUrl.pathname)
+    return NextResponse.next()
+  }
+
   // IMPORTANT: Avoid writing any logic between createServerClient and
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.

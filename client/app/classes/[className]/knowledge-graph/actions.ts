@@ -17,10 +17,13 @@ export const getKnowledgeGraphData = async (className: string) => {
 
   // TODO: probably should make a class_slug column in the classes table and filter by that
   const cleanedClassName = className.replace(/%20/g, ' ')
+  // console.log('cleanedClassName: ', cleanedClassName)
+
   const { data: classID, error } = await supabase
     .from('classes')
     .select('class_id')
-    .eq('name', cleanedClassName)
+    .eq('name', cleanedClassName) // hardcoding for now
+    .single()
 
   if (error) {
     console.error('Error fetching class ID: ', error)
@@ -30,12 +33,16 @@ export const getKnowledgeGraphData = async (className: string) => {
   const { data: graphData, error: graphError } = await supabase
     .from('class_knowledge_graph')
     .select('nodes, edges, react_flow_data')
-    .eq('class_id', classID[0].class_id)
+    .eq('class_id', classID.class_id)
     .single()
+
+  // console.log(classID)
+  // console.log('---------> graphData: ', graphData)
+  // console.log('---------> length: ', graphData?.length)
 
   if (graphError) {
     console.error('Error fetching graph data: ', graphError)
-    return { success: false, error: graphError, graphData: null }
+    return { success: false, error: graphError, graphData: [] }
   }
 
   return { success: true, graphData }
@@ -62,6 +69,7 @@ export const updateKnowledgeGraph = async (
   }
 
   const cleanedClassName = className.replace(/%20/g, ' ')
+  console.log('cleanedClassName: ', cleanedClassName)
   const { data: classID, error } = await supabase
     .from('classes')
     .select('class_id')

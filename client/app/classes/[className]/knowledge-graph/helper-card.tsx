@@ -84,13 +84,13 @@ const HelperCard = () => {
             </Typography>
             <Typography>
               <ul>
-                <li>{`Add Node(s): Click "Add" button and enter relevant information`}</li>
+                <li>Add a Node: Click Add button and enter relevant information</li>
                 <li>
-                  Creating Edge(s): Enter edge info when adding a node or click edge source and drag
+                  Creating an Edge: Enter edge info when adding a node or click edge source and drag
                   to desired node
                 </li>
-                <li>Move Node(s): Click and drag node(s)</li>
-                <li>Delete Node(s)/Edge(s): Click node or edge and press backspace</li>
+                <li>Move a Node: Click and drag</li>
+                <li>Delete a Node/Edge: Click node or edge and press backspace</li>
               </ul>
             </Typography>
           </CardContent>

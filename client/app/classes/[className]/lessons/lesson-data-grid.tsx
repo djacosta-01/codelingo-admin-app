@@ -20,12 +20,16 @@ import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 
 const LessonDataGrid = ({
   className,
+  refreshGrid,
   setPrevLessonData,
+  dataLoading,
   setDataLoading,
   setOpen,
 }: {
   className: string
+  refreshGrid: number
   setPrevLessonData: Dispatch<SetStateAction<Lesson | null>>
+  dataLoading: boolean
   setDataLoading: Dispatch<SetStateAction<boolean>>
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
@@ -131,11 +135,11 @@ const LessonDataGrid = ({
       setDataLoading(false)
     }
     fetchLessons()
-  }, [className])
+  }, [className, setDataLoading, refreshGrid])
 
   return (
     <>
-      {rows.length === 0 ? (
+      {dataLoading ? (
         <DataGridSkeleton columns={columns} />
       ) : (
         <>

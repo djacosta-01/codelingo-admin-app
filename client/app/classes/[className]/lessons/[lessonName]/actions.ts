@@ -9,6 +9,7 @@ export const getLessonQuestions = async (
 ): Promise<
   {
     question_id: number
+    question_type: string
     prompt: string | null
     snippet: string | null
     topics: string[] | null
@@ -68,7 +69,7 @@ export const getLessonQuestions = async (
   return questionData
 }
 
-export async function insertQuestion(
+export async function createNewQuestion(
   lessonName: string,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
@@ -80,15 +81,15 @@ export async function insertQuestion(
 
   const supabase = createClient()
 
-  const userResponse = await supabase.auth.getUser()
-  const user = userResponse.data.user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user?.id) {
     console.error('No user found')
     return { success: false, error: 'No user found' }
   }
 
-  // adding to questions table for now
   const { error } = await supabase.from('questions').insert({
     question_type: questionType,
     prompt,
@@ -103,7 +104,6 @@ export async function insertQuestion(
     return { success: false, error }
   }
 
-  // getting the question id of the question we just inserted
   const { data: questionIDs, error: questionIDError } = await supabase
     .from('questions')
     .select('question_id')
@@ -116,7 +116,6 @@ export async function insertQuestion(
   // theoretically, the largest question id should be the one we just inserted
   const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
 
-  // getting the lesson id of the lesson we want to add the question to
   const cleanedLessonName = lessonName.replace(/%20/g, ' ')
   const { data: lessonID, error: lessonIDError } = await supabase
     .from('lessons')
@@ -129,7 +128,6 @@ export async function insertQuestion(
     return { success: false, error: lessonIDError }
   }
 
-  // adding to lesson_question_bank table
   const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
     lesson_id: lessonID.lesson_id,
     owner_id: user.id,
