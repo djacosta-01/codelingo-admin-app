@@ -126,7 +126,7 @@ const MultipleChoiceQuestion = () => {
       {snippetIncluded || questionSnippet !== '' ? (
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
           <Editor
-            theme="vs-light"
+            theme="vs-dark"
             height="50vh"
             width="50vw"
             defaultLanguage="python"
