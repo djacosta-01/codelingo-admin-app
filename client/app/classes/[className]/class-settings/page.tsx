@@ -37,7 +37,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
       <Box>QRCode functionality not implemented yet</Box>
       <QRCode fontSize="large" />
       <Box>
-        <Button onClick={handleConfimationDialogOpen} color="error">
+        <Button variant="contained" onClick={handleConfimationDialogOpen} color="error">
           DELETE CLASS
         </Button>
         <Dialog open={confirmationDialogOpen}>
