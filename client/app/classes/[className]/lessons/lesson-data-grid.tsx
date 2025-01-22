@@ -2,15 +2,13 @@
 
 import {
   DataGrid,
-  GridRow,
-  GridRowProps,
   GridRowsProp,
   GridColDef,
   GridActionsCellItem,
   GridRowParams,
   GridToolbar,
 } from '@mui/x-data-grid'
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
+import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
