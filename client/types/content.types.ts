@@ -1,7 +1,7 @@
 export type Lesson = {
   lesson_id?: number
-  name: string | null
-  topics: string[] | null
+  name: string
+  topics: string[]
 }
 
 export type Question = {
