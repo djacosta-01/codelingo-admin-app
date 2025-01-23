@@ -3,6 +3,40 @@
 import { createClient } from '@/utils/supabase/server'
 import { Lesson } from '@/types/content.types'
 
+export const getAllLessons = async () => {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { data, error } = await supabase.from('professor_lessons').select('lesson_id')
+
+  if (error) {
+    console.error('Error fetching lessons: ', error)
+    return { success: false, error }
+  }
+
+  const userLessonIDs = data.map(lesson => lesson.lesson_id)
+
+  const { data: lessons, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('*')
+    .in('lesson_id', userLessonIDs)
+
+  if (lessonsError) {
+    console.error('Error fetching lessons: ', lessonsError)
+    return { success: false, error: lessonsError }
+  }
+
+  return { success: true, lessons }
+}
+
 export const lessonDataFor = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
 
@@ -117,7 +151,7 @@ export const createNewLesson = async (
   return { success: true }
 }
 
-export const getAllLessons = async () => {
+export const importLessonToClass = async (className: string, lessonIDs: number[]) => {
   const supabase = createClient()
 
   const {
@@ -129,26 +163,31 @@ export const getAllLessons = async () => {
     return { success: false, error: 'No user found' }
   }
 
-  const { data, error } = await supabase.from('professor_lessons').select('lesson_id')
+  const cleanedClassName = className.replace(/%20/g, ' ')
+
+  const { data, error } = await supabase
+    .from('classes')
+    .select('class_id')
+    .eq('name', cleanedClassName)
+    .single()
 
   if (error) {
-    console.error('Error fetching lessons: ', error)
-    return { success: false, error }
+    console.error('Error fetching class ID: ', error)
+    return { success: false, error: 'Something went wrong' }
   }
 
-  const userLessonIDs = data.map(lesson => lesson.lesson_id)
+  for (const lessonID of lessonIDs) {
+    const { error: insertError } = await supabase
+      .from('class_lesson_bank')
+      .insert({ owner_id: user.id, class_id: data.class_id, lesson_id: lessonID })
 
-  const { data: lessons, error: lessonsError } = await supabase
-    .from('lessons')
-    .select('*')
-    .in('lesson_id', userLessonIDs)
-
-  if (lessonsError) {
-    console.error('Error fetching lessons: ', lessonsError)
-    return { success: false, error: lessonsError }
+    if (insertError) {
+      console.error('Error importing lessons ', insertError)
+      return { success: false, error: 'Error importing lessons' }
+    }
   }
 
-  return { success: true, lessons }
+  return { success: true }
 }
 
 export const updateLesson = async (

@@ -17,14 +17,16 @@ import {
   type GridValidRowModel,
 } from '@mui/x-data-grid'
 import { type Dispatch, type SetStateAction, useState } from 'react'
-import { getAllLessons } from '@/app/classes/[className]/lessons/actions'
+import { getAllLessons, importLessonToClass } from '@/app/classes/[className]/lessons/actions'
 import { Lesson } from '@/types/content.types'
 
 const CustomToolbar = ({
   page,
+  className,
   setRows,
 }: {
   page: string
+  className: string
   setRows: Dispatch<SetStateAction<readonly GridValidRowModel[]>>
 }) => {
   const [open, setOpen] = useState(false)
@@ -64,10 +66,21 @@ const CustomToolbar = ({
     }))
   }
 
-  const handleImportLessons = () => {
+  const handleImportLessons = async () => {
     const chosenLessons = userLessons?.filter(lesson => lessonsToImport?.[lesson.name])
+
     if (!chosenLessons || chosenLessons.length === 0) {
       alert('No lessons selected')
+      return
+    }
+
+    const response = await importLessonToClass(
+      className,
+      chosenLessons.map(({ lesson_id }) => lesson_id)
+    )
+
+    if (!response?.success) {
+      alert(`Error importing lessons: ${response.error}`)
       return
     }
 
