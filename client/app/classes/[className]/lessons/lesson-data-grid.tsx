@@ -6,28 +6,16 @@ import {
   GridColDef,
   GridActionsCellItem,
   GridRowParams,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarExport,
 } from '@mui/x-data-grid'
-import { Dialog, DialogActions, DialogTitle, Button, Box } from '@mui/material'
+import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
 import { Edit, Delete } from '@mui/icons-material'
-import { getLessonData, deleteLesson } from '@/app/classes/[className]/lessons/actions'
+import { lessonDataFor, deleteLesson } from '@/app/classes/[className]/lessons/actions'
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
+import CustomToolbar from '@/components/add-class-content/custom-toolbar'
 
-const CustomToolbar = () => {
-  return (
-    <GridToolbarContainer>
-      <GridToolbarDensitySelector />
-      <Button color="primary">Import</Button>
-      <Box sx={{ flex: 1 }} />
-      <GridToolbarExport />
-    </GridToolbarContainer>
-  )
-}
 const LessonDataGrid = ({
   className,
   refreshGrid,
@@ -134,7 +122,7 @@ const LessonDataGrid = ({
 
   useEffect(() => {
     const fetchLessons = async () => {
-      const lessons = await getLessonData(className)
+      const lessons = await lessonDataFor(className)
       setRows(
         lessons.map(({ lesson_id, name, topics }) => ({
           id: lesson_id,
@@ -159,8 +147,13 @@ const LessonDataGrid = ({
             onRowClick={routeToLesson}
             disableColumnSelector
             ignoreDiacritics
-            getRowClassName={() => 'custom-row'}
-            slots={{ toolbar: CustomToolbar }}
+            slots={{ toolbar: props => <CustomToolbar {...props} page="lesson" /> }}
+            // slots={{ toolbar: CustomToolbar }}
+            // slotProps={{
+            //   toolbar: {
+            //     page: 'lesson',
+            //   },
+            // }}
             sx={{
               '& .custom-row:hover': {
                 cursor: 'pointer',

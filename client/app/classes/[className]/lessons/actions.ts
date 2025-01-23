@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { Lesson } from '@/types/content.types'
 
-export const getLessonData = async (className: string): Promise<Lesson[]> => {
+export const lessonDataFor = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -116,6 +116,40 @@ export const createNewLesson = async (
   }
 
   return { success: true }
+}
+
+export const getAllLessons = async () => {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { data, error } = await supabase.from('professor_lessons').select('lesson_id')
+
+  if (error) {
+    console.error('Error fetching lessons: ', error)
+    return { success: false, error }
+  }
+
+  const userLessonIDs = data.map(lesson => lesson.lesson_id)
+
+  const { data: lessons, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('*')
+    .in('lesson_id', userLessonIDs)
+
+  if (lessonsError) {
+    console.error('Error fetching lessons: ', lessonsError)
+    return { success: false, error: lessonsError }
+  }
+
+  return { success: true, lessons }
 }
 
 export const updateLesson = async (
