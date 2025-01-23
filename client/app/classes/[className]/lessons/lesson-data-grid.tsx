@@ -147,13 +147,7 @@ const LessonDataGrid = ({
             onRowClick={routeToLesson}
             disableColumnSelector
             ignoreDiacritics
-            slots={{ toolbar: props => <CustomToolbar {...props} page="lesson" /> }}
-            // slots={{ toolbar: CustomToolbar }}
-            // slotProps={{
-            //   toolbar: {
-            //     page: 'lesson',
-            //   },
-            // }}
+            slots={{ toolbar: props => <CustomToolbar page="lesson" setRows={setRows} /> }}
             sx={{
               '& .custom-row:hover': {
                 cursor: 'pointer',

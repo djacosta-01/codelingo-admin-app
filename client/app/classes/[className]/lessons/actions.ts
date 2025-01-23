@@ -69,7 +69,6 @@ export const createNewLesson = async (
     return { success: false, error: 'No user found' }
   }
 
-  console.log('className: ', className)
   const cleanedClassName = className.replace(/%20/g, ' ')
 
   // TODO: make this into a function please bc we're doing this in multiple places

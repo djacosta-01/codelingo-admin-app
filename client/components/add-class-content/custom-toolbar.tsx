@@ -14,12 +14,19 @@ import {
   GridToolbarContainer,
   GridToolbarDensitySelector,
   GridToolbarExport,
+  type GridValidRowModel,
 } from '@mui/x-data-grid'
-import { useState, useEffect } from 'react'
+import { type Dispatch, type SetStateAction, useState } from 'react'
 import { getAllLessons } from '@/app/classes/[className]/lessons/actions'
 import { Lesson } from '@/types/content.types'
 
-const CustomToolbar = ({ page }: { page: string }) => {
+const CustomToolbar = ({
+  page,
+  setRows,
+}: {
+  page: string
+  setRows: Dispatch<SetStateAction<readonly GridValidRowModel[]>>
+}) => {
   const [open, setOpen] = useState(false)
   const [userLessons, setUserLessons] = useState<Lesson[] | undefined>(undefined)
   const [lessonsToImport, setLessonsToImport] = useState<{ [key: string]: boolean }>()
@@ -57,6 +64,23 @@ const CustomToolbar = ({ page }: { page: string }) => {
     }))
   }
 
+  const handleImportLessons = () => {
+    const chosenLessons = userLessons?.filter(lesson => lessonsToImport?.[lesson.name])
+    if (!chosenLessons || chosenLessons.length === 0) {
+      alert('No lessons selected')
+      return
+    }
+
+    setRows(prev => [
+      ...prev,
+      ...chosenLessons.map(({ lesson_id, name, topics }) => ({
+        id: lesson_id,
+        lessonName: name,
+        unitsCovered: topics.join(', '),
+      })),
+    ])
+  }
+
   return (
     <>
       <GridToolbarContainer>
@@ -86,7 +110,7 @@ const CustomToolbar = ({ page }: { page: string }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button onClick={() => alert('IMPORT FEATURE COMING SOON!')}>Import</Button>
+          <Button onClick={handleImportLessons}>Import</Button>
         </DialogActions>
       </Dialog>
     </>
