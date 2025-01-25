@@ -73,11 +73,11 @@ export async function createNewQuestion(
   lessonName: string,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
-  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
-  if (hasDuplicates) {
-    console.error('Duplicate answer options found')
-    return { success: false, error: 'Duplicate answer options found' }
-  }
+  // const hasDuplicates = checkAnswersForDuplicates(answerOptions)
+  // if (hasDuplicates) {
+  //   console.error('Duplicate answer options found')
+  //   return { success: false, error: 'Duplicate answer options found' }
+  // }
 
   const supabase = createClient()
 
@@ -148,11 +148,11 @@ export async function updateQuestion(
   id: number,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
-  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
-  if (hasDuplicates) {
-    console.error('Duplicate answer options found')
-    return { success: false, error: 'Duplicate answer options found' }
-  }
+  // const hasDuplicates = checkAnswersForDuplicates(answerOptions)
+  // if (hasDuplicates) {
+  //   console.error('Duplicate answer options found')
+  //   return { success: false, error: 'Duplicate answer options found' }
+  // }
 
   const supabase = createClient()
 

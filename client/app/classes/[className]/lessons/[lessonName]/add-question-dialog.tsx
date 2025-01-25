@@ -74,22 +74,7 @@ const AddQuestionDialog = ({
 
   const componentMap: { [key: string]: JSX.Element } = {
     ['Multiple Choice']: <MultipleChoiceQuestion />,
-    ['Rearrange']: (
-      <RearrangeQuestion
-      // questionPrompt={questionPrompt}
-      // snippet={questionSnippet}
-      // options={options}
-      // correctAnswer={correctAnswer}
-      // topicsCovered={topicsCovered}
-      // handleQuestionPromptInput={handleQuestionPromptInput}
-      // handleSnippetInput={handleSnippetInput}
-      // handleOptionInput={handleOptionInput}
-      // deleteAnswerFromForm={deleteAnswerFromForm}
-      // handleAddNewOption={handleAddNewOption}
-      // handleCorrectAnswerSelect={handleCorrectAnswerSelect}
-      // handleTopicsCoveredSelect={handleTopicsCovered}
-      />
-    ),
+    ['Rearrange']: <RearrangeQuestion />,
   }
 
   return (

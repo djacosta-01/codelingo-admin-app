@@ -1,6 +1,14 @@
 'use client'
 
 import Editor from '@monaco-editor/react'
+import { EditorState } from '@uiw/react-codemirror'
+import { EditorView, keymap } from '@codemirror/view'
+import { defaultKeymap } from '@codemirror/commands'
+import CodeMirror from '@uiw/react-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { javascript } from '@codemirror/lang-javascript'
+import CodeMirrorExample from '../add-class-content/custom-editor'
+
 import {
   Box,
   Menu,
@@ -33,9 +41,10 @@ const MenuProps = {
 
 const RearrangeQuestion = () => {
   const [selectedText, setSelectedText] = useState('')
-  const [snippetIncluded, setSnippetIncluded] = useState(false)
+  const [selectionObj, setSelectionObj] = useState({ text: '', position: [0, 0] })
+  const [snippetIncluded, setSnippetIncluded] = useState(true)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
-  // const [tokens, setTokens] = useState<string[]>([])
+
   const {
     questionType,
     questionPrompt,
@@ -75,14 +84,34 @@ const RearrangeQuestion = () => {
   }
 
   const handleTokenCreation = () => {
-    const selection = window.getSelection()
+    // const selection = window.getSelection()
 
-    if (selection && selection.toString().length > 0) {
-      // setSelectedText(selection.toString())
-      setQuestionOptions(prev => [...(prev as string[]), selection.toString()])
-    } else {
-      alert('No text selected')
-      setSelectedText('')
+    // if (selection && selection.toString().length > 0) {
+    //   // console.log(selection)
+    //   // console.log('Anchor node:', selection.anchorNode)
+    //   // console.log('Focus node:', selection.focusNode)
+    //   // console.log('Anchor offset:', selection.anchorOffset)
+    //   // console.log('Focus offset:', selection.focusOffset)
+    //   // const x = [...selection.toString()]
+
+    //   // console.log(x)
+    //   // setSelectedText(selection.toString())
+    //   setQuestionOptions(prev => [...(prev as string[]), selection.toString()])
+    // } else {
+    //   alert('No text selected')
+    //   setSelectedText('')
+    // }
+    const selectionObj = window.getSelection()
+    const selectedText = selectionObj?.toString() // Get the selected text
+
+    if (selectedText) {
+      const range = selectionObj?.getRangeAt(0) // Get the range of the selection
+      const startOffset = range?.startOffset // Start offset of the selection
+      const endOffset = range?.endOffset // End offset of the selection
+      console.log('Selected text:', selectedText)
+      console.log('Start offset:', startOffset)
+      console.log('End offset:', endOffset)
+      console.log('Range:', range)
     }
   }
 
@@ -114,6 +143,20 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  const testNewSelectionMethod = (e: { target: any }) => {
+    console.log('IN TEST NEW SELECTION METHOD\n')
+
+    const input = e.target
+    const { value, selectionStart, selectionEnd } = input
+
+    if (selectionStart !== selectionEnd) {
+      console.log('Value:', value)
+      console.log('Selection start:', selectionStart)
+      console.log('Selection end:', selectionEnd)
+      const selectedText = value.slice(selectionStart, selectionEnd)
+      console.log(selectedText)
+    }
+  }
   return (
     <>
       <TextField
@@ -133,7 +176,16 @@ const RearrangeQuestion = () => {
           onContextMenu={handleContextMenu}
           sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, cursor: 'context-menu' }}
         >
-          <Editor
+          {/* <CodeMirror
+            height="500px"
+            width="500px"
+            value={questionSnippet}
+            onChange={value => handleSnippetInput(value ?? '')}
+            theme={oneDark}
+            extensions={[javascript()]}
+          /> */}
+          <CodeMirrorExample />
+          {/* <Editor
             theme="vs-dark"
             height="50vh"
             width="50vw"
@@ -141,7 +193,8 @@ const RearrangeQuestion = () => {
             options={{ contextmenu: false }}
             value={questionSnippet}
             onChange={value => handleSnippetInput(value ?? '')}
-          />
+          /> */}
+          {questionSnippet}
           <IconButton color="error" onClick={hideSnippet}>
             <RemoveIcon />
           </IconButton>
