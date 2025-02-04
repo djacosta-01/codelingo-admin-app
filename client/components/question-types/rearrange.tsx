@@ -20,6 +20,7 @@ import {
   InputLabel,
   Select,
   type SelectChangeEvent,
+  Tooltip,
 } from '@mui/material'
 import { useState, useEffect, useRef } from 'react'
 import { RemoveCircleOutline as RemoveIcon, Lock, LockOpen as Unlock } from '@mui/icons-material'
@@ -136,47 +137,42 @@ const RearrangeQuestion = () => {
         onChange={handleQuestionPromptInput}
         sx={{ width: '30rem' }}
       />
-      {snippetIncluded || questionSnippet !== '' ? (
-        <Box
+      <Box
+        onContextMenu={handleContextMenu}
+        sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
+      >
+        <CodeMirror
+          value={questionSnippet}
+          onChange={editorLocked ? () => {} : handleSnippetInput}
+          height="300px"
+          width="700px"
+          extensions={[javascript(), EditorView.editable.of(!editorLocked)]}
+          theme={oneDark}
+          onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
           onContextMenu={handleContextMenu}
-          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
-        >
-          <CodeMirror
-            value={questionSnippet}
-            onChange={editorLocked ? () => {} : handleSnippetInput}
-            height="300px"
-            width="700px"
-            extensions={[javascript(), EditorView.editable.of(editorLocked)]}
-            theme={oneDark}
-            onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
-            onContextMenu={handleContextMenu}
-          />
+        />
 
+        <Tooltip title={editorLocked ? 'Editor is Locked' : 'Editor is Unlocked'}>
           <IconButton onClick={() => setEditorLocked(!editorLocked)}>
             {editorLocked ? <Lock /> : <Unlock />}
           </IconButton>
+        </Tooltip>
 
-          <IconButton color="error" onClick={hideSnippet}>
-            <RemoveIcon />
-          </IconButton>
-          {editorLocked ? (
-            <Menu
-              open={contextMenu !== null}
-              onClose={handleContextMenuClose}
-              anchorReference="anchorPosition"
-              anchorPosition={
-                contextMenu !== null
-                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                  : undefined
-              }
-            >
-              <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
-            </Menu>
-          ) : null}
-        </Box>
-      ) : (
-        <Button onClick={showSnippet}>Add Snippet</Button>
-      )}
+        {editorLocked ? (
+          <Menu
+            open={contextMenu !== null}
+            onClose={handleContextMenuClose}
+            anchorReference="anchorPosition"
+            anchorPosition={
+              contextMenu !== null
+                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                : undefined
+            }
+          >
+            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
+          </Menu>
+        ) : null}
+      </Box>
       <Box sx={{ display: 'flex', gap: 2 }}>
         {!Array.isArray(questionOptions)
           ? ''
@@ -198,7 +194,6 @@ const RearrangeQuestion = () => {
             ))}
       </Box>
       <Button onClick={handleTokenReset}>CLEAR</Button>
-
       <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
