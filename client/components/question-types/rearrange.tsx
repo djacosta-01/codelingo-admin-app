@@ -1,14 +1,12 @@
 'use client'
 
-import Editor from '@monaco-editor/react'
-import { EditorState } from '@uiw/react-codemirror'
-import { EditorView, keymap } from '@codemirror/view'
-import { defaultKeymap } from '@codemirror/commands'
+// import Editor from '@monaco-editor/react'
+// import { EditorState } from '@uiw/react-codemirror'
+import { EditorView } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { javascript } from '@codemirror/lang-javascript'
-import CodeMirrorExample from '../add-class-content/custom-editor'
-
+import { python } from '@codemirror/lang-python'
 import {
   Box,
   Menu,
@@ -23,8 +21,8 @@ import {
   Select,
   type SelectChangeEvent,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
-import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
+import { useState, useEffect, useRef } from 'react'
+import { RemoveCircleOutline as RemoveIcon, Lock, LockOpen as Unlock } from '@mui/icons-material'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
@@ -40,10 +38,11 @@ const MenuProps = {
 }
 
 const RearrangeQuestion = () => {
-  const [selectedText, setSelectedText] = useState('')
-  const [selectionObj, setSelectionObj] = useState({ text: '', position: [0, 0] })
+  const [desiredTokens, setDesiredToken] = useState({ text: '', position: [0, 0] })
+  const [editorLocked, setEditorLocked] = useState(false)
   const [snippetIncluded, setSnippetIncluded] = useState(true)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
+  const editorRef = useRef<EditorView | null>(null)
 
   const {
     questionType,
@@ -69,7 +68,15 @@ const RearrangeQuestion = () => {
     setQuestionPrompt(e.target.value)
   }
 
+  const handleEditorLoad = (view: EditorView) => {
+    editorRef.current = view
+  }
+
   const handleSnippetInput = (value: string) => {
+    if (editorLocked) {
+      console.log('Editor is locked')
+      return
+    }
     setQuestionSnippet(value)
     setCorrectAnswer(value)
   }
@@ -84,35 +91,7 @@ const RearrangeQuestion = () => {
   }
 
   const handleTokenCreation = () => {
-    // const selection = window.getSelection()
-
-    // if (selection && selection.toString().length > 0) {
-    //   // console.log(selection)
-    //   // console.log('Anchor node:', selection.anchorNode)
-    //   // console.log('Focus node:', selection.focusNode)
-    //   // console.log('Anchor offset:', selection.anchorOffset)
-    //   // console.log('Focus offset:', selection.focusOffset)
-    //   // const x = [...selection.toString()]
-
-    //   // console.log(x)
-    //   // setSelectedText(selection.toString())
-    //   setQuestionOptions(prev => [...(prev as string[]), selection.toString()])
-    // } else {
-    //   alert('No text selected')
-    //   setSelectedText('')
-    // }
-    const selectionObj = window.getSelection()
-    const selectedText = selectionObj?.toString() // Get the selected text
-
-    if (selectedText) {
-      const range = selectionObj?.getRangeAt(0) // Get the range of the selection
-      const startOffset = range?.startOffset // Start offset of the selection
-      const endOffset = range?.endOffset // End offset of the selection
-      console.log('Selected text:', selectedText)
-      console.log('Start offset:', startOffset)
-      console.log('End offset:', endOffset)
-      console.log('Range:', range)
-    }
+    alert('Token creation being reworked')
   }
 
   const handleTokenReset = () => {
@@ -143,20 +122,6 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
-  const testNewSelectionMethod = (e: { target: any }) => {
-    console.log('IN TEST NEW SELECTION METHOD\n')
-
-    const input = e.target
-    const { value, selectionStart, selectionEnd } = input
-
-    if (selectionStart !== selectionEnd) {
-      console.log('Value:', value)
-      console.log('Selection start:', selectionStart)
-      console.log('Selection end:', selectionEnd)
-      const selectedText = value.slice(selectionStart, selectionEnd)
-      console.log(selectedText)
-    }
-  }
   return (
     <>
       <TextField
@@ -174,42 +139,40 @@ const RearrangeQuestion = () => {
       {snippetIncluded || questionSnippet !== '' ? (
         <Box
           onContextMenu={handleContextMenu}
-          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, cursor: 'context-menu' }}
+          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
         >
-          {/* <CodeMirror
-            height="500px"
-            width="500px"
+          <CodeMirror
             value={questionSnippet}
-            onChange={value => handleSnippetInput(value ?? '')}
+            onChange={editorLocked ? () => {} : handleSnippetInput}
+            height="300px"
+            width="700px"
+            extensions={[javascript(), EditorView.editable.of(editorLocked)]}
             theme={oneDark}
-            extensions={[javascript()]}
-          /> */}
-          <CodeMirrorExample />
-          {/* <Editor
-            theme="vs-dark"
-            height="50vh"
-            width="50vw"
-            defaultLanguage="python"
-            options={{ contextmenu: false }}
-            value={questionSnippet}
-            onChange={value => handleSnippetInput(value ?? '')}
-          /> */}
-          {questionSnippet}
+            onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
+            onContextMenu={handleContextMenu}
+          />
+
+          <IconButton onClick={() => setEditorLocked(!editorLocked)}>
+            {editorLocked ? <Lock /> : <Unlock />}
+          </IconButton>
+
           <IconButton color="error" onClick={hideSnippet}>
             <RemoveIcon />
           </IconButton>
-          <Menu
-            open={contextMenu !== null}
-            onClose={handleContextMenuClose}
-            anchorReference="anchorPosition"
-            anchorPosition={
-              contextMenu !== null
-                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                : undefined
-            }
-          >
-            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
-          </Menu>
+          {editorLocked ? (
+            <Menu
+              open={contextMenu !== null}
+              onClose={handleContextMenuClose}
+              anchorReference="anchorPosition"
+              anchorPosition={
+                contextMenu !== null
+                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                  : undefined
+              }
+            >
+              <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
+            </Menu>
+          ) : null}
         </Box>
       ) : (
         <Button onClick={showSnippet}>Add Snippet</Button>
