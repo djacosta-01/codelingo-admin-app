@@ -144,8 +144,6 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
-  console.log('desiredTokens', desiredTokens)
-
   return (
     <>
       <TextField
