@@ -23,7 +23,7 @@ import {
   Tooltip,
 } from '@mui/material'
 import { useState, useEffect, useRef } from 'react'
-import { RemoveCircleOutline as RemoveIcon, Lock, LockOpen as Unlock } from '@mui/icons-material'
+import { Lock, LockOpen as Unlock } from '@mui/icons-material'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
@@ -38,12 +38,17 @@ const MenuProps = {
   },
 }
 
+interface Token {
+  text: string
+  position: [number, number]
+  range?: number[]
+}
+
 const RearrangeQuestion = () => {
-  const [desiredTokens, setDesiredToken] = useState({ text: '', position: [0, 0] })
-  const [editorLocked, setEditorLocked] = useState(false)
-  const [snippetIncluded, setSnippetIncluded] = useState(true)
-  const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
   const editorRef = useRef<EditorView | null>(null)
+  const [desiredTokens, setDesiredTokens] = useState<Token[]>([])
+  const [editorLocked, setEditorLocked] = useState(false)
+  const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
 
   const {
     questionType,
@@ -74,28 +79,47 @@ const RearrangeQuestion = () => {
   }
 
   const handleSnippetInput = (value: string) => {
-    if (editorLocked) {
-      console.log('Editor is locked')
-      return
-    }
     setQuestionSnippet(value)
     setCorrectAnswer(value)
   }
 
-  const showSnippet = () => {
-    setSnippetIncluded(true)
-  }
-
-  const hideSnippet = () => {
-    setQuestionSnippet('')
-    setSnippetIncluded(false)
-  }
-
   const handleTokenCreation = () => {
-    alert('Token creation being reworked')
+    if (!editorRef.current) return
+
+    const view = editorRef.current
+    const state = view.state
+
+    const { from: startIndex, to: endIndex } = state.selection.main
+    const selectedText = state.sliceDoc(startIndex, endIndex)
+
+    if (selectedText.trim().length === 0) {
+      alert('No text selected. Please select a range of text to create a token')
+      return
+    }
+
+    const range = [...Array(endIndex - startIndex)].map((_, i) => startIndex + i)
+
+    if (handleTokenOverlapDetection(range)) {
+      alert('Token overlap detected. Please select a different range of text')
+      return
+    }
+
+    setDesiredTokens([
+      ...desiredTokens,
+      { text: selectedText, position: [startIndex, endIndex], range },
+    ])
+  }
+
+  const handleTokenOverlapDetection = (tokenCandidatePosition: number[]) => {
+    return desiredTokens.some(({ range }) => {
+      if (!range) return false
+      return range.some(index => tokenCandidatePosition.includes(index))
+    })
   }
 
   const handleTokenReset = () => {
+    // TODO: get rid of one of these
+    setDesiredTokens([])
     setQuestionOptions([])
   }
 
@@ -193,6 +217,11 @@ const RearrangeQuestion = () => {
               </Paper>
             ))}
       </Box>
+      {desiredTokens.map(({ text }, index) => (
+        <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
+          {text}
+        </Paper>
+      ))}
       <Button onClick={handleTokenReset}>CLEAR</Button>
       <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
