@@ -13,8 +13,13 @@ import {
   Checkbox,
 } from '@mui/material'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
-import Editor from '@monaco-editor/react'
+import { useEffect, useRef, useState } from 'react'
+// import Editor from '@monaco-editor/react'
+import { EditorView } from '@codemirror/view'
+import CodeMirror from '@uiw/react-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { javascript } from '@codemirror/lang-javascript'
+import { python } from '@codemirror/lang-python'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
@@ -38,6 +43,8 @@ const convertToObject = (values: string[]) => {
 }
 
 const MultipleChoiceQuestion = () => {
+  const editorRef = useRef<EditorView | null>(null)
+
   const [snippetIncluded, setSnippetIncluded] = useState(false)
   const {
     questionPrompt,
@@ -52,13 +59,9 @@ const MultipleChoiceQuestion = () => {
     setTopicsCovered,
   } = useQuestionContext()
 
-  useEffect(() => {
-    if (Array.isArray(questionOptions)) {
-      // console.log('in useEffect for multiple choice')
-      // setQuestionOptions({ option1: '', option2: '' })
-      setQuestionOptions(convertToObject(questionOptions))
-    }
-  }, [])
+  const handleEditorLoad = (view: EditorView) => {
+    editorRef.current = view
+  }
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
@@ -109,6 +112,12 @@ const MultipleChoiceQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  useEffect(() => {
+    // if (Array.isArray(questionOptions)) {
+    setQuestionOptions({ option1: '', option2: '' })
+    // }
+  }, [])
+
   return (
     <>
       <TextField
@@ -125,15 +134,16 @@ const MultipleChoiceQuestion = () => {
       />
       {snippetIncluded || questionSnippet !== '' ? (
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-          <Editor
-            theme="vs-dark"
-            height="50vh"
-            width="50vw"
-            defaultLanguage="python"
-            options={{ contextmenu: false }}
+          <CodeMirror
             value={questionSnippet}
-            onChange={value => handleSnippetInput(value || '')}
+            onChange={handleSnippetInput}
+            height="300px"
+            width="700px"
+            extensions={[javascript()]}
+            theme={oneDark}
+            onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
           />
+
           <IconButton color="error" onClick={hideSnippet}>
             <RemoveIcon />
           </IconButton>

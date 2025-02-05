@@ -1,12 +1,10 @@
 'use client'
 
-// import Editor from '@monaco-editor/react'
-// import { EditorState } from '@uiw/react-codemirror'
 import { EditorView } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { javascript } from '@codemirror/lang-javascript'
-import { python } from '@codemirror/lang-python'
+// import { python } from '@codemirror/lang-python'
 import {
   Box,
   Menu,
@@ -51,7 +49,6 @@ const RearrangeQuestion = () => {
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
 
   const {
-    questionType,
     questionPrompt,
     setQuestionPrompt,
     questionSnippet,
@@ -147,6 +144,8 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  console.log('desiredTokens', desiredTokens)
+
   return (
     <>
       <TextField
@@ -167,7 +166,7 @@ const RearrangeQuestion = () => {
       >
         <CodeMirror
           value={questionSnippet}
-          onChange={editorLocked ? () => {} : handleSnippetInput}
+          onChange={handleSnippetInput}
           height="300px"
           width="700px"
           extensions={[javascript(), EditorView.editable.of(!editorLocked)]}
@@ -217,11 +216,14 @@ const RearrangeQuestion = () => {
               </Paper>
             ))}
       </Box>
-      {desiredTokens.map(({ text }, index) => (
-        <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
-          {text}
-        </Paper>
-      ))}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        {desiredTokens.map(({ text }, index) => (
+          <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
+            {text}
+          </Paper>
+        ))}
+      </Box>
+
       <Button onClick={handleTokenReset}>CLEAR</Button>
       <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>

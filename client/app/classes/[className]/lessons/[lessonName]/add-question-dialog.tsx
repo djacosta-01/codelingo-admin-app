@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  type SelectChangeEvent,
   IconButton,
   Dialog,
   DialogTitle,
@@ -19,6 +20,11 @@ import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import RearrangeQuestion from '@/components/question-types/rearrange'
 import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
 import { useQuestionContext } from '@/contexts/question-context'
+
+const componentMap: { [key: string]: JSX.Element } = {
+  ['Multiple Choice']: <MultipleChoiceQuestion />,
+  ['Rearrange']: <RearrangeQuestion />,
+}
 
 const AddQuestionDialog = ({
   lessonName,
@@ -53,6 +59,10 @@ const AddQuestionDialog = ({
     setButtonOperation('Add Question')
   }
 
+  const handleSelectQuestionType = (e: SelectChangeEvent<string>) => {
+    setQuestionType(e.target.value)
+  }
+
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -69,11 +79,6 @@ const AddQuestionDialog = ({
     handleDialogClose()
     setRefreshGrid(prev => prev + 1)
     setAlertOpen(true)
-  }
-
-  const componentMap: { [key: string]: JSX.Element } = {
-    ['Multiple Choice']: <MultipleChoiceQuestion />,
-    ['Rearrange']: <RearrangeQuestion />,
   }
 
   return (
@@ -96,7 +101,7 @@ const AddQuestionDialog = ({
             variant="standard"
             sx={{ width: '15em' }}
             value={questionType}
-            onChange={e => setQuestionType(e.target.value)}
+            onChange={handleSelectQuestionType}
           >
             <MenuItem value="Multiple Choice">Multiple Choice</MenuItem>
             <MenuItem value="Rearrange">Rearrange</MenuItem>
