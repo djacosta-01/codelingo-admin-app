@@ -19,6 +19,10 @@ import {
   Select,
   type SelectChangeEvent,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material'
 import { useState, useEffect, useRef } from 'react'
 import { Lock, LockOpen as Unlock } from '@mui/icons-material'
@@ -47,7 +51,7 @@ const RearrangeQuestion = () => {
   const [desiredTokens, setDesiredTokens] = useState<Token[]>([])
   const [editorLocked, setEditorLocked] = useState(false)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
-
+  const [distractorTokenDialogue, setDistractorTokenDialogue] = useState(false)
   const {
     questionPrompt,
     setQuestionPrompt,
@@ -80,8 +84,13 @@ const RearrangeQuestion = () => {
     setCorrectAnswer(value)
   }
 
-  const handleTokenCreation = () => {
+  const handleTokenCreation = (distractor?: boolean) => {
     if (!editorRef.current) return
+
+    if (distractor) {
+      alert('distractor token feature coming soon...')
+      return
+    }
 
     const view = editorRef.current
     const state = view.state
@@ -190,7 +199,7 @@ const RearrangeQuestion = () => {
                 : undefined
             }
           >
-            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
+            <MenuItem onClick={() => handleTokenCreation}>Create Token</MenuItem>
           </Menu>
         ) : null}
       </Box>
@@ -222,7 +231,14 @@ const RearrangeQuestion = () => {
         ))}
       </Box>
 
-      <Button onClick={handleTokenReset}>CLEAR</Button>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Button onClick={() => setDistractorTokenDialogue(true)}>Add Distractor Tokens</Button>
+
+        <Button color="error" onClick={handleTokenReset}>
+          CLEAR
+        </Button>
+      </Box>
+
       <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
@@ -244,6 +260,28 @@ const RearrangeQuestion = () => {
           ))}
         </Select>
       </FormControl>
+      <Dialog open={distractorTokenDialogue}>
+        <DialogTitle>Add Distractor Token</DialogTitle>
+        <DialogContent>
+          These tokens should serve as "misdirection" for the student. They should be similar to the
+          correct answer, but not quite. The purpose of these tokens is to make the question more
+          challenging for the student and to test their understanding of the material.
+          <TextField
+            autoFocus
+            required
+            multiline
+            rows={4}
+            placeholder="Enter your distractor token"
+            label="Distractor Token"
+            variant="standard"
+            sx={{ width: '30rem' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleTokenCreation(true)}>Add Distractor Token</Button>
+          <Button onClick={() => setDistractorTokenDialogue(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
