@@ -5,6 +5,7 @@ import {
   createNewQuestion,
   updateQuestion,
 } from '@/app/classes/[className]/lessons/[lessonName]/actions'
+import { Question } from '@/types/content.types'
 import { PostgrestError } from '@supabase/supabase-js'
 
 interface QuestionContextType {
@@ -16,8 +17,8 @@ interface QuestionContextType {
   setQuestionPrompt: React.Dispatch<React.SetStateAction<string>>
   questionSnippet: string
   setQuestionSnippet: React.Dispatch<React.SetStateAction<string>>
-  questionOptions: { [key: string]: string } | string[]
-  setQuestionOptions: React.Dispatch<React.SetStateAction<{ [key: string]: string } | string[]>>
+  questionOptions: any[]
+  setQuestionOptions: React.Dispatch<React.SetStateAction<any[]>>
   correctAnswer: string
   setCorrectAnswer: React.Dispatch<React.SetStateAction<string>>
   topicsCovered: string[]
@@ -41,8 +42,8 @@ const initialContext: QuestionContextType = {
   setQuestionPrompt: () => {},
   questionSnippet: '',
   setQuestionSnippet: () => {},
-  questionOptions: {},
-  setQuestionOptions: () => {},
+  questionOptions: [],
+  setQuestionOptions: () => [],
   correctAnswer: '',
   setCorrectAnswer: () => {},
   topicsCovered: [],
@@ -60,7 +61,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
   const [questionType, setQuestionType] = useState('')
   const [questionPrompt, setQuestionPrompt] = useState('')
   const [questionSnippet, setQuestionSnippet] = useState('')
-  const [questionOptions, setQuestionOptions] = useState<{ [key: string]: string } | string[]>({})
+  const [questionOptions, setQuestionOptions] = useState<any>([])
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [topicsCovered, setTopicsCovered] = useState<string[]>([])
 
@@ -69,7 +70,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
     setQuestionType('')
     setQuestionPrompt('')
     setQuestionSnippet('')
-    setQuestionOptions({})
+    setQuestionOptions([])
     setCorrectAnswer('')
     setTopicsCovered([])
   }
@@ -83,12 +84,11 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
   }) => {
     if (lessonName) {
       return await createNewQuestion(lessonName!, {
-        // if we're adding a new question, guaranteed to have lessonName
         questionType,
         prompt: questionPrompt,
         snippet: questionSnippet,
         topics: topicsCovered,
-        answerOptions: Object.values(questionOptions),
+        answerOptions: questionOptions,
         answer: correctAnswer,
       })
     }
@@ -98,7 +98,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
       prompt: questionPrompt,
       snippet: questionSnippet,
       topics: topicsCovered,
-      answerOptions: Object.values(questionOptions),
+      answerOptions: questionOptions,
       answer: correctAnswer,
     })
   }

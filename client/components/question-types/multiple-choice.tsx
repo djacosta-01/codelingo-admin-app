@@ -14,13 +14,12 @@ import {
 } from '@mui/material'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
 import { useEffect, useRef, useState } from 'react'
-// import Editor from '@monaco-editor/react'
 import { EditorView } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { javascript } from '@codemirror/lang-javascript'
 import { python } from '@codemirror/lang-python'
 import { useQuestionContext } from '@/contexts/question-context'
+import { MultipleChoice } from '@/types/content.types'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 
@@ -49,6 +48,8 @@ const MultipleChoiceQuestion = () => {
   const {
     questionPrompt,
     setQuestionPrompt,
+    questionType,
+    setQuestionType,
     questionSnippet,
     setQuestionSnippet,
     questionOptions,
@@ -82,23 +83,43 @@ const MultipleChoiceQuestion = () => {
 
   const handleOptionInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setQuestionOptions({ ...questionOptions, [name]: value })
+    // TODO: convert this to be a list of objects and update it accordingly
+    // setQuestionOptions({ ...questionOptions, [name]: value })
+
+    console.log('reworked option input')
+    const inputToUpdate = questionOptions.find(option => Object.keys(option)[0] === name)
+    const index = questionOptions.indexOf(inputToUpdate)
+    const updatedOptions = [...questionOptions]
+    updatedOptions[index] = { [name]: value }
+    setQuestionOptions(updatedOptions)
   }
 
   const handleAddNewOption = () => {
+    // TODO: convert this to be a list of objects and update it accordingly
+    // setQuestionOptions(prev => {
+    //   return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+    // })
     setQuestionOptions(prev => {
-      return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
+      return [...prev, { [`option${prev.length + 1}`]: '' }]
     })
   }
 
   const deleteQuestionOption = (key: string) => {
-    const mapping = new Map(Object.entries(questionOptions))
-    mapping.delete(key)
+    console.log(key)
+    console.log(questionOptions)
+    // filter out element from object list
+    // x.filter((elem, index) => Object.keys(elem))
 
-    // necessary to keep state updates in sync (specifically textfield onChange)
-    const values = Object.values(Object.fromEntries(mapping))
-    const updatedOptions = convertToObject(values)
-    setQuestionOptions(updatedOptions)
+    // TODO: delete this
+    // const mapping = new Map(Object.entries(questionOptions) !== key)
+    // mapping.delete(key)
+
+    // // necessary to keep state updates in sync (specifically textfield onChange)
+    // const values = Object.values(Object.fromEntries(mapping))
+    // const updatedOptions = convertToObject(values)
+    // console.log(updatedOptions)
+    // setQuestionOptions(updatedOptions)
+    // setQuestionOptions(Object.values(Object.fromEntries(mapping)))
   }
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
@@ -114,7 +135,7 @@ const MultipleChoiceQuestion = () => {
 
   useEffect(() => {
     // if (Array.isArray(questionOptions)) {
-    setQuestionOptions({ option1: '', option2: '' })
+    setQuestionOptions([{ option1: '' }, { option2: '' }])
     // }
   }, [])
 
@@ -139,7 +160,7 @@ const MultipleChoiceQuestion = () => {
             onChange={handleSnippetInput}
             height="300px"
             width="700px"
-            extensions={[javascript()]}
+            extensions={[python()]}
             theme={oneDark}
             onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
           />
@@ -162,8 +183,10 @@ const MultipleChoiceQuestion = () => {
           width: '50%',
         }}
       >
-        {Object.values(questionOptions).map((option, index) => {
+        {questionOptions.map((option, index) => {
           const optionKey = `option${index + 1}`
+          console.log(optionKey)
+          console.log(option.toString())
           return (
             <Box key={index}>
               <TextField
@@ -171,7 +194,7 @@ const MultipleChoiceQuestion = () => {
                 label={`Option ${index + 1}`}
                 name={optionKey}
                 variant="standard"
-                value={option}
+                value={option[optionKey]}
                 onChange={handleOptionInput}
               />
               <IconButton

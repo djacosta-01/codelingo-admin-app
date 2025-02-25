@@ -3,8 +3,7 @@
 import { EditorView } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { javascript } from '@codemirror/lang-javascript'
-// import { python } from '@codemirror/lang-python'
+import { python } from '@codemirror/lang-python'
 import {
   Box,
   Menu,
@@ -40,15 +39,8 @@ const MenuProps = {
   },
 }
 
-interface Token {
-  text: string
-  position: [number, number]
-  range?: number[]
-}
-
 const RearrangeQuestion = () => {
   const editorRef = useRef<EditorView | null>(null)
-  const [desiredTokens, setDesiredTokens] = useState<Token[]>([])
   const [editorLocked, setEditorLocked] = useState(false)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
   const [distractorTokenDialogue, setDistractorTokenDialogue] = useState(false)
@@ -66,9 +58,7 @@ const RearrangeQuestion = () => {
   } = useQuestionContext()
 
   useEffect(() => {
-    if (!Array.isArray(questionOptions)) {
-      setQuestionOptions([] as string[])
-    }
+    setQuestionOptions([])
   }, [])
 
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,13 +74,8 @@ const RearrangeQuestion = () => {
     setCorrectAnswer(value)
   }
 
-  const handleTokenCreation = (distractor?: boolean) => {
+  const handleTokenCreation = () => {
     if (!editorRef.current) return
-
-    if (distractor) {
-      alert('distractor token feature coming soon...')
-      return
-    }
 
     const view = editorRef.current
     const state = view.state
@@ -105,19 +90,21 @@ const RearrangeQuestion = () => {
 
     const range = [...Array(endIndex - startIndex)].map((_, i) => startIndex + i)
 
+    // console.log('in token creation')
+    // console.log('position', questionSnippet.slice(13, 14))
     if (handleTokenOverlapDetection(range)) {
       alert('Token overlap detected. Please select a different range of text')
       return
     }
 
-    setDesiredTokens([
-      ...desiredTokens,
-      { text: selectedText, position: [startIndex, endIndex], range },
+    setQuestionOptions([
+      ...(questionOptions as RearrangeOptions[]),
+      { text: selectedText, position: [startIndex, endIndex], range: range },
     ])
   }
 
   const handleTokenOverlapDetection = (tokenCandidatePosition: number[]) => {
-    return desiredTokens.some(({ range }) => {
+    return questionOptions.some(({ range }) => {
       if (!range) return false
       return range.some(index => tokenCandidatePosition.includes(index))
     })
@@ -125,7 +112,7 @@ const RearrangeQuestion = () => {
 
   const handleTokenReset = () => {
     // TODO: get rid of one of these
-    setDesiredTokens([])
+    // setDesiredTokens([])
     setQuestionOptions([])
   }
 
@@ -153,6 +140,8 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  console.log(questionSnippet)
+  // console.log('questionOptions', questionOptions)
   return (
     <>
       <TextField
@@ -176,7 +165,7 @@ const RearrangeQuestion = () => {
           onChange={handleSnippetInput}
           height="300px"
           width="700px"
-          extensions={[javascript(), EditorView.editable.of(!editorLocked)]}
+          extensions={[python(), EditorView.editable.of(!editorLocked)]}
           theme={oneDark}
           onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
           onContextMenu={handleContextMenu}
@@ -199,32 +188,13 @@ const RearrangeQuestion = () => {
                 : undefined
             }
           >
-            <MenuItem onClick={() => handleTokenCreation}>Create Token</MenuItem>
+            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
           </Menu>
         ) : null}
       </Box>
+
       <Box sx={{ display: 'flex', gap: 2 }}>
-        {!Array.isArray(questionOptions)
-          ? ''
-          : questionOptions.map((token, index) => (
-              <Paper
-                elevation={4}
-                key={index}
-                sx={{
-                  padding: 1,
-                  height: '5em',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {token}
-              </Paper>
-            ))}
-      </Box>
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        {desiredTokens.map(({ text }, index) => (
+        {questionOptions.map(({ text }, index) => (
           <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
             {text}
           </Paper>
@@ -263,9 +233,9 @@ const RearrangeQuestion = () => {
       <Dialog open={distractorTokenDialogue}>
         <DialogTitle>Add Distractor Token</DialogTitle>
         <DialogContent>
-          These tokens should serve as "misdirection" for the student. They should be similar to the
-          correct answer, but not quite. The purpose of these tokens is to make the question more
-          challenging for the student and to test their understanding of the material.
+          These tokens should serve as {'misdirection'} for the student. They should be similar to
+          the correct answer, but not quite. The purpose of these tokens is to make the question
+          more challenging for the student and to test their understanding of the material.
           <TextField
             autoFocus
             required
@@ -278,7 +248,7 @@ const RearrangeQuestion = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleTokenCreation(true)}>Add Distractor Token</Button>
+          <Button onClick={handleTokenCreation}>Add Distractor Token</Button>
           <Button onClick={() => setDistractorTokenDialogue(false)}>Close</Button>
         </DialogActions>
       </Dialog>
