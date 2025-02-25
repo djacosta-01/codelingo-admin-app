@@ -91,11 +91,8 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
   if (questionData.questionType === 'multiple-choice') {
     console.log('multiple choice being processed')
     const multipleChoiceData = questionData as MultipleChoice
-    // console.log(multipleChoiceData)
     const { questionType, prompt, snippet, topics, answerOptions, answer } = multipleChoiceData
     const answerOptionValues = answerOptions.map(option => Object.values(option)[0])
-
-    // TODO: for question options: x.map((elem, index) => elem[`option${index+1}`])
 
     const { error } = await supabase.from('questions').insert({
       question_type: questionType,
