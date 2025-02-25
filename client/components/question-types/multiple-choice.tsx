@@ -86,7 +86,6 @@ const MultipleChoiceQuestion = () => {
     // TODO: convert this to be a list of objects and update it accordingly
     // setQuestionOptions({ ...questionOptions, [name]: value })
 
-    console.log('reworked option input')
     const inputToUpdate = questionOptions.find(option => Object.keys(option)[0] === name)
     const index = questionOptions.indexOf(inputToUpdate)
     const updatedOptions = [...questionOptions]
@@ -105,24 +104,19 @@ const MultipleChoiceQuestion = () => {
   }
 
   const deleteQuestionOption = (key: string) => {
-    console.log(key)
-    console.log(questionOptions)
-    // filter out element from object list
-    // x.filter((elem, index) => Object.keys(elem))
-
-    // TODO: delete this
-    // const mapping = new Map(Object.entries(questionOptions) !== key)
-    // mapping.delete(key)
-
-    // // necessary to keep state updates in sync (specifically textfield onChange)
-    // const values = Object.values(Object.fromEntries(mapping))
-    // const updatedOptions = convertToObject(values)
-    // console.log(updatedOptions)
-    // setQuestionOptions(updatedOptions)
-    // setQuestionOptions(Object.values(Object.fromEntries(mapping)))
+    // this is to remap the options to be in the format of [{option1: 'value'}, {option2: 'value'}]
+    // if we don't do this, it's possible that the options will be in the format of [{option1: 'value'}, {option3: 'value'},..]
+    // and this messes up the correct answer select
+    const remappedOptions = questionOptions
+      .filter(option => Object.keys(option)[0] !== key)
+      .map((option, index) => {
+        return { [`option${index + 1}`]: Object.values(option)[0] }
+      })
+    setQuestionOptions(remappedOptions)
   }
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
+    console.log(e.target.value)
     setCorrectAnswer(e.target.value)
   }
 
@@ -139,6 +133,7 @@ const MultipleChoiceQuestion = () => {
     // }
   }, [])
 
+  console.log('correctAnswer', correctAnswer)
   return (
     <>
       <TextField
@@ -185,8 +180,6 @@ const MultipleChoiceQuestion = () => {
       >
         {questionOptions.map((option, index) => {
           const optionKey = `option${index + 1}`
-          console.log(optionKey)
-          console.log(option.toString())
           return (
             <Box key={index}>
               <TextField
@@ -211,7 +204,7 @@ const MultipleChoiceQuestion = () => {
       <Box id="add-new-option-button">
         <Button
           variant="contained"
-          disabled={Object.values(questionOptions).length === 10}
+          disabled={questionOptions.length === 10}
           onClick={handleAddNewOption}
         >
           Add Option
@@ -224,13 +217,14 @@ const MultipleChoiceQuestion = () => {
           labelId="correct-answer"
           label="Correct Answer"
           variant="standard"
-          value={Object.values(questionOptions).includes(correctAnswer) ? correctAnswer : ''}
+          // value={Object.values(questionOptions).includes(correctAnswer) ? correctAnswer : ''}
+          renderValue={selected => selected}
           onChange={handleCorrectAnswerSelect}
           sx={{ width: '15em' }}
         >
-          {Object.values(questionOptions).map((option, index) => (
-            <MenuItem key={index} value={option}>
-              {option}
+          {questionOptions.map((option, index) => (
+            <MenuItem key={index} value={option[`option${index + 1}`]}>
+              {option[`option${index + 1}`]}
             </MenuItem>
           ))}
         </Select>

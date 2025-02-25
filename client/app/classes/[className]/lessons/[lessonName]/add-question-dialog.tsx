@@ -22,8 +22,8 @@ import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const componentMap: { [key: string]: JSX.Element } = {
-  ['Multiple Choice']: <MultipleChoiceQuestion />,
-  ['Rearrange']: <RearrangeQuestion />,
+  ['multiple-choice']: <MultipleChoiceQuestion />,
+  ['rearrange']: <RearrangeQuestion />,
 }
 
 const AddQuestionDialog = ({
@@ -103,8 +103,8 @@ const AddQuestionDialog = ({
             value={questionType}
             onChange={handleSelectQuestionType}
           >
-            <MenuItem value="Multiple Choice">Multiple Choice</MenuItem>
-            <MenuItem value="Rearrange">Rearrange</MenuItem>
+            <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
+            <MenuItem value="rearrange">Rearrange</MenuItem>
           </Select>
         </FormControl>
 
