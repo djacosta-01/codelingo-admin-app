@@ -102,6 +102,7 @@ const QuestionDataGrid = ({
           questionTypeColumn: question_type,
           snippetColumn: snippet,
           unitsCoveredColumn: topics?.join(', '),
+          // TODO: convert this to be a list of objects and update it accordingly
           optionsColumn: answer_options?.join(', '),
           answerColumn: answer,
         })

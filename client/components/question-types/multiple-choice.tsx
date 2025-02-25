@@ -94,16 +94,15 @@ const MultipleChoiceQuestion = () => {
   }
 
   const handleAddNewOption = () => {
-    // TODO: convert this to be a list of objects and update it accordingly
-    // setQuestionOptions(prev => {
-    //   return { ...prev, [`option${Object.keys(prev).length + 1}`]: '' }
-    // })
     setQuestionOptions(prev => {
       return [...prev, { [`option${prev.length + 1}`]: '' }]
     })
   }
 
   const deleteQuestionOption = (key: string) => {
+    const isKeyCorrectAnswer = questionOptions.some(option => Object.keys(option)[0] === key)
+    setCorrectAnswer(isKeyCorrectAnswer ? '' : correctAnswer)
+
     // this is to remap the options to be in the format of [{option1: 'value'}, {option2: 'value'}]
     // if we don't do this, it's possible that the options will be in the format of [{option1: 'value'}, {option3: 'value'},..]
     // and this messes up the correct answer select
@@ -116,7 +115,6 @@ const MultipleChoiceQuestion = () => {
   }
 
   const handleCorrectAnswerSelect = (e: SelectChangeEvent<string>) => {
-    console.log(e.target.value)
     setCorrectAnswer(e.target.value)
   }
 
@@ -128,12 +126,25 @@ const MultipleChoiceQuestion = () => {
   }
 
   useEffect(() => {
-    // if (Array.isArray(questionOptions)) {
-    setQuestionOptions([{ option1: '' }, { option2: '' }])
-    // }
+    // Case: where user is editing a multiple choice question
+    if (
+      questionOptions.length > 0 &&
+      questionOptions.every(option => typeof Object.values(option)[0] === 'string')
+    ) {
+      const optionValues = questionOptions.map((option, index) => ({
+        [`option${index + 1}`]: option,
+      }))
+      setQuestionOptions(optionValues)
+    }
+    // Case: where user is creating a new multiple choice question OR user is switching from another question type
+    else if (
+      questionOptions.length === 0 ||
+      !questionOptions.every(option => typeof Object.values(option)[0] === 'string')
+    ) {
+      setQuestionOptions([{ option1: '' }, { option2: '' }])
+    }
   }, [])
 
-  console.log('correctAnswer', correctAnswer)
   return (
     <>
       <TextField
@@ -217,8 +228,7 @@ const MultipleChoiceQuestion = () => {
           labelId="correct-answer"
           label="Correct Answer"
           variant="standard"
-          // value={Object.values(questionOptions).includes(correctAnswer) ? correctAnswer : ''}
-          renderValue={selected => selected}
+          value={correctAnswer}
           onChange={handleCorrectAnswerSelect}
           sx={{ width: '15em' }}
         >
