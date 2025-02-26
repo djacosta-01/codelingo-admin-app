@@ -87,7 +87,6 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
   }
 
   // can prolly have a helper here that processes and inserts data
-  console.log(questionData.questionType)
   if (questionData.questionType === 'multiple-choice') {
     console.log('multiple choice being processed')
     const multipleChoiceData = questionData as MultipleChoice
@@ -144,28 +143,72 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     }
     return { success: true }
   }
-
   console.log('rearrange being processed')
   const rearrangeData = questionData as Rearrange
   const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
-  // process rearrange data
-  // create student view
-  // submit professor view and student view in answerOptions
+
+  const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
+
+  console.log(answerOptions)
+  console.log(studentViewOptions)
+  const { error } = await supabase.from('questions').insert({
+    question_type: questionType,
+    prompt,
+    snippet,
+    topics,
+    answer_options: [{ professorView: answerOptions }, { studentView: studentViewOptions }],
+    answer,
+  })
+
+  if (error) {
+    console.error('Error inserting question data: ', error)
+    return { success: false, error }
+  }
+
+  const { data: questionIDs, error: questionIDError } = await supabase
+    .from('questions')
+    .select('question_id')
+
+  if (questionIDError) {
+    console.error('Error fetching question ID: ', questionIDError)
+    return { success: false, error: questionIDError }
+  }
+
+  // theoretically, the largest question id should be the one we just inserted
+  const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
+
+  const cleanedLessonName = lessonName.replace(/%20/g, ' ')
+  const { data: lessonID, error: lessonIDError } = await supabase
+    .from('lessons')
+    .select('lesson_id')
+    .eq('name', cleanedLessonName)
+    .single()
+
+  if (lessonIDError) {
+    console.error('Error fetching question or lesson ID: ', lessonIDError)
+    return { success: false, error: lessonIDError }
+  }
+
+  const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
+    lesson_id: lessonID.lesson_id,
+    owner_id: user.id,
+    question_id: questionID,
+  })
+
+  if (lessonQuestionBankError) {
+    console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
+    return { success: false, error: lessonQuestionBankError }
+  }
+  return { success: true }
 
   // TODO: need to add question to class_question_bank table as well
-  return { success: false, error: 'Not implemented yet' }
 }
 
 export async function updateQuestion(
   id: number,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
-  // const hasDuplicates = checkAnswersForDuplicates(answerOptions)
-  // if (hasDuplicates) {
-  //   console.error('Duplicate answer options found')
-  //   return { success: false, error: 'Duplicate answer options found' }
-  // }
-
+  // TODO: fix the logic here
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -231,4 +274,33 @@ const checkAnswersForDuplicates = (answerOptions: string[]) => {
     seen.add(trimmedOption)
   }
   return false
+}
+
+const processRearrangeOptionsData = (options: any[], snippet: string) => {
+  const selectTokensText = options.map(option => option.text)
+
+  const optionsIncludingStartAndEnd = [
+    ...options,
+    { text: 'START', position: [0] },
+    { text: 'END', position: [snippet.length] },
+  ]
+
+  const positions = new Set(
+    optionsIncludingStartAndEnd.flatMap(option => option.position).sort((a, b) => a - b)
+  )
+
+  const sliceIndices = Array.from(positions)
+    .map((position, index, arr) => [position, arr[index + 1]])
+    .filter(slice => !slice.includes(undefined))
+
+  const slices = sliceIndices.map(([start, end], index) => {
+    const text = snippet.slice(start, end)
+    if (selectTokensText.includes(text)) {
+      const blankText = [...text].map(character => '_').join('')
+      return blankText
+    }
+    return text
+  })
+
+  return [{ tokens: selectTokensText, problem: slices }]
 }

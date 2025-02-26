@@ -98,7 +98,7 @@ const RearrangeQuestion = () => {
     }
 
     setQuestionOptions([
-      ...(questionOptions as RearrangeOptions[]),
+      ...questionOptions,
       { text: selectedText, position: [startIndex, endIndex], range: range },
     ])
   }
@@ -106,7 +106,7 @@ const RearrangeQuestion = () => {
   const handleTokenOverlapDetection = (tokenCandidatePosition: number[]) => {
     return questionOptions.some(({ range }) => {
       if (!range) return false
-      return range.some(index => tokenCandidatePosition.includes(index))
+      return range.some((index: number) => tokenCandidatePosition.includes(index))
     })
   }
 
@@ -140,7 +140,7 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
-  console.log(questionSnippet)
+  // console.log(questionSnippet)
   // console.log('questionOptions', questionOptions)
   return (
     <>
@@ -202,7 +202,7 @@ const RearrangeQuestion = () => {
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-        <Button onClick={() => setDistractorTokenDialogue(true)}>Add Distractor Tokens</Button>
+        {/* <Button onClick={() => setDistractorTokenDialogue(true)}>Add Distractor Tokens</Button> */}
 
         <Button color="error" onClick={handleTokenReset}>
           CLEAR
@@ -230,7 +230,7 @@ const RearrangeQuestion = () => {
           ))}
         </Select>
       </FormControl>
-      <Dialog open={distractorTokenDialogue}>
+      {/* <Dialog open={distractorTokenDialogue}>
         <DialogTitle>Add Distractor Token</DialogTitle>
         <DialogContent>
           These tokens should serve as {'misdirection'} for the student. They should be similar to
@@ -251,7 +251,7 @@ const RearrangeQuestion = () => {
           <Button onClick={handleTokenCreation}>Add Distractor Token</Button>
           <Button onClick={() => setDistractorTokenDialogue(false)}>Close</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </>
   )
 }
