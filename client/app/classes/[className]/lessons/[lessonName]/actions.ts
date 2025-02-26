@@ -90,6 +90,7 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
   if (questionData.questionType === 'multiple-choice') {
     console.log('multiple choice being processed')
     const multipleChoiceData = questionData as MultipleChoice
+    console.log(multipleChoiceData)
     const { questionType, prompt, snippet, topics, answerOptions, answer } = multipleChoiceData
     const answerOptionValues = answerOptions.map(option => Object.values(option)[0])
 

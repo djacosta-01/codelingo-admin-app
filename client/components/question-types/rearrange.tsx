@@ -57,10 +57,6 @@ const RearrangeQuestion = () => {
     setTopicsCovered,
   } = useQuestionContext()
 
-  useEffect(() => {
-    setQuestionOptions([])
-  }, [])
-
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
   }
@@ -90,8 +86,6 @@ const RearrangeQuestion = () => {
 
     const range = [...Array(endIndex - startIndex)].map((_, i) => startIndex + i)
 
-    // console.log('in token creation')
-    // console.log('position', questionSnippet.slice(13, 14))
     if (handleTokenOverlapDetection(range)) {
       alert('Token overlap detected. Please select a different range of text')
       return
@@ -111,8 +105,6 @@ const RearrangeQuestion = () => {
   }
 
   const handleTokenReset = () => {
-    // TODO: get rid of one of these
-    // setDesiredTokens([])
     setQuestionOptions([])
   }
 
@@ -140,8 +132,10 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
-  // console.log(questionSnippet)
-  // console.log('questionOptions', questionOptions)
+  useEffect(() => {
+    setQuestionOptions([])
+  }, [])
+
   return (
     <>
       <TextField
