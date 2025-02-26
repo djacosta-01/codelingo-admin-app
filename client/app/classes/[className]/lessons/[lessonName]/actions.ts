@@ -88,9 +88,7 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
 
   // can prolly have a helper here that processes and inserts data
   if (questionData.questionType === 'multiple-choice') {
-    console.log('multiple choice being processed')
     const multipleChoiceData = questionData as MultipleChoice
-    console.log(multipleChoiceData)
     const { questionType, prompt, snippet, topics, answerOptions, answer } = multipleChoiceData
     const answerOptionValues = answerOptions.map(option => Object.values(option)[0])
 
@@ -144,14 +142,11 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     }
     return { success: true }
   }
-  console.log('rearrange being processed')
   const rearrangeData = questionData as Rearrange
   const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
 
   const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
 
-  console.log(answerOptions)
-  console.log(studentViewOptions)
   const { error } = await supabase.from('questions').insert({
     question_type: questionType,
     prompt,
