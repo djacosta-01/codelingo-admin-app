@@ -1,6 +1,6 @@
 'use server'
 
-import { Question } from '@/types/content.types'
+import { Question, MultipleChoice, Rearrange } from '@/types/content.types'
 import { createClient } from '@/utils/supabase/server'
 
 export const getLessonQuestions = async (
@@ -69,16 +69,7 @@ export const getLessonQuestions = async (
   return questionData
 }
 
-export async function createNewQuestion(
-  lessonName: string,
-  { questionType, prompt, snippet, topics, answerOptions, answer }: Question
-) {
-  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
-  if (hasDuplicates) {
-    console.error('Duplicate answer options found')
-    return { success: false, error: 'Duplicate answer options found' }
-  }
-
+export async function createNewQuestion(lessonName: string, questionData: Question) {
   const supabase = createClient()
 
   const {
@@ -90,12 +81,78 @@ export async function createNewQuestion(
     return { success: false, error: 'No user found' }
   }
 
+  if (!lessonName) {
+    console.error('No lesson name found')
+    return { success: false, error: 'No lesson name found' }
+  }
+
+  // can prolly have a helper here that processes and inserts data
+  if (questionData.questionType === 'multiple-choice') {
+    const multipleChoiceData = questionData as MultipleChoice
+    const { questionType, prompt, snippet, topics, answerOptions, answer } = multipleChoiceData
+    const answerOptionValues = answerOptions.map(option => Object.values(option)[0])
+
+    const { error } = await supabase.from('questions').insert({
+      question_type: questionType,
+      prompt,
+      snippet,
+      topics,
+      answer_options: answerOptionValues,
+      answer,
+    })
+
+    if (error) {
+      console.error('Error inserting question data: ', error)
+      return { success: false, error }
+    }
+
+    const { data: questionIDs, error: questionIDError } = await supabase
+      .from('questions')
+      .select('question_id')
+
+    if (questionIDError) {
+      console.error('Error fetching question ID: ', questionIDError)
+      return { success: false, error: questionIDError }
+    }
+
+    // theoretically, the largest question id should be the one we just inserted
+    const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
+
+    const cleanedLessonName = lessonName.replace(/%20/g, ' ')
+    const { data: lessonID, error: lessonIDError } = await supabase
+      .from('lessons')
+      .select('lesson_id')
+      .eq('name', cleanedLessonName)
+      .single()
+
+    if (lessonIDError) {
+      console.error('Error fetching question or lesson ID: ', lessonIDError)
+      return { success: false, error: lessonIDError }
+    }
+
+    const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
+      lesson_id: lessonID.lesson_id,
+      owner_id: user.id,
+      question_id: questionID,
+    })
+
+    if (lessonQuestionBankError) {
+      console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
+      return { success: false, error: lessonQuestionBankError }
+    }
+    return { success: true }
+  }
+  const rearrangeData = questionData as Rearrange
+  const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
+
+  const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
+
   const { error } = await supabase.from('questions').insert({
     question_type: questionType,
     prompt,
     snippet,
     topics,
-    answer_options: answerOptions,
+    answer_options: [{ professorView: answerOptions }, { studentView: studentViewOptions }],
     answer,
   })
 
@@ -138,22 +195,16 @@ export async function createNewQuestion(
     console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
     return { success: false, error: lessonQuestionBankError }
   }
+  return { success: true }
 
   // TODO: need to add question to class_question_bank table as well
-
-  return { success: true }
 }
 
 export async function updateQuestion(
   id: number,
   { questionType, prompt, snippet, topics, answerOptions, answer }: Question
 ) {
-  const hasDuplicates = checkAnswersForDuplicates(answerOptions)
-  if (hasDuplicates) {
-    console.error('Duplicate answer options found')
-    return { success: false, error: 'Duplicate answer options found' }
-  }
-
+  // TODO: fix the logic here
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -219,4 +270,33 @@ const checkAnswersForDuplicates = (answerOptions: string[]) => {
     seen.add(trimmedOption)
   }
   return false
+}
+
+const processRearrangeOptionsData = (options: any[], snippet: string) => {
+  const selectTokensText = options.map(option => option.text)
+
+  const optionsIncludingStartAndEnd = [
+    ...options,
+    { text: 'START', position: [0] },
+    { text: 'END', position: [snippet.length] },
+  ]
+
+  const positions = new Set(
+    optionsIncludingStartAndEnd.flatMap(option => option.position).sort((a, b) => a - b)
+  )
+
+  const sliceIndices = Array.from(positions)
+    .map((position, index, arr) => [position, arr[index + 1]])
+    .filter(slice => !slice.includes(undefined))
+
+  const slices = sliceIndices.map(([start, end], index) => {
+    const text = snippet.slice(start, end)
+    if (selectTokensText.includes(text)) {
+      const blankText = [...text].map(character => '_').join('')
+      return blankText
+    }
+    return text
+  })
+
+  return [{ tokens: selectTokensText, problem: slices }]
 }

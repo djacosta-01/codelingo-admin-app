@@ -1,7 +1,7 @@
 export type Lesson = {
   lesson_id?: number
-  name: string | null
-  topics: string[] | null
+  name: string
+  topics: string[]
 }
 
 export type Question = {
@@ -10,6 +10,29 @@ export type Question = {
   prompt: string
   snippet: string
   topics: string[]
+  answerOptions: any[]
+  answer: string
+}
+
+export type MultipleChoice = {
+  questionId?: number
+  questionType: string
+  prompt: string
+  snippet?: string
+  topics: string[]
   answerOptions: string[]
+  answer: string
+}
+
+export type Rearrange = {
+  questionId?: number
+  questionType: string
+  prompt: string
+  snippet: string
+  topics: string[]
+  answerOptions: {
+    professorView: { [key: string]: string }[]
+    studentView?: { [key: string]: string }[]
+  }[]
   answer: string
 }

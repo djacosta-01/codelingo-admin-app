@@ -3,7 +3,41 @@
 import { createClient } from '@/utils/supabase/server'
 import { Lesson } from '@/types/content.types'
 
-export const getLessonData = async (className: string): Promise<Lesson[]> => {
+export const getAllLessons = async () => {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const { data, error } = await supabase.from('professor_lessons').select('lesson_id')
+
+  if (error) {
+    console.error('Error fetching lessons: ', error)
+    return { success: false, error }
+  }
+
+  const userLessonIDs = data.map(lesson => lesson.lesson_id)
+
+  const { data: lessons, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('*')
+    .in('lesson_id', userLessonIDs)
+
+  if (lessonsError) {
+    console.error('Error fetching lessons: ', lessonsError)
+    return { success: false, error: lessonsError }
+  }
+
+  return { success: true, lessons }
+}
+
+export const lessonDataFor = async (className: string): Promise<Lesson[]> => {
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -69,7 +103,6 @@ export const createNewLesson = async (
     return { success: false, error: 'No user found' }
   }
 
-  console.log('className: ', className)
   const cleanedClassName = className.replace(/%20/g, ' ')
 
   // TODO: make this into a function please bc we're doing this in multiple places
@@ -113,6 +146,45 @@ export const createNewLesson = async (
   if (insertIntoClassLessonBankError) {
     console.error('Error inserting into class_lesson_bank: ', insertIntoClassLessonBankError)
     return { success: false, error: insertIntoClassLessonBankError }
+  }
+
+  return { success: true }
+}
+
+export const importLessonToClass = async (className: string, lessonIDs: number[]) => {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    console.error('No user found')
+    return { success: false, error: 'No user found' }
+  }
+
+  const cleanedClassName = className.replace(/%20/g, ' ')
+
+  const { data, error } = await supabase
+    .from('classes')
+    .select('class_id')
+    .eq('name', cleanedClassName)
+    .single()
+
+  if (error) {
+    console.error('Error fetching class ID: ', error)
+    return { success: false, error: 'Something went wrong' }
+  }
+
+  for (const lessonID of lessonIDs) {
+    const { error: insertError } = await supabase
+      .from('class_lesson_bank')
+      .insert({ owner_id: user.id, class_id: data.class_id, lesson_id: lessonID })
+
+    if (insertError) {
+      console.error('Error importing lessons ', insertError)
+      return { success: false, error: 'Error importing lessons' }
+    }
   }
 
   return { success: true }

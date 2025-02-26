@@ -94,7 +94,8 @@ const QuestionDataGrid = ({
   useEffect(() => {
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
-
+      // TODO: rework the way data is being displayed in the table
+      console.log()
       const tableRows = lessonQuestions.map(
         ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => ({
           id: question_id,
@@ -102,7 +103,10 @@ const QuestionDataGrid = ({
           questionTypeColumn: question_type,
           snippetColumn: snippet,
           unitsCoveredColumn: topics?.join(', '),
-          optionsColumn: answer_options?.join(', '),
+          optionsColumn:
+            question_type !== 'rearrange'
+              ? answer_options?.join(', ')
+              : answer_options[1].studentView[0].tokens.join(', '),
           answerColumn: answer,
         })
       )

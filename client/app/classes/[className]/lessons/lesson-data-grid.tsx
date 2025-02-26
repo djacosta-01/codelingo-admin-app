@@ -6,15 +6,15 @@ import {
   GridColDef,
   GridActionsCellItem,
   GridRowParams,
-  GridToolbar,
 } from '@mui/x-data-grid'
 import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
 import { Edit, Delete } from '@mui/icons-material'
-import { getLessonData, deleteLesson } from '@/app/classes/[className]/lessons/actions'
+import { lessonDataFor, deleteLesson } from '@/app/classes/[className]/lessons/actions'
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
+import CustomToolbar from '@/components/add-class-content/custom-toolbar'
 
 const LessonDataGrid = ({
   className,
@@ -122,7 +122,7 @@ const LessonDataGrid = ({
 
   useEffect(() => {
     const fetchLessons = async () => {
-      const lessons = await getLessonData(className)
+      const lessons = await lessonDataFor(className)
       setRows(
         lessons.map(({ lesson_id, name, topics }) => ({
           id: lesson_id,
@@ -147,15 +147,13 @@ const LessonDataGrid = ({
             onRowClick={routeToLesson}
             disableColumnSelector
             ignoreDiacritics
-            getRowClassName={() => 'custom-row'}
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
+            slots={{
+              toolbar: () => (
+                <CustomToolbar page="lesson" className={className} setRows={setRows} />
+              ),
             }}
             sx={{
-              '& .custom-row:hover': {
+              '& :hover': {
                 cursor: 'pointer',
               },
             }}

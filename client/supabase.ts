@@ -39,18 +39,26 @@ export type Database = {
         Insert: {
           class_id: number
           edges: string[]
-          graph_id?: number
+          graph_id?: never
           nodes: string[]
           react_flow_data: Json[]
         }
         Update: {
           class_id?: number
           edges?: string[]
-          graph_id?: number
+          graph_id?: never
           nodes?: string[]
           react_flow_data?: Json[]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'class_knowledge_graph_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: true
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          }
+        ]
       }
       class_lesson_bank: {
         Row: {
@@ -70,11 +78,25 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: 'class_lesson_bank_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          },
+          {
             foreignKeyName: 'class_lesson_bank_lesson_id_fkey'
             columns: ['lesson_id']
             isOneToOne: false
             referencedRelation: 'lessons'
             referencedColumns: ['lesson_id']
+          },
+          {
+            foreignKeyName: 'class_lesson_bank_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
           }
         ]
       }
@@ -95,6 +117,20 @@ export type Database = {
           question_id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: 'class_question_bank_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          },
+          {
+            foreignKeyName: 'class_question_bank_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          },
           {
             foreignKeyName: 'class_question_bank_question_id_fkey'
             columns: ['question_id']
@@ -138,7 +174,22 @@ export type Database = {
           class_id?: number
           student_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'enrollments_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          },
+          {
+            foreignKeyName: 'enrollments_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'students'
+            referencedColumns: ['student_id']
+          }
+        ]
       }
       lesson_question_bank: {
         Row: {
@@ -163,6 +214,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'lessons'
             referencedColumns: ['lesson_id']
+          },
+          {
+            foreignKeyName: 'lesson_question_bank_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
           },
           {
             foreignKeyName: 'lesson_question_bank_question_id_fkey'
@@ -204,7 +262,82 @@ export type Database = {
           class_id?: number
           owner_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'professor_courses_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          },
+          {
+            foreignKeyName: 'professor_courses_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          }
+        ]
+      }
+      professor_lessons: {
+        Row: {
+          lesson_id: number
+          owner_id: string
+        }
+        Insert: {
+          lesson_id: number
+          owner_id: string
+        }
+        Update: {
+          lesson_id?: number
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'professor_lessons_lesson_id_fkey'
+            columns: ['lesson_id']
+            isOneToOne: false
+            referencedRelation: 'lessons'
+            referencedColumns: ['lesson_id']
+          },
+          {
+            foreignKeyName: 'professor_lessons_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          }
+        ]
+      }
+      professor_questions: {
+        Row: {
+          owner_id: string
+          question_id: number
+        }
+        Insert: {
+          owner_id: string
+          question_id: number
+        }
+        Update: {
+          owner_id?: string
+          question_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'professor_questions_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'professors'
+            referencedColumns: ['professor_id']
+          },
+          {
+            foreignKeyName: 'professor_questions_question_id_fkey'
+            columns: ['question_id']
+            isOneToOne: false
+            referencedRelation: 'questions'
+            referencedColumns: ['question_id']
+          }
+        ]
       }
       professors: {
         Row: {
@@ -260,7 +393,7 @@ export type Database = {
         Insert: {
           class_id: number
           edges: string[]
-          graph_id?: number
+          graph_id?: never
           nodes: string[]
           react_flow_data: Json[]
           student_id: string
@@ -268,12 +401,27 @@ export type Database = {
         Update: {
           class_id?: number
           edges?: string[]
-          graph_id?: number
+          graph_id?: never
           nodes?: string[]
           react_flow_data?: Json[]
           student_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'student_knowledge_graph_class_id_fkey'
+            columns: ['class_id']
+            isOneToOne: false
+            referencedRelation: 'classes'
+            referencedColumns: ['class_id']
+          },
+          {
+            foreignKeyName: 'student_knowledge_graph_student_id_fkey'
+            columns: ['student_id']
+            isOneToOne: false
+            referencedRelation: 'students'
+            referencedColumns: ['student_id']
+          }
+        ]
       }
       students: {
         Row: {

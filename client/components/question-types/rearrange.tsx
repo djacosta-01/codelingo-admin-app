@@ -1,6 +1,9 @@
 'use client'
 
-import Editor from '@monaco-editor/react'
+import { EditorView } from '@codemirror/view'
+import CodeMirror from '@uiw/react-codemirror'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { python } from '@codemirror/lang-python'
 import {
   Box,
   Menu,
@@ -14,9 +17,14 @@ import {
   InputLabel,
   Select,
   type SelectChangeEvent,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
-import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
+import { useState, useEffect, useRef } from 'react'
+import { Lock, LockOpen as Unlock } from '@mui/icons-material'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
@@ -32,12 +40,11 @@ const MenuProps = {
 }
 
 const RearrangeQuestion = () => {
-  const [selectedText, setSelectedText] = useState('')
-  const [snippetIncluded, setSnippetIncluded] = useState(false)
+  const editorRef = useRef<EditorView | null>(null)
+  const [editorLocked, setEditorLocked] = useState(false)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
-  // const [tokens, setTokens] = useState<string[]>([])
+  const [distractorTokenDialogue, setDistractorTokenDialogue] = useState(false)
   const {
-    questionType,
     questionPrompt,
     setQuestionPrompt,
     questionSnippet,
@@ -50,14 +57,12 @@ const RearrangeQuestion = () => {
     setTopicsCovered,
   } = useQuestionContext()
 
-  useEffect(() => {
-    if (!Array.isArray(questionOptions)) {
-      setQuestionOptions([] as string[])
-    }
-  }, [])
-
   const handleQuestionPromptInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestionPrompt(e.target.value)
+  }
+
+  const handleEditorLoad = (view: EditorView) => {
+    editorRef.current = view
   }
 
   const handleSnippetInput = (value: string) => {
@@ -65,25 +70,38 @@ const RearrangeQuestion = () => {
     setCorrectAnswer(value)
   }
 
-  const showSnippet = () => {
-    setSnippetIncluded(true)
-  }
-
-  const hideSnippet = () => {
-    setQuestionSnippet('')
-    setSnippetIncluded(false)
-  }
-
   const handleTokenCreation = () => {
-    const selection = window.getSelection()
+    if (!editorRef.current) return
 
-    if (selection && selection.toString().length > 0) {
-      // setSelectedText(selection.toString())
-      setQuestionOptions(prev => [...(prev as string[]), selection.toString()])
-    } else {
-      alert('No text selected')
-      setSelectedText('')
+    const view = editorRef.current
+    const state = view.state
+
+    const { from: startIndex, to: endIndex } = state.selection.main
+    const selectedText = state.sliceDoc(startIndex, endIndex)
+
+    if (selectedText.trim().length === 0) {
+      alert('No text selected. Please select a range of text to create a token')
+      return
     }
+
+    const range = [...Array(endIndex - startIndex)].map((_, i) => startIndex + i)
+
+    if (handleTokenOverlapDetection(range)) {
+      alert('Token overlap detected. Please select a different range of text')
+      return
+    }
+
+    setQuestionOptions([
+      ...questionOptions,
+      { text: selectedText, position: [startIndex, endIndex], range: range },
+    ])
+  }
+
+  const handleTokenOverlapDetection = (tokenCandidatePosition: number[]) => {
+    return questionOptions.some(({ range }) => {
+      if (!range) return false
+      return range.some((index: number) => tokenCandidatePosition.includes(index))
+    })
   }
 
   const handleTokenReset = () => {
@@ -114,6 +132,10 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  useEffect(() => {
+    setQuestionOptions([])
+  }, [])
+
   return (
     <>
       <TextField
@@ -128,23 +150,28 @@ const RearrangeQuestion = () => {
         onChange={handleQuestionPromptInput}
         sx={{ width: '30rem' }}
       />
-      {snippetIncluded || questionSnippet !== '' ? (
-        <Box
+      <Box
+        onContextMenu={handleContextMenu}
+        sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
+      >
+        <CodeMirror
+          value={questionSnippet}
+          onChange={handleSnippetInput}
+          height="300px"
+          width="700px"
+          extensions={[python(), EditorView.editable.of(!editorLocked)]}
+          theme={oneDark}
+          onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
           onContextMenu={handleContextMenu}
-          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, cursor: 'context-menu' }}
-        >
-          <Editor
-            theme="vs-dark"
-            height="50vh"
-            width="50vw"
-            defaultLanguage="python"
-            options={{ contextmenu: false }}
-            value={questionSnippet}
-            onChange={value => handleSnippetInput(value ?? '')}
-          />
-          <IconButton color="error" onClick={hideSnippet}>
-            <RemoveIcon />
+        />
+
+        <Tooltip title={editorLocked ? 'Editor is Locked' : 'Editor is Unlocked'}>
+          <IconButton onClick={() => setEditorLocked(!editorLocked)}>
+            {editorLocked ? <Lock /> : <Unlock />}
           </IconButton>
+        </Tooltip>
+
+        {editorLocked ? (
           <Menu
             open={contextMenu !== null}
             onClose={handleContextMenuClose}
@@ -157,31 +184,24 @@ const RearrangeQuestion = () => {
           >
             <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
           </Menu>
-        </Box>
-      ) : (
-        <Button onClick={showSnippet}>Add Snippet</Button>
-      )}
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        {!Array.isArray(questionOptions)
-          ? ''
-          : questionOptions.map((token, index) => (
-              <Paper
-                elevation={4}
-                key={index}
-                sx={{
-                  padding: 1,
-                  height: '5em',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {token}
-              </Paper>
-            ))}
+        ) : null}
       </Box>
-      <Button onClick={handleTokenReset}>CLEAR</Button>
+
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        {questionOptions.map(({ text }, index) => (
+          <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
+            {text}
+          </Paper>
+        ))}
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        {/* <Button onClick={() => setDistractorTokenDialogue(true)}>Add Distractor Tokens</Button> */}
+
+        <Button color="error" onClick={handleTokenReset}>
+          CLEAR
+        </Button>
+      </Box>
 
       <FormControl>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
@@ -204,6 +224,28 @@ const RearrangeQuestion = () => {
           ))}
         </Select>
       </FormControl>
+      {/* <Dialog open={distractorTokenDialogue}>
+        <DialogTitle>Add Distractor Token</DialogTitle>
+        <DialogContent>
+          These tokens should serve as {'misdirection'} for the student. They should be similar to
+          the correct answer, but not quite. The purpose of these tokens is to make the question
+          more challenging for the student and to test their understanding of the material.
+          <TextField
+            autoFocus
+            required
+            multiline
+            rows={4}
+            placeholder="Enter your distractor token"
+            label="Distractor Token"
+            variant="standard"
+            sx={{ width: '30rem' }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleTokenCreation}>Add Distractor Token</Button>
+          <Button onClick={() => setDistractorTokenDialogue(false)}>Close</Button>
+        </DialogActions>
+      </Dialog> */}
     </>
   )
 }

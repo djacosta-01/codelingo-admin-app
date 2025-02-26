@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  type SelectChangeEvent,
   IconButton,
   Dialog,
   DialogTitle,
@@ -16,10 +17,14 @@ import {
 } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
-
 import RearrangeQuestion from '@/components/question-types/rearrange'
 import MultipleChoiceQuestion from '@/components/question-types/multiple-choice'
 import { useQuestionContext } from '@/contexts/question-context'
+
+const componentMap: { [key: string]: JSX.Element } = {
+  ['multiple-choice']: <MultipleChoiceQuestion />,
+  ['rearrange']: <RearrangeQuestion />,
+}
 
 const AddQuestionDialog = ({
   lessonName,
@@ -54,6 +59,10 @@ const AddQuestionDialog = ({
     setButtonOperation('Add Question')
   }
 
+  const handleSelectQuestionType = (e: SelectChangeEvent<string>) => {
+    setQuestionType(e.target.value)
+  }
+
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -70,26 +79,6 @@ const AddQuestionDialog = ({
     handleDialogClose()
     setRefreshGrid(prev => prev + 1)
     setAlertOpen(true)
-  }
-
-  const componentMap: { [key: string]: JSX.Element } = {
-    ['Multiple Choice']: <MultipleChoiceQuestion />,
-    ['Rearrange']: (
-      <RearrangeQuestion
-      // questionPrompt={questionPrompt}
-      // snippet={questionSnippet}
-      // options={options}
-      // correctAnswer={correctAnswer}
-      // topicsCovered={topicsCovered}
-      // handleQuestionPromptInput={handleQuestionPromptInput}
-      // handleSnippetInput={handleSnippetInput}
-      // handleOptionInput={handleOptionInput}
-      // deleteAnswerFromForm={deleteAnswerFromForm}
-      // handleAddNewOption={handleAddNewOption}
-      // handleCorrectAnswerSelect={handleCorrectAnswerSelect}
-      // handleTopicsCoveredSelect={handleTopicsCovered}
-      />
-    ),
   }
 
   return (
@@ -112,10 +101,10 @@ const AddQuestionDialog = ({
             variant="standard"
             sx={{ width: '15em' }}
             value={questionType}
-            onChange={e => setQuestionType(e.target.value)}
+            onChange={handleSelectQuestionType}
           >
-            <MenuItem value="Multiple Choice">Multiple Choice</MenuItem>
-            <MenuItem value="Rearrange">Rearrange</MenuItem>
+            <MenuItem value="multiple-choice">Multiple Choice</MenuItem>
+            <MenuItem value="rearrange">Rearrange</MenuItem>
           </Select>
         </FormControl>
 
