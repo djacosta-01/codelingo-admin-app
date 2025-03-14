@@ -18,6 +18,27 @@ import {
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 import { useQuestionContext } from '@/contexts/question-context'
 
+// Define types for rearrange question data structures
+interface TokenObject {
+  text: string
+  position?: [number, number]
+  range?: number[]
+  isDistractor?: boolean
+}
+
+interface ProfessorView {
+  professorView: TokenObject[]
+}
+
+interface StudentView {
+  studentView: {
+    tokens: string[]
+    problem: string[]
+  }[]
+}
+
+type RearrangeOptions = [ProfessorView, StudentView]
+
 // source: https://mui.com/x/react-data-grid/editing/
 const QuestionDataGrid = ({
   params,
@@ -60,6 +81,8 @@ const QuestionDataGrid = ({
 
   const handleEditClick = (id: number) => () => {
     const row = rows?.find(row => row.id === id)
+    if (!row) return
+
     const {
       id: rowId,
       promptColumn,
@@ -68,15 +91,56 @@ const QuestionDataGrid = ({
       unitsCoveredColumn,
       optionsColumn,
       answerColumn,
+      rawOptionsData,
     } = row!
 
     setQuestionID(rowId)
     setQuestionType(questionTypeColumn)
     setQuestionPrompt(promptColumn)
     setQuestionSnippet(snippetColumn)
-    setQuestionOptions(optionsColumn.split(', '))
     setCorrectAnswer(answerColumn)
-    setTopicsCovered(unitsCoveredColumn.split(', '))
+
+    // Parse topics covered
+    const topics = unitsCoveredColumn ? unitsCoveredColumn.split(', ') : []
+    setTopicsCovered(topics)
+
+    // Handle question options based on question type
+    if (questionTypeColumn === 'rearrange') {
+      // For rearrange questions, use the raw data if available
+      if (rawOptionsData) {
+        try {
+          // Extract tokens from the professorView or use the processed tokens
+          const options = rawOptionsData as unknown as RearrangeOptions
+          const professorsTokens = options[0]?.professorView || []
+          setQuestionOptions(professorsTokens)
+        } catch (error) {
+          console.error('Error parsing rearrange question options:', error)
+          // Fallback to simple string tokens
+          setQuestionOptions(
+            optionsColumn.split(', ').map((token: string) => ({
+              text: token,
+              position: [-1, -1] as [number, number],
+              range: [],
+              isDistractor: true,
+            }))
+          )
+        }
+      } else {
+        // Fallback if rawOptionsData is not available
+        setQuestionOptions(
+          optionsColumn.split(', ').map((token: string) => ({
+            text: token,
+            position: [-1, -1] as [number, number],
+            range: [],
+            isDistractor: true,
+          }))
+        )
+      }
+    } else {
+      // For other question types, split the options string
+      setQuestionOptions(optionsColumn.split(', '))
+    }
+
     setOpen(true)
   }
 
@@ -94,21 +158,50 @@ const QuestionDataGrid = ({
   useEffect(() => {
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
-      // TODO: rework the way data is being displayed in the table
-      console.log()
+      // Process questions for the data grid
       const tableRows = lessonQuestions.map(
-        ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => ({
-          id: question_id,
-          promptColumn: prompt,
-          questionTypeColumn: question_type,
-          snippetColumn: snippet,
-          unitsCoveredColumn: topics?.join(', '),
-          optionsColumn:
-            question_type !== 'rearrange'
-              ? answer_options?.join(', ')
-              : answer_options[1].studentView[0].tokens.join(', '),
-          answerColumn: answer,
-        })
+        ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => {
+          // Format options string based on question type
+          let optionsString = ''
+          let rawOptionsData = null
+
+          if (question_type === 'rearrange' && Array.isArray(answer_options)) {
+            rawOptionsData = answer_options
+
+            // Try to extract tokens for display in the grid
+            try {
+              // Cast answer_options to the appropriate type
+              const options = answer_options as unknown as RearrangeOptions
+
+              if (options[0]?.professorView) {
+                // Get tokens from professor view
+                const tokens = options[0].professorView.map((token: TokenObject) => token.text)
+                optionsString = tokens.join(', ')
+              } else if (options[1]?.studentView?.[0]?.tokens) {
+                // Fallback to student view tokens
+                optionsString = options[1].studentView[0].tokens.join(', ')
+              } else {
+                optionsString = 'No tokens available'
+              }
+            } catch (error) {
+              console.error('Error parsing rearrange options:', error)
+              optionsString = 'Error parsing options'
+            }
+          } else if (Array.isArray(answer_options)) {
+            optionsString = answer_options.join(', ')
+          }
+
+          return {
+            id: question_id,
+            promptColumn: prompt,
+            questionTypeColumn: question_type,
+            snippetColumn: snippet,
+            unitsCoveredColumn: topics?.join(', ') || '',
+            optionsColumn: optionsString,
+            answerColumn: answer,
+            rawOptionsData, // Store raw data for editing
+          }
+        }
       )
 
       setRows(tableRows)
@@ -142,7 +235,7 @@ const QuestionDataGrid = ({
     },
     {
       field: 'unitsCoveredColumn',
-      headerName: 'Units Covered',
+      headerName: 'Topics Covered',
       width: 180,
       align: 'center',
       headerAlign: 'center',

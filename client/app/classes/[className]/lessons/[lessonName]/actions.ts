@@ -13,7 +13,7 @@ export const getLessonQuestions = async (
     prompt: string | null
     snippet: string | null
     topics: string[] | null
-    answer_options: string[] | null
+    answer_options: any[] | null
     answer: string | null
   }[]
 > => {
@@ -86,7 +86,7 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     return { success: false, error: 'No lesson name found' }
   }
 
-  // can prolly have a helper here that processes and inserts data
+  // Handle different question types
   if (questionData.questionType === 'multiple-choice') {
     const multipleChoiceData = questionData as MultipleChoice
     const { questionType, prompt, snippet, topics, answerOptions, answer } = multipleChoiceData
@@ -99,68 +99,55 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
       topics,
       answer_options: answerOptionValues,
       answer,
-    })
+    } as any)
 
     if (error) {
       console.error('Error inserting question data: ', error)
       return { success: false, error }
     }
+  } else if (questionData.questionType === 'rearrange') {
+    const rearrangeData = questionData as Rearrange
+    const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
 
-    const { data: questionIDs, error: questionIDError } = await supabase
-      .from('questions')
-      .select('question_id')
-
-    if (questionIDError) {
-      console.error('Error fetching question ID: ', questionIDError)
-      return { success: false, error: questionIDError }
+    // Make sure we have required fields
+    if (!prompt || !topics || !topics.length) {
+      console.error('Missing required fields for rearrange question')
+      return {
+        success: false,
+        error: 'Missing required fields. Please provide a prompt and select at least one topic.',
+      }
     }
 
-    // theoretically, the largest question id should be the one we just inserted
-    const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
-
-    const cleanedLessonName = lessonName.replace(/%20/g, ' ')
-    const { data: lessonID, error: lessonIDError } = await supabase
-      .from('lessons')
-      .select('lesson_id')
-      .eq('name', cleanedLessonName)
-      .single()
-
-    if (lessonIDError) {
-      console.error('Error fetching question or lesson ID: ', lessonIDError)
-      return { success: false, error: lessonIDError }
+    // Make sure we have at least one token
+    if (!answerOptions || answerOptions.length === 0) {
+      console.error('No tokens defined for rearrange question')
+      return {
+        success: false,
+        error: 'No tokens defined. Please create at least one token for the rearrange question.',
+      }
     }
 
-    const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
-      lesson_id: lessonID.lesson_id,
-      owner_id: user.id,
-      question_id: questionID,
-    })
+    const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
 
-    if (lessonQuestionBankError) {
-      console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
-      return { success: false, error: lessonQuestionBankError }
+    const { error } = await supabase.from('questions').insert({
+      question_type: questionType,
+      prompt,
+      snippet,
+      topics,
+      answer_options: [{ professorView: answerOptions }, { studentView: studentViewOptions }],
+      answer,
+    } as any)
+
+    if (error) {
+      console.error('Error inserting question data: ', error)
+      return { success: false, error }
     }
-    return { success: true }
-  }
-  const rearrangeData = questionData as Rearrange
-  const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
-
-  const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
-
-  const { error } = await supabase.from('questions').insert({
-    question_type: questionType,
-    prompt,
-    snippet,
-    topics,
-    answer_options: [{ professorView: answerOptions }, { studentView: studentViewOptions }],
-    answer,
-  })
-
-  if (error) {
-    console.error('Error inserting question data: ', error)
-    return { success: false, error }
+  } else {
+    console.error('Unsupported question type')
+    return { success: false, error: 'Unsupported question type' }
   }
 
+  // Get the newly inserted question ID - this is common for all question types
   const { data: questionIDs, error: questionIDError } = await supabase
     .from('questions')
     .select('question_id')
@@ -181,10 +168,11 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     .single()
 
   if (lessonIDError) {
-    console.error('Error fetching question or lesson ID: ', lessonIDError)
+    console.error('Error fetching lesson ID: ', lessonIDError)
     return { success: false, error: lessonIDError }
   }
 
+  // Associate the question with the lesson
   const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
     lesson_id: lessonID.lesson_id,
     owner_id: user.id,
@@ -195,16 +183,11 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
     return { success: false, error: lessonQuestionBankError }
   }
-  return { success: true }
 
-  // TODO: need to add question to class_question_bank table as well
+  return { success: true }
 }
 
-export async function updateQuestion(
-  id: number,
-  { questionType, prompt, snippet, topics, answerOptions, answer }: Question
-) {
-  // TODO: fix the logic here
+export async function updateQuestion(id: number, questionData: Question) {
   const supabase = createClient()
 
   const userResponse = await supabase.auth.getUser()
@@ -215,17 +198,31 @@ export async function updateQuestion(
     return { success: false, error: 'No user found' }
   }
 
-  const { error } = await supabase
-    .from('questions')
-    .update({
-      question_type: questionType,
-      prompt,
-      snippet,
-      topics,
-      answer_options: answerOptions,
-      answer,
-    })
-    .eq('question_id', id)
+  const { questionType, prompt, snippet, topics, answerOptions, answer } = questionData
+
+  // Handle different question types for update
+  let updateData: any = {
+    question_type: questionType,
+    prompt,
+    snippet,
+    topics,
+    answer,
+  }
+
+  if (questionType === 'multiple-choice') {
+    const answerOptionValues = answerOptions.map(option =>
+      typeof option === 'string' ? option : Object.values(option)[0]
+    )
+    updateData.answer_options = answerOptionValues
+  } else if (questionType === 'rearrange') {
+    const studentViewOptions = processRearrangeOptionsData(answerOptions, snippet)
+    updateData.answer_options = [
+      { professorView: answerOptions },
+      { studentView: studentViewOptions },
+    ]
+  }
+
+  const { error } = await supabase.from('questions').update(updateData).eq('question_id', id)
 
   if (error) {
     console.error('Error updating question data: ', error)
@@ -273,30 +270,59 @@ const checkAnswersForDuplicates = (answerOptions: string[]) => {
 }
 
 const processRearrangeOptionsData = (options: any[], snippet: string) => {
-  const selectTokensText = options.map(option => option.text)
+  // Extract all tokens text for student view
+  const allTokens = options.map(option => option.text)
 
+  // Filter out only tokens that aren't distractors (have valid positions in the snippet)
+  const nonDistractorOptions = options.filter(
+    option => !option.isDistractor && option.position && option.position.length >= 2
+  )
+
+  // If we don't have any non-distractor tokens with positions, return simple tokens
+  if (nonDistractorOptions.length === 0) {
+    return [{ tokens: allTokens, problem: [snippet] }]
+  }
+
+  // Add START and END positions to help with slicing
   const optionsIncludingStartAndEnd = [
-    ...options,
+    ...nonDistractorOptions,
     { text: 'START', position: [0] },
     { text: 'END', position: [snippet.length] },
   ]
 
-  const positions = new Set(
-    optionsIncludingStartAndEnd.flatMap(option => option.position).sort((a, b) => a - b)
-  )
+  // Extract all position points and sort them
+  const positions = Array.from(
+    new Set(
+      optionsIncludingStartAndEnd.flatMap(option => {
+        const [start, end] = option.position || []
+        return [start, end].filter(pos => pos !== undefined)
+      })
+    )
+  ).sort((a, b) => a - b)
 
-  const sliceIndices = Array.from(positions)
-    .map((position, index, arr) => [position, arr[index + 1]])
-    .filter(slice => !slice.includes(undefined))
+  // Create slices from the positions
+  const sliceIndices = []
+  for (let i = 0; i < positions.length - 1; i++) {
+    sliceIndices.push([positions[i], positions[i + 1]])
+  }
 
-  const slices = sliceIndices.map(([start, end], index) => {
+  // Generate the problem text with blanks for tokens
+  const slices = sliceIndices.map(([start, end]) => {
     const text = snippet.slice(start, end)
-    if (selectTokensText.includes(text)) {
-      const blankText = [...text].map(character => '_').join('')
-      return blankText
+
+    // Check if this slice corresponds to a token
+    const isToken = nonDistractorOptions.some(option => {
+      const [optStart, optEnd] = option.position || []
+      return optStart === start && optEnd === end
+    })
+
+    if (isToken) {
+      // Replace with a blank of the same length
+      return '_'.repeat(text.length)
     }
+
     return text
   })
 
-  return [{ tokens: selectTokensText, problem: slices }]
+  return [{ tokens: allTokens, problem: slices }]
 }

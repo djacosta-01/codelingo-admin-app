@@ -22,9 +22,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
+  Chip,
+  Typography,
 } from '@mui/material'
 import { useState, useEffect, useRef } from 'react'
-import { Lock, LockOpen as Unlock } from '@mui/icons-material'
+import { Lock, LockOpen as Unlock, Delete, Add } from '@mui/icons-material'
 import { useQuestionContext } from '@/contexts/question-context'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
@@ -44,7 +47,11 @@ const RearrangeQuestion = () => {
   const [editorLocked, setEditorLocked] = useState(false)
   const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null)
   const [distractorTokenDialogue, setDistractorTokenDialogue] = useState(false)
+  const [distractorToken, setDistractorToken] = useState('')
+  const [validationError, setValidationError] = useState<string | null>(null)
+
   const {
+    questionID,
     questionPrompt,
     setQuestionPrompt,
     questionSnippet,
@@ -80,14 +87,14 @@ const RearrangeQuestion = () => {
     const selectedText = state.sliceDoc(startIndex, endIndex)
 
     if (selectedText.trim().length === 0) {
-      alert('No text selected. Please select a range of text to create a token')
+      setValidationError('No text selected. Please select a range of text to create a token')
       return
     }
 
     const range = [...Array(endIndex - startIndex)].map((_, i) => startIndex + i)
 
     if (handleTokenOverlapDetection(range)) {
-      alert('Token overlap detected. Please select a different range of text')
+      setValidationError('Token overlap detected. Please select a different range of text')
       return
     }
 
@@ -95,6 +102,25 @@ const RearrangeQuestion = () => {
       ...questionOptions,
       { text: selectedText, position: [startIndex, endIndex], range: range },
     ])
+
+    setValidationError(null)
+    setContextMenu(null)
+  }
+
+  const handleAddDistractorToken = () => {
+    if (!distractorToken.trim()) {
+      setValidationError('Distractor token cannot be empty')
+      return
+    }
+
+    setQuestionOptions([
+      ...questionOptions,
+      { text: distractorToken, position: [-1, -1], range: [], isDistractor: true },
+    ])
+
+    setDistractorToken('')
+    setDistractorTokenDialogue(false)
+    setValidationError(null)
   }
 
   const handleTokenOverlapDetection = (tokenCandidatePosition: number[]) => {
@@ -104,11 +130,17 @@ const RearrangeQuestion = () => {
     })
   }
 
+  const handleRemoveToken = (tokenIndex: number) => {
+    setQuestionOptions(questionOptions.filter((_, index) => index !== tokenIndex))
+  }
+
   const handleTokenReset = () => {
     setQuestionOptions([])
   }
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!editorLocked) return
+
     e.preventDefault()
 
     setContextMenu(
@@ -132,9 +164,25 @@ const RearrangeQuestion = () => {
     setTopicsCovered(typeof value === 'string' ? value.split(',') : value)
   }
 
+  const handleDistractorTokenInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDistractorToken(e.target.value)
+  }
+
+  // Parse and load existing tokens when editing a question
   useEffect(() => {
-    setQuestionOptions([])
-  }, [])
+    if (questionID && Array.isArray(questionOptions) && questionOptions.length > 0) {
+      if (typeof questionOptions[0] === 'object' && questionOptions[0].text) {
+      } else if (typeof questionOptions[0] === 'string') {
+        const tokenObjects = questionOptions.map(token => ({
+          text: token,
+          position: [-1, -1], // We don't know the original positions
+          range: [],
+          isDistractor: true, // Assume these are distractor tokens when loading from edit
+        }))
+        setQuestionOptions(tokenObjects)
+      }
+    }
+  }, [questionID, questionOptions, setQuestionOptions])
 
   return (
     <>
@@ -148,72 +196,113 @@ const RearrangeQuestion = () => {
         variant="standard"
         value={questionPrompt}
         onChange={handleQuestionPromptInput}
-        sx={{ width: '30rem' }}
+        sx={{ width: '30rem', mb: 3 }}
       />
-      <Box
-        onContextMenu={handleContextMenu}
-        sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
-      >
-        <CodeMirror
-          value={questionSnippet}
-          onChange={handleSnippetInput}
-          height="300px"
-          width="700px"
-          extensions={[python(), EditorView.editable.of(!editorLocked)]}
-          theme={oneDark}
-          onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
+
+      {validationError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {validationError}
+        </Alert>
+      )}
+
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          Code Snippet - {editorLocked ? 'Locked (Ready for token creation)' : 'Editable'}
+        </Typography>
+        <Box
           onContextMenu={handleContextMenu}
-        />
+          sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}
+        >
+          <CodeMirror
+            value={questionSnippet}
+            onChange={handleSnippetInput}
+            height="300px"
+            width="700px"
+            extensions={[python(), EditorView.editable.of(!editorLocked)]}
+            theme={oneDark}
+            onUpdate={(viewUpdate: { view: EditorView }) => handleEditorLoad(viewUpdate.view)}
+            onContextMenu={handleContextMenu}
+          />
 
-        <Tooltip title={editorLocked ? 'Editor is Locked' : 'Editor is Unlocked'}>
-          <IconButton onClick={() => setEditorLocked(!editorLocked)}>
-            {editorLocked ? <Lock /> : <Unlock />}
-          </IconButton>
-        </Tooltip>
+          <Tooltip title={editorLocked ? 'Unlock Editor' : 'Lock Editor for Token Creation'}>
+            <IconButton onClick={() => setEditorLocked(!editorLocked)}>
+              {editorLocked ? <Lock /> : <Unlock />}
+            </IconButton>
+          </Tooltip>
 
-        {editorLocked ? (
-          <Menu
-            open={contextMenu !== null}
-            onClose={handleContextMenuClose}
-            anchorReference="anchorPosition"
-            anchorPosition={
-              contextMenu !== null
-                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                : undefined
-            }
+          {editorLocked && (
+            <Menu
+              open={contextMenu !== null}
+              onClose={handleContextMenuClose}
+              anchorReference="anchorPosition"
+              anchorPosition={
+                contextMenu !== null
+                  ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                  : undefined
+              }
+            >
+              <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
+            </Menu>
+          )}
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <Typography variant="subtitle1" sx={{ flexGrow: 1 }}>
+            Created Tokens
+          </Typography>
+          <Button
+            startIcon={<Add />}
+            onClick={() => setDistractorTokenDialogue(true)}
+            variant="outlined"
+            size="small"
+            sx={{ mr: 1 }}
           >
-            <MenuItem onClick={handleTokenCreation}>Create Token</MenuItem>
-          </Menu>
-        ) : null}
+            Add Distractor Token
+          </Button>
+          {questionOptions.length > 0 && (
+            <Button color="error" onClick={handleTokenReset} variant="outlined" size="small">
+              Clear All
+            </Button>
+          )}
+        </Box>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {questionOptions.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No tokens created yet. Lock the editor and highlight text to create tokens.
+            </Typography>
+          ) : (
+            questionOptions.map(({ text, isDistractor }, index) => (
+              <Chip
+                key={index}
+                label={text}
+                color={isDistractor ? 'secondary' : 'primary'}
+                onDelete={() => handleRemoveToken(index)}
+                deleteIcon={<Delete />}
+                sx={{
+                  py: 1,
+                  height: 'auto',
+                  '& .MuiChip-label': { display: 'block', whiteSpace: 'normal' },
+                }}
+              />
+            ))
+          )}
+        </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        {questionOptions.map(({ text }, index) => (
-          <Paper key={index} elevation={4} sx={{ wrap: 'flexWrap', height: '3rem', padding: 1 }}>
-            {text}
-          </Paper>
-        ))}
-      </Box>
-
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-        {/* <Button onClick={() => setDistractorTokenDialogue(true)}>Add Distractor Tokens</Button> */}
-
-        <Button color="error" onClick={handleTokenReset}>
-          CLEAR
-        </Button>
-      </Box>
-
-      <FormControl>
+      <FormControl sx={{ width: '15em', mb: 3 }}>
         <InputLabel id="topics-covered">Topics Covered</InputLabel>
         <Select
           required
-          label="topics-covered"
-          variant="standard"
+          labelId="topics-covered"
+          label="Topics Covered"
+          variant="outlined"
           multiple
           value={topicsCovered}
           onChange={handleTopicsCovered}
           renderValue={(selected: string[]) => selected.join(', ')}
-          sx={{ width: '15em' }}
           MenuProps={MenuProps}
         >
           {mockTopics.map((topic, index) => (
@@ -224,28 +313,40 @@ const RearrangeQuestion = () => {
           ))}
         </Select>
       </FormControl>
-      {/* <Dialog open={distractorTokenDialogue}>
+
+      <Dialog open={distractorTokenDialogue} onClose={() => setDistractorTokenDialogue(false)}>
         <DialogTitle>Add Distractor Token</DialogTitle>
         <DialogContent>
-          These tokens should serve as {'misdirection'} for the student. They should be similar to
-          the correct answer, but not quite. The purpose of these tokens is to make the question
-          more challenging for the student and to test their understanding of the material.
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            These tokens should serve as misdirection for the student. They should be similar to the
+            correct answer, but not quite. The purpose of these tokens is to make the question more
+            challenging for the student and to test their understanding of the material.
+          </Typography>
           <TextField
             autoFocus
             required
             multiline
-            rows={4}
+            rows={2}
             placeholder="Enter your distractor token"
             label="Distractor Token"
-            variant="standard"
-            sx={{ width: '30rem' }}
+            variant="outlined"
+            fullWidth
+            value={distractorToken}
+            onChange={handleDistractorTokenInput}
+            sx={{ mt: 1 }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleTokenCreation}>Add Distractor Token</Button>
-          <Button onClick={() => setDistractorTokenDialogue(false)}>Close</Button>
+          <Button onClick={() => setDistractorTokenDialogue(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleAddDistractorToken}
+            disabled={!distractorToken.trim()}
+          >
+            Add
+          </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>
     </>
   )
 }

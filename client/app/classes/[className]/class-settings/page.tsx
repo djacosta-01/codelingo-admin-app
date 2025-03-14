@@ -71,7 +71,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
 
       if (response.success) {
         showSnackbar('Class deleted successfully')
-        router.push('/classes')
+        router.replace('/classes')
       } else {
         showSnackbar(`Error deleting class: ${response.error}`)
       }
