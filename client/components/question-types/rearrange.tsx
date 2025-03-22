@@ -8,7 +8,6 @@ import {
   Box,
   Menu,
   MenuItem,
-  Paper,
   Button,
   IconButton,
   TextField,
@@ -168,7 +167,6 @@ const RearrangeQuestion = () => {
     setDistractorToken(e.target.value)
   }
 
-  // Parse and load existing tokens when editing a question
   useEffect(() => {
     if (questionID && Array.isArray(questionOptions) && questionOptions.length > 0) {
       if (typeof questionOptions[0] === 'object' && questionOptions[0].text) {
