@@ -109,7 +109,6 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     const rearrangeData = questionData as Rearrange
     const { questionType, prompt, snippet, topics, answerOptions, answer } = rearrangeData
 
-    // Make sure we have required fields
     if (!prompt || !topics || !topics.length) {
       console.error('Missing required fields for rearrange question')
       return {
@@ -147,7 +146,6 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     return { success: false, error: 'Unsupported question type' }
   }
 
-  // Get the newly inserted question ID - this is common for all question types
   const { data: questionIDs, error: questionIDError } = await supabase
     .from('questions')
     .select('question_id')
@@ -172,7 +170,6 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
     return { success: false, error: lessonIDError }
   }
 
-  // Associate the question with the lesson
   const { error: lessonQuestionBankError } = await supabase.from('lesson_question_bank').insert({
     lesson_id: lessonID.lesson_id,
     owner_id: user.id,
@@ -200,7 +197,6 @@ export async function updateQuestion(id: number, questionData: Question) {
 
   const { questionType, prompt, snippet, topics, answerOptions, answer } = questionData
 
-  // Handle different question types for update
   let updateData: any = {
     question_type: questionType,
     prompt,
