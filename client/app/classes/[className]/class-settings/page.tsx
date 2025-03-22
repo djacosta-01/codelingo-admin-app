@@ -51,7 +51,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
   const [newClassName, setNewClassName] = useState<string>('')
 
   useEffect(() => {
-    // Decode className from URL
+    // TODO: fix this
     const decoded = decodeURIComponent(className).replace(/%20/g, ' ')
     setDecodedClassName(decoded)
     setNewClassName(decoded)
@@ -108,7 +108,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
   }
 
   const saveClassName = () => {
-    // Here you would implement the server action to update the class name
+    // TODO: implement the server action to update the class name
     setEditingClassName(false)
     showSnackbar('Class name updated successfully')
     // This would require implementation of the updateClassName server action
@@ -201,7 +201,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
                   <QRCodeIcon sx={{ mr: 1 }} /> Class Invitation
                 </Typography>
 
-                <Box mt={2} display="flex" flexDirection="column" alignItems="center">
+                <Box mt={2} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   {/* Placeholder QR code icon */}
                   <QRCodeIcon sx={{ fontSize: 150, opacity: 0.7 }} />
                   <Typography variant="body2" color="textSecondary" mt={2}>
