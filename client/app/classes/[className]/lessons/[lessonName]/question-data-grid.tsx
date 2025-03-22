@@ -18,7 +18,6 @@ import {
 import DataGridSkeleton from '@/components/skeletons/data-grid-skeleton'
 import { useQuestionContext } from '@/contexts/question-context'
 
-// Define types for rearrange question data structures
 interface TokenObject {
   text: string
   position?: [number, number]
@@ -100,7 +99,6 @@ const QuestionDataGrid = ({
     setQuestionSnippet(snippetColumn)
     setCorrectAnswer(answerColumn)
 
-    // Parse topics covered
     const topics = unitsCoveredColumn ? unitsCoveredColumn.split(', ') : []
     setTopicsCovered(topics)
 
@@ -158,27 +156,23 @@ const QuestionDataGrid = ({
   useEffect(() => {
     const fetchLessonQuestions = async () => {
       const lessonQuestions = await getLessonQuestions(params.className, params.lessonName)
-      // Process questions for the data grid
+
       const tableRows = lessonQuestions.map(
         ({ question_id, question_type, prompt, snippet, topics, answer_options, answer }) => {
-          // Format options string based on question type
           let optionsString = ''
           let rawOptionsData = null
 
           if (question_type === 'rearrange' && Array.isArray(answer_options)) {
             rawOptionsData = answer_options
 
-            // Try to extract tokens for display in the grid
             try {
-              // Cast answer_options to the appropriate type
               const options = answer_options as unknown as RearrangeOptions
 
               if (options[0]?.professorView) {
-                // Get tokens from professor view
                 const tokens = options[0].professorView.map((token: TokenObject) => token.text)
                 optionsString = tokens.join(', ')
               } else if (options[1]?.studentView?.[0]?.tokens) {
-                // Fallback to student view tokens
+                // fallback to student view tokens
                 optionsString = options[1].studentView[0].tokens.join(', ')
               } else {
                 optionsString = 'No tokens available'
@@ -199,7 +193,7 @@ const QuestionDataGrid = ({
             unitsCoveredColumn: topics?.join(', ') || '',
             optionsColumn: optionsString,
             answerColumn: answer,
-            rawOptionsData, // Store raw data for editing
+            rawOptionsData,
           }
         }
       )
