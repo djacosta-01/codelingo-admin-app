@@ -214,15 +214,17 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
                     fullWidth
                     variant="outlined"
                     value={classSettings.shareableLink}
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton edge="end" onClick={handleCopyLink} color="primary">
-                            <CopyIcon />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
+                    slotProps={{
+                      input: {
+                        readOnly: true,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton edge="end" onClick={handleCopyLink} color="primary">
+                              <CopyIcon />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      },
                     }}
                     size="small"
                   />

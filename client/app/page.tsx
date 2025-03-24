@@ -146,12 +146,14 @@ export default function Login() {
                 label="Email"
                 value={email}
                 onChange={_event => setEmail(_event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountCircle fontSize="small" />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <TextField
@@ -163,12 +165,14 @@ export default function Login() {
                 label="Password"
                 value={password}
                 onChange={_event => setPassword(_event.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <Button
@@ -229,7 +233,7 @@ export default function Login() {
                 onChange={e => setResetEmail(e.target.value)}
               />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-                <Button onClick={handleDialogClose} color="inherit">
+                <Button onClick={handleDialogClose} color="error">
                   Cancel
                 </Button>
                 <Button onClick={() => alert('COMING SOON...SORRY...')} variant="contained">

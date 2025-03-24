@@ -130,12 +130,14 @@ const Register = () => {
                 variant="outlined"
                 value={displayName}
                 onChange={e => setDisplayName(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <BadgeIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <BadgeIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <TextField
@@ -150,12 +152,14 @@ const Register = () => {
                 onChange={e => setEmail(e.target.value)}
                 error={registrationError}
                 helperText={registrationError ? 'Please use your LMU email (@lmu.edu)' : ''}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountCircle fontSize="small" />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <TextField
@@ -168,12 +172,14 @@ const Register = () => {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
               />
               <Button
@@ -190,7 +196,7 @@ const Register = () => {
         </Box>
 
         <Typography sx={{ mt: 3 }}>
-          Already have an account?{' '}
+          Already have an account?
           <Link href="/" style={{ fontWeight: 500, color: theme.palette.primary.main }}>
             Login Here
           </Link>
