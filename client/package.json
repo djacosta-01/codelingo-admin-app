@@ -21,7 +21,7 @@
     "@uiw/react-codemirror": "^4.23.8",
     "@xyflow/react": "^12.3.0",
     "cors": "^2.8.5",
-    "next": "14.2.13",
+    "next": "^14.2.26",
     "react": "^18",
     "react-dom": "^18",
     "react-qr-code": "^2.0.15"
