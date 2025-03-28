@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Typography, Tooltip, IconButton } from '@mui/material'
+import { Box, Typography, Tooltip, IconButton, Container } from '@mui/material'
 import { useState } from 'react'
 import { Lesson } from '@/types/content.types'
 import { AddCircleOutline } from '@mui/icons-material'
@@ -19,49 +19,60 @@ const Lessons = ({ params }: { params: { className: string } }) => {
   }
 
   return (
-    <>
+    <Container
+      maxWidth="xl"
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        paddingTop: 2,
+        paddingBottom: 2,
+      }}
+    >
       {dataLoading ? (
         <ClassConentHeaderSkeleton />
       ) : (
         <>
-          <Box id="class-name" sx={{ paddingLeft: 3 }}>
-            <h1>{params.className.replace(/%20/g, ' ')}</h1>
-          </Box>
-          <Box
-            sx={{
-              paddingLeft: 5,
-              paddingBottom: 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            <Typography variant="h5">Lessons</Typography>
-            <Tooltip title="Create New Lesson">
-              <IconButton onClick={handleLessonDialogOpen}>
-                <AddCircleOutline />
-              </IconButton>
-            </Tooltip>
+          <Box sx={{ padding: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h4">
+              <strong>{params.className.replace(/%20/g, ' ')}</strong>
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Typography variant="h5">Lessons</Typography>
+              <Tooltip arrow title="Create New Lesson">
+                <IconButton onClick={handleLessonDialogOpen}>
+                  <AddCircleOutline />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </>
       )}
-      <AddLessonDialog
-        className={params.className}
-        open={open}
-        setOpen={setOpen}
-        setRefreshGrid={setRefreshGrid}
-        prevLessonData={prevLessonData}
-        resetPrevLessonData={setPrevLessonData}
-      />
-      <LessonDataGrid
-        className={params.className}
-        refreshGrid={refreshGrid}
-        setPrevLessonData={setPrevLessonData}
-        dataLoading={dataLoading}
-        setDataLoading={setDataLoading}
-        setOpen={setOpen}
-      />
-    </>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <AddLessonDialog
+          className={params.className}
+          open={open}
+          setOpen={setOpen}
+          setRefreshGrid={setRefreshGrid}
+          prevLessonData={prevLessonData}
+          resetPrevLessonData={setPrevLessonData}
+        />
+        <LessonDataGrid
+          className={params.className}
+          refreshGrid={refreshGrid}
+          setPrevLessonData={setPrevLessonData}
+          dataLoading={dataLoading}
+          setDataLoading={setDataLoading}
+          setOpen={setOpen}
+        />
+      </Box>
+    </Container>
   )
 }
 

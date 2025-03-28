@@ -7,7 +7,16 @@ import {
   GridActionsCellItem,
   GridRowParams,
 } from '@mui/x-data-grid'
-import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material'
+import {
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Button,
+  Box,
+  Container,
+  Backdrop,
+  CircularProgress,
+} from '@mui/material'
 import { type Dispatch, type SetStateAction, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lesson } from '@/types/content.types'
@@ -34,10 +43,12 @@ const LessonDataGrid = ({
   const [rows, setRows] = useState<GridRowsProp>([])
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState<boolean>(false)
   const [lessonId, setLessonId] = useState<number | null>(null)
+  const [isNavigating, setIsNavigating] = useState(false)
 
   const router = useRouter()
 
-  const routeToLesson = ({ row }: GridRowParams) => {
+  const routeToLesson = async ({ row }: GridRowParams) => {
+    setIsNavigating(true)
     router.push(`/classes/${className}/lessons/${row.lessonName}`)
   }
 
@@ -77,14 +88,14 @@ const LessonDataGrid = ({
     {
       field: 'lessonName',
       headerName: 'Lessons',
-      width: 180,
+      width: 300,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'unitsCovered',
       headerName: 'Units Covered',
-      width: 180,
+      width: 300,
       align: 'center',
       headerAlign: 'center',
     },
@@ -136,7 +147,7 @@ const LessonDataGrid = ({
   }, [className, setDataLoading, refreshGrid])
 
   return (
-    <>
+    <Box sx={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
       {dataLoading ? (
         <DataGridSkeleton columns={columns} />
       ) : (
@@ -167,9 +178,15 @@ const LessonDataGrid = ({
               </Button>
             </DialogActions>
           </Dialog>
+          <Backdrop
+            sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
+            open={isNavigating}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </>
       )}
-    </>
+    </Box>
   )
 }
 
