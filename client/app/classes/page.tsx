@@ -308,16 +308,8 @@ const Classes = () => {
               No classes yet
             </Typography>
             <Typography variant="body2" color="text.secondary" align="center" marginBottom={3}>
-              Create your first class to get started with CodeLingo
+              Create your first class to get started with Knowledge Grapht
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddCircleOutline />}
-              onClick={handleOpenAddClassDialog}
-            >
-              Create New Class
-            </Button>
           </Box>
         )}
       </Container>
