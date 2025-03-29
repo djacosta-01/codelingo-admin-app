@@ -12,8 +12,8 @@ import {
   DialogContentText,
   Button,
   Alert,
-  Fade,
   useTheme,
+  Snackbar,
 } from '@mui/material'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import LockIcon from '@mui/icons-material/Lock'
@@ -89,20 +89,6 @@ export default function Login() {
           height="150"
           style={{ marginBottom: '1.5rem' }}
         />
-
-        {loginError && (
-          <Fade in={loginError}>
-            <Alert
-              severity="error"
-              onClose={() => {
-                setLoginError(false)
-              }}
-              sx={{ width: '100%', mb: 2 }}
-            >
-              {errorMessage}
-            </Alert>
-          </Fade>
-        )}
 
         <Box
           sx={{
@@ -244,6 +230,24 @@ export default function Login() {
           </DialogContent>
         </Dialog>
       </Box>
+      <Snackbar
+        open={loginError}
+        autoHideDuration={4000}
+        onClose={() => {
+          setLoginError(false)
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          variant="filled"
+          severity="error"
+          onClose={() => {
+            setLoginError(false)
+          }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
