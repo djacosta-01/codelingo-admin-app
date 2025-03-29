@@ -48,13 +48,13 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
     }/join-class?code=${encodeURIComponent(className)}`,
   })
   const [editingClassName, setEditingClassName] = useState<boolean>(false)
-  const [newClassName, setNewClassName] = useState<string>('')
+  const [currentClassName, setCurrentClassName] = useState<string>('')
 
   useEffect(() => {
     // TODO: fix this
     const decoded = decodeURIComponent(className).replace(/%20/g, ' ')
     setDecodedClassName(decoded)
-    setNewClassName(decoded)
+    setCurrentClassName(decoded)
   }, [className])
 
   const handleConfirmationDialogOpen = () => {
@@ -110,26 +110,35 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
   const saveClassName = () => {
     // TODO: implement the server action to update the class name
     setEditingClassName(false)
-    showSnackbar('Class name updated successfully')
+    // showSnackbar('Class name updated successfully')
+    showSnackbar('Updated class name is not persistent yet. This is a placeholder message.') // Placeholder message until server action is implemented
     // This would require implementation of the updateClassName server action
     // Then redirect to the new URL or refresh the page
   }
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Paper elevation={2} sx={{ padding: 3, marginBottom: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 3,
+          }}
+        >
           <Typography variant="h4" component="h1" gutterBottom>
             Class Settings
           </Typography>
           {!editingClassName ? (
             <Typography variant="h5" display="flex" alignItems="center">
-              {decodedClassName}
+              {/* {decodedClassName} */}
+              {currentClassName}
               <IconButton
                 color="primary"
                 onClick={startEditingClassName}
                 size="small"
-                sx={{ ml: 1 }}
+                sx={{ marginLeft: 1 }}
               >
                 <EditIcon />
               </IconButton>
@@ -137,19 +146,19 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
           ) : (
             <Box display="flex" alignItems="center">
               <TextField
-                value={newClassName}
-                onChange={e => setNewClassName(e.target.value)}
+                value={currentClassName}
+                onChange={e => setCurrentClassName(e.target.value)}
                 variant="outlined"
                 size="small"
               />
-              <IconButton color="primary" onClick={saveClassName} sx={{ ml: 1 }}>
+              <IconButton color="primary" onClick={saveClassName} sx={{ marginLeft: 1 }}>
                 <SaveIcon />
               </IconButton>
             </Box>
           )}
         </Box>
 
-        <Divider sx={{ mb: 3 }} />
+        <Divider sx={{ marginBottom: 3 }} />
 
         <Grid container spacing={4}>
           {/* Class Information Section */}
@@ -157,7 +166,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
             <Card elevation={1} sx={{ height: '100%' }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom display="flex" alignItems="center">
-                  <SettingsIcon sx={{ mr: 1 }} /> General Settings
+                  <SettingsIcon sx={{ marginRight: 1 }} /> General Settings
                 </Typography>
 
                 <Box mt={2}>
@@ -171,7 +180,11 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
                     }
                     label="Email Notifications"
                   />
-                  <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mb: 2 }}>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ marginLeft: 4, marginBottom: 2 }}
+                  >
                     Receive email notifications when students submit assignments
                   </Typography>
 
@@ -185,7 +198,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
                     }
                     label="Auto-grading"
                   />
-                  <Typography variant="body2" color="textSecondary" sx={{ ml: 4 }}>
+                  <Typography variant="body2" color="textSecondary" sx={{ marginLeft: 4 }}>
                     Automatically grade multiple-choice questions
                   </Typography>
                 </Box>
@@ -198,7 +211,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
             <Card elevation={1} sx={{ height: '100%' }}>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography variant="h6" gutterBottom display="flex" alignItems="center">
-                  <QRCodeIcon sx={{ mr: 1 }} /> Class Invitation
+                  <QRCodeIcon sx={{ marginRight: 1 }} /> Class Invitation
                 </Typography>
 
                 <Box mt={2} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -236,7 +249,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
 
         {/* Danger Zone */}
         <Box mt={4}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #ffdddd', borderRadius: 1 }}>
+          <Paper elevation={0} sx={{ padding: 3, border: '1px solid #ffdddd', borderRadius: 1 }}>
             <Typography variant="h6" color="error" gutterBottom>
               Danger Zone
             </Typography>
@@ -266,7 +279,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
         <DialogTitle>Are you sure you want to delete this class?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This will permanently delete <strong>{decodedClassName}</strong> and all associated
+            This will permanently delete <strong>{currentClassName}</strong> and all associated
             data, including lessons, assignments, and student records. This action cannot be undone.
           </DialogContentText>
         </DialogContent>
