@@ -6,9 +6,9 @@ import {
   Typography,
   Button,
   Alert,
-  Fade,
   InputAdornment,
   useTheme,
+  Snackbar,
 } from '@mui/material'
 import { useState } from 'react'
 import { signup } from '@/app/auth/login/actions'
@@ -76,20 +76,6 @@ const Register = () => {
           style={{ marginBottom: '1.5rem' }}
         />
 
-        {registrationError && (
-          <Fade in={registrationError}>
-            <Alert
-              severity="error"
-              onClose={() => {
-                setRegistrationError(false)
-              }}
-              sx={{ width: '100%', mb: 2 }}
-            >
-              {errorMessage}
-            </Alert>
-          </Fade>
-        )}
-
         <Box
           sx={{
             display: 'flex',
@@ -151,7 +137,7 @@ const Register = () => {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 error={registrationError}
-                helperText={registrationError ? 'Please use your LMU email (@lmu.edu)' : ''}
+                // helperText={registrationError ? 'Please use your LMU email (@lmu.edu)' : ''}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -195,13 +181,32 @@ const Register = () => {
           </form>
         </Box>
 
-        <Typography sx={{ mt: 3 }}>
-          Already have an account?
+        <Typography sx={{ marginTop: 3 }}>
+          {`Already have an account?`}{' '}
           <Link href="/" style={{ fontWeight: 500, color: theme.palette.primary.main }}>
             Login Here
           </Link>
         </Typography>
       </Box>
+
+      <Snackbar
+        open={registrationError}
+        autoHideDuration={4000}
+        onClose={() => {
+          setRegistrationError(false)
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          variant="filled"
+          severity="error"
+          onClose={() => {
+            setRegistrationError(false)
+          }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }
