@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, IconButton, Tooltip, Typography } from '@mui/material'
+import { Card, CardContent, IconButton, Tooltip, Typography, Box } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import HelpIcon from '@mui/icons-material/Help'
 import { keyframes } from '@mui/material'
@@ -45,9 +45,11 @@ const HelperCard = () => {
           id="helper-card"
           sx={{
             animation: `${isHelpOpen ? slideIn : slideOut} 0.3s ease-in-out`,
-            width: '18rem',
+            width: '20rem',
             position: 'relative',
-            outline: '1px solid black',
+            outline: '1px solid rgba(0, 0, 0, 0.12)',
+            borderRadius: 2,
+            boxShadow: 3,
           }}
         >
           <CardContent
@@ -55,49 +57,90 @@ const HelperCard = () => {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              alignItems: 'center',
-              margin: 1,
-              padding: 0,
-              flexWrap: 'wrap',
+              alignItems: 'flex-start',
+              padding: 2,
               '& #close-button': {
-                margin: 0,
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                padding: '4px',
+              },
+              '& ul': {
                 padding: 0,
-                alignSelf: 'flex-start',
+                paddingLeft: 2,
+                margin: 0,
+                '& li': {
+                  marginBottom: 1,
+                  '&:last-child': {
+                    marginBottom: 0,
+                  },
+                },
               },
             }}
           >
-            <IconButton id="close-button" onClick={handleCardToggle}>
-              <CloseIcon />
+            <IconButton id="close-button" onClick={handleCardToggle} size="small">
+              <CloseIcon fontSize="small" />
             </IconButton>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>
-              Inputting your Knowledge Graph
-            </Typography>
-            <Typography>
-              A valid knowledge graph input should satisfy the following conditions:
-              <ol>
-                <li>No duplicate nodes</li>
-                <li>No cyles between nodes</li>
-              </ol>
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', textDecoration: 'underline' }}>
-              Controls:
-            </Typography>
-            <Typography>
-              <ul>
-                <li>Add a Node: Click Add button and enter relevant information</li>
-                <li>
-                  Creating an Edge: Enter edge info when adding a node or click edge source and drag
-                  to desired node
-                </li>
-                <li>Move a Node: Click and drag</li>
-                <li>Delete a Node/Edge: Click node or edge and press backspace</li>
-              </ul>
-            </Typography>
+
+            <Box sx={{ width: '100%', mt: 1 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  marginBottom: 2,
+                  fontSize: '1.1rem',
+                  color: 'primary.main',
+                  borderBottom: '2px solid',
+                  borderColor: 'primary.main',
+                  paddingBottom: 0.5,
+                }}
+              >
+                Using the Knowledge Graph
+              </Typography>
+
+              <Typography component="div" sx={{ marginBottom: 2 }}>
+                <ul>
+                  <li>
+                    Create nodes: Click + button or drag from a node handle to create a connected
+                    node
+                  </li>
+                  <li>Edit nodes: Click a node and select edit</li>
+                  <li>Move nodes: Click and drag to reposition</li>
+                  <li>Delete nodes: Click node and press backspace</li>
+                  <li>Delete edges: Click edge and press backspace</li>
+                </ul>
+              </Typography>
+
+              <Typography
+                sx={{
+                  fontSize: '0.9rem',
+                  color: 'text.secondary',
+                  backgroundColor: 'action.hover',
+                  padding: 1.5,
+                  borderRadius: 1,
+                  borderLeft: '4px solid',
+                  borderColor: 'warning.main',
+                }}
+              >
+                Note: Avoid creating duplicate nodes or cycles between nodes
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       ) : (
-        <Tooltip title="Help" arrow>
-          <IconButton onClick={handleCardToggle}>
+        <Tooltip title="Help" arrow placement="right">
+          <IconButton
+            onClick={handleCardToggle}
+            sx={{
+              backgroundColor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                backgroundColor: 'background.paper',
+                transform: 'scale(1.1)',
+              },
+              transition: 'transform 0.2s',
+            }}
+          >
             <HelpIcon id="help-button" color="info" fontSize="large" />
           </IconButton>
         </Tooltip>
