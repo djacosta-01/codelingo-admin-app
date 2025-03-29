@@ -132,8 +132,6 @@ const HelperCard = () => {
           <IconButton
             onClick={handleCardToggle}
             sx={{
-              backgroundColor: 'background.paper',
-              boxShadow: 2,
               '&:hover': {
                 backgroundColor: 'background.paper',
                 transform: 'scale(1.1)',
