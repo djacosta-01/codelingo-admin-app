@@ -17,6 +17,7 @@ import {
   Snackbar,
   Alert,
   Skeleton,
+  CircularProgress,
   useTheme,
 } from '@mui/material'
 import { AddCircleOutline, School } from '@mui/icons-material'
@@ -103,6 +104,7 @@ const ClassesSkeleton = ({ isDarkMode }: { isDarkMode: boolean }) => {
 const Classes = () => {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
+  const [navigatingToClass, setNavigatingToClass] = useState<string | null>(null)
 
   // Select the appropriate color array based on the theme mode
   const CLASS_HEADER_COLORS = isDarkMode ? DARK_MODE_COLORS : LIGHT_MODE_COLORS
@@ -207,12 +209,37 @@ const Classes = () => {
     fetchClasses()
   }, [])
 
-  /**
-   * TODO: switch to Grid2 since Grid is deprecated
-   */
+  const handleClassNavigation = (className: string) => {
+    setNavigatingToClass(className)
+    router.push(`/classes/${className}/lessons`)
+  }
+
   return (
     <>
       <NavbarWithSideMenu className="" displaySideMenu={false} />
+      {navigatingToClass && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+            zIndex: theme.zIndex.drawer + 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+          }}
+        >
+          <CircularProgress size={40} />
+          <Typography variant="h6" color={isDarkMode ? 'white' : 'inherit'}>
+            Loading {navigatingToClass}...
+          </Typography>
+        </Box>
+      )}
       <Container maxWidth="lg" sx={{ marginTop: 10, marginBottom: 4 }}>
         <Box
           sx={{
@@ -256,7 +283,7 @@ const Classes = () => {
                   }}
                 >
                   <CardActionArea
-                    onClick={() => router.push(`/classes/${className}/lessons`)}
+                    onClick={() => handleClassNavigation(className || '')}
                     sx={{
                       height: '100%',
                       display: 'flex',
