@@ -109,7 +109,7 @@ const Navbar = ({
                 },
               }}
             >
-              Codelingo
+              Knowledge Grapht
             </Typography>
           </Box>
         </Box>
