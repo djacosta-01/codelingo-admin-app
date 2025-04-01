@@ -94,7 +94,10 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
     }
 
     alert('Update functionality is being reworked. It will be back soon!')
-    return
+    return {
+      success: false,
+      error: 'Update functionality is being reworked. It will be back soon!',
+    }
     // return await updateQuestion(questionID!, {
     //   questionType,
     //   prompt: questionPrompt,

@@ -76,7 +76,7 @@ const CustomToolbar = ({
 
     const response = await importLessonToClass(
       className,
-      chosenLessons.map(({ lesson_id }) => lesson_id)
+      chosenLessons.map(({ lesson_id }) => lesson_id).filter((id): id is number => id !== undefined)
     )
 
     if (!response?.success) {

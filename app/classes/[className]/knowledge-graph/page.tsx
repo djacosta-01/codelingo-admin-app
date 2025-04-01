@@ -18,7 +18,6 @@ import {
   useOnEdgesChange,
   useOnConnect,
   useOnConnectEnd,
-  // useIsValidConnection,
 } from '@/hooks/knowledgeGraphHooks'
 import { getKnowledgeGraphData } from '@/app/classes/[className]/knowledge-graph/actions'
 import EditableNode from '@/components/custom-graph-nodes/editable-node'
@@ -26,6 +25,33 @@ import HelperCard from '@/app/classes/[className]/knowledge-graph/helper-card'
 import EditGraphActions from '@/app/classes/[className]/knowledge-graph/edit-graph-actions'
 import KnowledgeGraphSkeleton from '@/components/skeletons/knowledge-graph-skeleton'
 import { ViewModeContext } from '@/contexts/viewmode-context'
+import { Json } from '@/supabase'
+
+interface GraphDataResponse {
+  success: boolean
+  graphData:
+    | {
+        nodes: string[]
+        edges: string[]
+        react_flow_data: Json[]
+      }
+    | null
+    | never[]
+  error?: string | any
+}
+
+interface FlowData {
+  reactFlowNodes: FlowNode[]
+  reactFlowEdges: Edge[]
+}
+
+interface FlowNode extends Node {
+  id: string
+  data: {
+    label: string
+    setReactFlowData: any
+  }
+}
 
 const nodeTypes = { editableNode: EditableNode }
 
@@ -44,7 +70,7 @@ const intialInteractionProps: KnowledgeGraphInteractionProps = {
 const KnowledgeGraph = ({ className }: { className: string }) => {
   const [nodes, setNodes] = useState<string[]>([])
   const [edges, setEdges] = useState<string[]>([])
-  const { settings, dispatch } = useContext(ViewModeContext)
+  const { settings } = useContext(ViewModeContext)
 
   // I plan to use this state to show a warning message when a cycle is detected
   // const [hasCycle, setHasCycle] = useState<boolean>(false)
@@ -75,28 +101,30 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
 
   useEffect(() => {
     const fetchClassGraphData = async () => {
-      const response = await getKnowledgeGraphData(className)
+      const response: GraphDataResponse = await getKnowledgeGraphData(className)
 
-      if (response.success) {
-        const { nodes, edges, react_flow_data } = response.graphData!
-        setNodes(nodes!)
-        setEdges(edges!)
+      if (response.success && response.graphData && 'nodes' in response.graphData) {
+        const { nodes, edges, react_flow_data } = response.graphData
+        setNodes(nodes)
+        setEdges(edges)
 
         if (react_flow_data && Array.isArray(react_flow_data) && react_flow_data[0]) {
-          const data = react_flow_data[0] as unknown as {
-            reactFlowNodes: Node[]
-            reactFlowEdges: Edge[]
+          try {
+            const flowData = react_flow_data[0] as unknown as FlowData
+            if ('reactFlowNodes' in flowData && 'reactFlowEdges' in flowData) {
+              setReactFlowData(prev => ({
+                ...prev,
+                reactFlowNodes: flowData.reactFlowNodes.map((nodeData: FlowNode) => ({
+                  ...nodeData,
+                  id: nodeData.id,
+                  data: { ...nodeData.data, setReactFlowData },
+                })),
+                reactFlowEdges: flowData.reactFlowEdges,
+              }))
+            }
+          } catch (error) {
+            console.error('Error parsing react flow data:', error)
           }
-
-          setReactFlowData(prev => ({
-            ...prev,
-            reactFlowNodes: data.reactFlowNodes.map(nodeData => ({
-              ...nodeData,
-              id: nodeData.id as string, // possibly unnecessary. need to check
-              data: { ...nodeData.data, setReactFlowData },
-            })),
-            reactFlowEdges: data.reactFlowEdges,
-          }))
         }
       }
     }
@@ -135,7 +163,7 @@ const KnowledgeGraph = ({ className }: { className: string }) => {
               nodeOrigin={[0.5, 0]}
               fitView
             >
-              {inEditMode ? <Background gap={20} /> : ''}
+              {inEditMode && <Background gap={20} />}
               <MiniMap />
             </ReactFlow>
           )}
