@@ -14,24 +14,24 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   }
+  // TODO: DONT FORGET TO REMOVE THIS ONCE THE APP IS READY FOR PRODUCTION
+  const developmentAccount = data.email.trim() === process.env.NEXT_DEVELOPMENT_ACCOUNT!
+
+  // TODO: make prof validation a helper function
+  const professorAccount = data.email.trim().endsWith('@lmu.edu') || developmentAccount
+
+  if (!professorAccount) {
+    return { error: 'Invalid email. Please use your LMU email.' }
+  }
 
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    // console.error(error)
     return { error: 'Invalid email or password' }
   }
 
-  // TODO: DONT FORGET TO REMOVE THIS ONCE THE APP IS READY FOR PRODUCTION
-  const developmentAccount = data.email.trim() === process.env.NEXT_DEVELOPMENT_ACCOUNT!
-
-  const isProfessor = data.email.trim().endsWith('@lmu.edu') || developmentAccount
-
   revalidatePath('/', 'layout')
-
-  if (isProfessor) {
-    redirect('/classes')
-  }
+  redirect('/classes')
 }
 
 export async function signup(formData: FormData) {
