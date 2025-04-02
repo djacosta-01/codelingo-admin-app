@@ -1,9 +1,11 @@
 'use client'
 
 import { styled } from '@mui/material/styles'
+
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import { Box, Toolbar, Typography, IconButton, Tooltip, Avatar } from '@mui/material'
-import { Info, Logout, Menu, Code } from '@mui/icons-material'
+import { Info, Logout, Menu, AccountTree } from '@mui/icons-material'
+
 import { useRouter } from 'next/navigation'
 
 interface AppBarProps extends MuiAppBarProps {
@@ -92,7 +94,7 @@ const Navbar = ({
                 alignItems: 'center',
               }}
             >
-              <Code fontSize="small" />
+              <AccountTree fontSize="small" />
             </Avatar>
 
             <Typography
