@@ -11,7 +11,7 @@ import {
   Typography,
   Paper,
   TextField,
-  Grid,
+  Grid2 as Grid,
   Card,
   CardContent,
   Divider,
@@ -118,7 +118,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Paper elevation={2} sx={{ padding: 3, marginBottom: 4 }}>
+      <Paper elevation={2} sx={{ padding: 3, marginBottom: 4, height: '100%' }}>
         <Box
           sx={{
             display: 'flex',
@@ -162,7 +162,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
 
         <Grid container spacing={4}>
           {/* Class Information Section */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card elevation={1} sx={{ height: '100%' }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom display="flex" alignItems="center">
@@ -207,7 +207,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
           </Grid>
 
           {/* QR Code Section */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card elevation={1} sx={{ height: '100%' }}>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography variant="h6" gutterBottom display="flex" alignItems="center">
@@ -222,7 +222,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
                   </Typography>
                 </Box>
 
-                <Box mt={3} width="100%">
+                <Box sx={{ marginTop: 3, width: '100%' }}>
                   <TextField
                     fullWidth
                     variant="outlined"
@@ -248,7 +248,7 @@ const ClassSettings = ({ params: { className } }: { params: { className: string 
         </Grid>
 
         {/* Danger Zone */}
-        <Box mt={4}>
+        <Box sx={{ marginTop: 4 }}>
           <Paper elevation={0} sx={{ padding: 3, border: '1px solid #ffdddd', borderRadius: 1 }}>
             <Typography variant="h6" color="error" gutterBottom>
               Danger Zone
