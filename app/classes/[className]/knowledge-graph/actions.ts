@@ -102,3 +102,84 @@ export const updateKnowledgeGraph = async (
 
   return { success: true }
 }
+
+interface CycleResult {
+  isValid: boolean
+  cycleEdges?: Edge[]
+}
+
+export const detectCycle = async (edges: Edge[]): Promise<CycleResult> => {
+  const graph = new Map<string, Set<string>>()
+  const inDegree = new Map<string, number>()
+  const edgeMap = new Map<string, Edge>()
+
+  // initialize all nodes and create edge lookup map
+  edges.forEach(edge => {
+    const edgeKey = `${edge.source}->${edge.target}`
+    edgeMap.set(edgeKey, edge)
+
+    if (!graph.has(edge.source)) {
+      graph.set(edge.source, new Set())
+      inDegree.set(edge.source, 0)
+    }
+
+    if (!graph.has(edge.target)) {
+      graph.set(edge.target, new Set())
+      inDegree.set(edge.target, 0)
+    }
+  })
+
+  // Build the graph and count in-degrees
+  edges.forEach(edge => {
+    graph.get(edge.source)!.add(edge.target)
+    inDegree.set(edge.target, (inDegree.get(edge.target) || 0) + 1)
+  })
+
+  const visited = new Set<string>()
+  const inStack = new Set<string>()
+  const cycleEdges: Edge[] = []
+
+  // DFS function to find the actual cycle
+  const findCycle = (node: string, path: Edge[] = []): boolean => {
+    if (inStack.has(node)) {
+      // cycle found
+      const cycleStartIndex = path.findIndex(edge => edge.source === node)
+      cycleEdges.push(...path.slice(cycleStartIndex))
+      return true
+    }
+
+    if (visited.has(node)) {
+      return false
+    }
+
+    visited.add(node)
+    inStack.add(node)
+
+    const neighbors = graph.get(node) || new Set()
+    for (const neighbor of neighbors) {
+      const edgeKey = `${node}->${neighbor}`
+      const edge = edgeMap.get(edgeKey)
+      if (edge) {
+        if (findCycle(neighbor, [...path, edge])) {
+          return true
+        }
+      }
+    }
+
+    inStack.delete(node)
+    return false
+  }
+
+  for (const node of graph.keys()) {
+    if (!visited.has(node) && findCycle(node)) {
+      return {
+        isValid: false,
+        cycleEdges,
+      }
+    }
+  }
+
+  return {
+    isValid: true,
+  }
+}

@@ -22,7 +22,10 @@ import React, {
   useRef,
   useEffect,
 } from 'react'
-import { updateKnowledgeGraph } from '@/app/classes/[className]/knowledge-graph/actions'
+import {
+  detectCycle,
+  updateKnowledgeGraph,
+} from '@/app/classes/[className]/knowledge-graph/actions'
 
 const EditGraphActions = ({
   className,
@@ -106,6 +109,14 @@ const EditGraphActions = ({
       reactFlowEdges: [],
     }
 
+    const graph = await detectCycle(reactFlowEdges)
+
+    if (!graph.isValid) {
+      alert('Graph contains a cycle. Please fix it before saving.')
+      console.log('Cycle detected in edges: ', graph.cycleEdges)
+      return
+    }
+
     const response = await updateKnowledgeGraph(className, {
       reactFlowEdges: JSON.parse(JSON.stringify(reactFlowEdges)),
       reactFlowNodes: JSON.parse(JSON.stringify(reactFlowNodes)),
@@ -122,7 +133,7 @@ const EditGraphActions = ({
       { icon: <Save />, name: 'Save Changes', onClick: saveGraph },
       { icon: <ExitToApp />, name: 'Exit Edit Mode', onClick: exitEditMode },
     ],
-    []
+    [saveGraph]
   )
 
   const addDataToGraph = (e: React.FormEvent<HTMLFormElement>) => {
