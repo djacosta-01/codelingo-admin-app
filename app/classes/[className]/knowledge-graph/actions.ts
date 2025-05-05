@@ -69,7 +69,7 @@ export const updateKnowledgeGraph = async (
   }
 
   const cleanedClassName = className.replace(/%20/g, ' ')
-  console.log('cleanedClassName: ', cleanedClassName)
+  // console.log('cleanedClassName: ', cleanedClassName)
   const { data: classID, error } = await supabase
     .from('classes')
     .select('class_id')

@@ -69,6 +69,7 @@ export const getLessonQuestions = async (
   return questionData
 }
 
+// TODO: add question to class question bank
 export async function createNewQuestion(lessonName: string, questionData: Question) {
   const supabase = createClient()
 
@@ -177,7 +178,7 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
   })
 
   if (lessonQuestionBankError) {
-    console.error('Error inserting into lesson_question_bank: ', lessonQuestionBankError)
+    console.error('Error linking question to lesson: ', lessonQuestionBankError)
     return { success: false, error: lessonQuestionBankError }
   }
 
@@ -314,7 +315,8 @@ const processRearrangeOptionsData = (options: any[], snippet: string) => {
 
     if (isToken) {
       // Replace with a blank of the same length
-      return '_'.repeat(text.length)
+      // return '_'.repeat(text.length)
+      return null
     }
 
     return text
