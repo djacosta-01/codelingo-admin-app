@@ -6,7 +6,7 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
+  Grid2 as Grid,
   Avatar,
   IconButton,
   Tooltip,
@@ -20,6 +20,7 @@ import {
   Menu,
   Button,
   Skeleton,
+  Paper,
 } from '@mui/material'
 import {
   PersonRemove,
@@ -29,43 +30,50 @@ import {
   Sort as SortIcon,
   ArrowUpward as AscIcon,
   ArrowDownward as DescIcon,
+  PeopleOutline,
 } from '@mui/icons-material'
 import RosterSkeleton from '@/components/skeletons/roster-skeleton'
-
-// Extended mock data to simulate a larger class
-const mockStudents = Array(35)
-  .fill(null)
-  .map((_, i) => ({
-    id: (i + 1).toString(),
-    name: `Student ${i + 1}`,
-    email: `student${i + 1}@example.com`,
-    joinedDate: new Date(2024, 0, Math.floor(Math.random() * 30) + 1).toISOString(),
-  }))
+import { enrolledStudents } from './actions'
 
 const STUDENTS_PER_PAGE = 12
 const LIST_VIEW_ITEMS_PER_PAGE = 20
 
+interface Student {
+  student_id: string
+  student_name: string
+}
+
 interface SortConfig {
-  field: 'name' | 'email' | 'joinedDate'
+  field: 'student_name'
   direction: 'asc' | 'desc'
 }
 
 const ClassRoster = ({ params }: { params: { className: string } }) => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [students, setStudents] = useState(mockStudents)
+  const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'name', direction: 'asc' })
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    field: 'student_name',
+    direction: 'asc',
+  })
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null)
 
-  // Simulate loading data
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [])
+    const fetchStudents = async () => {
+      const response = await enrolledStudents(params.className)
+
+      if (response.success && response.students) {
+        setStudents(response.students)
+        setLoading(false)
+      } else if (response.error) {
+        console.error('Error fetching students:', response.error)
+        setLoading(false)
+      }
+    }
+    fetchStudents()
+  }, [params.className])
 
   const handleRemoveStudent = (studentId: string) => {
     alert('Remove student functionality needs to be implemented')
@@ -89,20 +97,10 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
 
   const getSortedAndFilteredStudents = () => {
     return students
-      .filter(
-        student =>
-          student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      .filter(student => student.student_name.toLowerCase().includes(searchTerm.toLowerCase()))
       .sort((a, b) => {
         const direction = sortConfig.direction === 'asc' ? 1 : -1
-        if (sortConfig.field === 'joinedDate') {
-          return (
-            (new Date(a[sortConfig.field]).getTime() - new Date(b[sortConfig.field]).getTime()) *
-            direction
-          )
-        }
-        return a[sortConfig.field].localeCompare(b[sortConfig.field]) * direction
+        return a.student_name.localeCompare(b.student_name) * direction
       })
   }
 
@@ -129,10 +127,10 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
         </Box>
         <Box sx={{ mb: 4 }}>
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Skeleton variant="rectangular" height={56} />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Skeleton variant="rectangular" width={120} height={32} />
                 <Skeleton variant="rectangular" width={100} height={32} />
@@ -159,7 +157,7 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
       Controls Section */}
       <Box sx={{ mb: 4 }}>
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               placeholder="Search students..."
@@ -178,9 +176,7 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
             />
           </Grid>
           <Grid
-            item
-            xs={12}
-            md={6}
+            size={{ xs: 12, md: 6 }}
             sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}
           >
             <Chip label={`Total Students: ${students.length}`} color="primary" variant="outlined" />
@@ -191,16 +187,14 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
               variant="outlined"
               size="small"
             >
-              Sort by {sortConfig.field}
+              Sort by name
             </Button>
             <Menu
               anchorEl={sortAnchorEl}
               open={Boolean(sortAnchorEl)}
               onClose={handleSortMenuClose}
             >
-              <MenuItem onClick={() => handleSort('name')}>Name</MenuItem>
-              <MenuItem onClick={() => handleSort('email')}>Email</MenuItem>
-              <MenuItem onClick={() => handleSort('joinedDate')}>Join Date</MenuItem>
+              <MenuItem onClick={() => handleSort('student_name')}>Name</MenuItem>
             </Menu>
             <ToggleButtonGroup
               value={viewMode}
@@ -224,112 +218,136 @@ const ClassRoster = ({ params }: { params: { className: string } }) => {
         </Grid>
       </Box>
 
+      {/* Empty State */}
+      {sortedAndFilteredStudents.length === 0 && (
+        <Paper
+          sx={{
+            p: 6,
+            textAlign: 'center',
+            bgcolor: theme => (theme.palette.mode === 'dark' ? 'background.paper' : 'grey.50'),
+          }}
+        >
+          <PeopleOutline sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+          {searchTerm ? (
+            <>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                No students found
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                No students match your search criteria. Try adjusting your search terms.
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                No students enrolled
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Students will appear here once they are enrolled in this class.
+              </Typography>
+            </>
+          )}
+        </Paper>
+      )}
+
       {/* Students Display */}
-      {viewMode === 'grid' ? (
-        <Grid container spacing={3}>
-          {displayedStudents.map(student => (
-            <Grid item xs={12} sm={6} md={4} key={student.id}>
-              <Card
-                elevation={1}
-                sx={{
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    transition: 'transform 0.2s ease-in-out',
-                    boxShadow: 3,
-                  },
-                }}
-              >
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Avatar
-                      sx={{
-                        width: 56,
-                        height: 56,
-                        bgcolor: theme =>
-                          theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light',
-                      }}
-                    >
-                      {student.name
-                        .split(' ')
-                        .map(n => n[0])
-                        .join('')}
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6" component="h2">
-                        {student.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {student.email}
-                      </Typography>
-                    </Box>
-                    <Tooltip title="Remove student">
-                      <IconButton
-                        onClick={() => handleRemoveStudent(student.id)}
-                        sx={{
-                          '&:hover': {
-                            color: 'error.main',
-                          },
-                        }}
-                      >
-                        <PersonRemove />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Joined: {new Date(student.joinedDate).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <Card elevation={1}>
-          {displayedStudents.map((student, index) => (
-            <Box key={student.id}>
-              {index > 0 && <Box sx={{ mx: 2, borderTop: 1, borderColor: 'divider' }} />}
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar
+      {sortedAndFilteredStudents.length > 0 && (
+        <>
+          {viewMode === 'grid' ? (
+            <Grid container spacing={3}>
+              {displayedStudents.map(student => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={student.student_id}>
+                  <Card
+                    elevation={1}
                     sx={{
-                      bgcolor: theme =>
-                        theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        transition: 'transform 0.2s ease-in-out',
+                        boxShadow: 3,
+                      },
                     }}
                   >
-                    {student.name
-                      .split(' ')
-                      .map(n => n[0])
-                      .join('')}
-                  </Avatar>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1">{student.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {student.email}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Joined: {new Date(student.joinedDate).toLocaleDateString()}
-                    </Typography>
-                    <Tooltip title="Remove student">
-                      <IconButton
-                        onClick={() => handleRemoveStudent(student.id)}
-                        size="small"
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                        <Avatar
+                          sx={{
+                            width: 56,
+                            height: 56,
+                            bgcolor: theme =>
+                              theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light',
+                          }}
+                        >
+                          {student.student_name
+                            .split(' ')
+                            .map(n => n[0])
+                            .join('')}
+                        </Avatar>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="h6" component="h2">
+                            {student.student_name}
+                          </Typography>
+                        </Box>
+                        <Tooltip title="Remove student">
+                          <IconButton
+                            onClick={() => handleRemoveStudent(student.student_id)}
+                            sx={{
+                              '&:hover': {
+                                color: 'error.main',
+                              },
+                            }}
+                          >
+                            <PersonRemove />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Card elevation={1}>
+              {displayedStudents.map((student, index) => (
+                <Box key={student.student_id}>
+                  {index > 0 && <Box sx={{ mx: 2, borderTop: 1, borderColor: 'divider' }} />}
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar
                         sx={{
-                          '&:hover': {
-                            color: 'error.main',
-                          },
+                          bgcolor: theme =>
+                            theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.light',
                         }}
                       >
-                        <PersonRemove />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
+                        {student.student_name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')}
+                      </Avatar>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="subtitle1">{student.student_name}</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Tooltip title="Remove student">
+                          <IconButton
+                            onClick={() => handleRemoveStudent(student.student_id)}
+                            size="small"
+                            sx={{
+                              '&:hover': {
+                                color: 'error.main',
+                              },
+                            }}
+                          >
+                            <PersonRemove />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </Box>
+                  </CardContent>
                 </Box>
-              </CardContent>
-            </Box>
-          ))}
-        </Card>
+              ))}
+            </Card>
+          )}
+        </>
       )}
 
       {/* Pagination */}
