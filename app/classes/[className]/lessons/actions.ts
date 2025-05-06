@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { Lesson } from '@/types/content.types'
+import { getKnowledgeGraphData } from '../knowledge-graph/actions'
 
 export const getAllLessons = async () => {
   const supabase = createClient()
@@ -242,4 +243,20 @@ export const deleteLesson = async (lessonID: number) => {
   }
 
   return { success: true }
+}
+
+export const getLessonTopics = async (className: string) => {
+  const { graphData } = await getKnowledgeGraphData(className)
+  console.log('graphData: ', graphData)
+  const { react_flow_data } = graphData
+  const { reactFlowNodes } = react_flow_data[0]
+
+  const nodes = reactFlowNodes.map(node => {
+    const {
+      data: { label },
+    } = node
+    return label
+  })
+
+  return { success: true, topics: nodes }
 }

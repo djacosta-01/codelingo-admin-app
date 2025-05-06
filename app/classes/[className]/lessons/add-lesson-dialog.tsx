@@ -17,7 +17,11 @@ import {
   ListItemText,
   type SelectChangeEvent,
 } from '@mui/material'
-import { createNewLesson, updateLesson } from '@/app/classes/[className]/lessons/actions'
+import {
+  createNewLesson,
+  updateLesson,
+  getLessonTopics,
+} from '@/app/classes/[className]/lessons/actions'
 import { Lesson } from '@/types/content.types'
 
 const AddLessonDialog = ({
@@ -38,19 +42,11 @@ const AddLessonDialog = ({
   const [lessonID, setLessonID] = useState<number>(-1)
   const [newLessonName, setNewLessonName] = useState<string>('')
   const [lessonTopics, setLessonTopics] = useState<string[]>([])
+  // TODO: make this a set of strings
+  const [selectedLessonTopics, setSelectedLessonTopics] = useState<string[]>([])
   const [buttonOperation, setButtonOperation] = useState<'Add Lesson' | 'Update Lesson'>(
     'Add Lesson'
   )
-
-  useEffect(() => {
-    if (prevLessonData) {
-      const { lesson_id, name, topics } = prevLessonData
-      setLessonID(lesson_id ?? -1)
-      setNewLessonName(name ?? '')
-      setLessonTopics(topics ?? [])
-      setButtonOperation('Update Lesson')
-    }
-  }, [prevLessonData])
 
   const handleLessonDiaglogClose = () => {
     setOpen(false)
@@ -60,8 +56,10 @@ const AddLessonDialog = ({
     resetPrevLessonData(null)
   }
 
-  const handleLessonTopicChange = (e: SelectChangeEvent<typeof lessonTopics>) => {
-    setLessonTopics(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)
+  const handleLessonTopicChange = (e: SelectChangeEvent<typeof selectedLessonTopics>) => {
+    setSelectedLessonTopics(
+      typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
+    )
   }
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,9 +70,9 @@ const AddLessonDialog = ({
     const response = addingLesson
       ? await createNewLesson(className, {
           lessonName: newLessonName,
-          topics: lessonTopics,
+          topics: selectedLessonTopics,
         })
-      : await updateLesson(lessonID, { lessonName: newLessonName, topics: lessonTopics })
+      : await updateLesson(lessonID, { lessonName: newLessonName, topics: selectedLessonTopics })
 
     if (response.success) {
       handleLessonDiaglogClose()
@@ -86,6 +84,28 @@ const AddLessonDialog = ({
 
     alert('Error adding lesson')
   }
+
+  useEffect(() => {
+    // prepopulating the form with previous lesson data if in edit mode
+    if (prevLessonData) {
+      const { lesson_id, name, topics } = prevLessonData
+      setLessonID(lesson_id ?? -1)
+      setNewLessonName(name ?? '')
+      setLessonTopics(topics ?? [])
+      setButtonOperation('Update Lesson')
+    }
+  }, [prevLessonData])
+
+  useEffect(() => {
+    const fetchLessonTopics = async () => {
+      const response = await getLessonTopics(className)
+      if (response.success) {
+        const { topics } = response
+        setLessonTopics(topics ?? [])
+      }
+    }
+    fetchLessonTopics()
+  }, [className])
 
   return (
     <Dialog open={open} PaperProps={{ component: 'form', onSubmit: submitForm }}>
@@ -116,27 +136,17 @@ const AddLessonDialog = ({
               required
               multiple
               labelId="lesson-topics"
-              value={lessonTopics}
+              value={selectedLessonTopics}
               onChange={handleLessonTopicChange}
               renderValue={selected => selected.join(', ')}
               //   variant="standard"
             >
-              <MenuItem value="topic 1">
-                <Checkbox checked={lessonTopics.includes('topic 1')} />
-                <ListItemText primary="topic 1" />
-              </MenuItem>
-              <MenuItem value="topic 2">
-                <Checkbox checked={lessonTopics.includes('topic 2')} />
-                <ListItemText primary="topic 2" />
-              </MenuItem>
-              <MenuItem value="topic 3">
-                <Checkbox checked={lessonTopics.includes('topic 3')} />
-                <ListItemText primary="topic 3" />
-              </MenuItem>
-              <MenuItem value="topic 4">
-                <Checkbox checked={lessonTopics.includes('topic 4')} />
-                <ListItemText primary="topic 4" />
-              </MenuItem>
+              {lessonTopics.map(topic => (
+                <MenuItem key={topic} value={topic}>
+                  <Checkbox checked={selectedLessonTopics.includes(topic)} />
+                  <ListItemText primary={topic} />
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Box>
