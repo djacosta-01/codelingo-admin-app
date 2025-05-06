@@ -13,13 +13,13 @@ import {
   Checkbox,
 } from '@mui/material'
 import { RemoveCircleOutline as RemoveIcon } from '@mui/icons-material'
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import { EditorView } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { python } from '@codemirror/lang-python'
 import { useQuestionContext } from '@/contexts/question-context'
-import { MultipleChoice } from '@/types/content.types'
+import { getLessonTopics } from '@/app/classes/[className]/lessons/actions'
 
 const mockTopics = ['topic 1', 'topic 2', 'topic 3', 'topic 4', 'topic 5', 'topic 6', 'topic 7']
 
@@ -45,6 +45,7 @@ const MultipleChoiceQuestion = () => {
   const editorRef = useRef<EditorView | null>(null)
 
   const [snippetIncluded, setSnippetIncluded] = useState(false)
+  const [questionTopics, setQuestionTopics] = useState<string[]>([])
   const {
     questionPrompt,
     setQuestionPrompt,
@@ -144,6 +145,17 @@ const MultipleChoiceQuestion = () => {
       setQuestionOptions([{ option1: '' }, { option2: '' }])
     }
   }, [])
+
+  // useEffect(() => {
+  //   const fetchLessonTopics = async () => {
+  //     const response = await getLessonTopics('className')
+  //     if (response.success) {
+  //       const { topics } = response
+  //       setQuestionOptions(topics ?? [])
+  //     }
+  //   }
+  //   fetchLessonTopics()
+  // }, [])
 
   return (
     <>
@@ -252,7 +264,7 @@ const MultipleChoiceQuestion = () => {
           sx={{ width: '15em' }}
           MenuProps={MenuProps}
         >
-          {mockTopics.map((topic, index) => (
+          {questionTopics.map((topic, index) => (
             <MenuItem key={index} value={topic}>
               <Checkbox checked={topicsCovered.includes(topic)} />
               {topic}

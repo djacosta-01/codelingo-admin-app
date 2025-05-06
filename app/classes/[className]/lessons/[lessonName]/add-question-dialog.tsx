@@ -46,11 +46,6 @@ const AddQuestionDialog = ({
     'Add Question'
   )
 
-  // probably don't need this anymore since we're using context??
-  useEffect(() => {
-    if (questionID) setButtonOperation('Update Question')
-  }, [open])
-
   const handleDialogClose = () => {
     setOpen(false)
 
@@ -80,6 +75,11 @@ const AddQuestionDialog = ({
     setRefreshGrid(prev => prev + 1)
     setAlertOpen(true)
   }
+
+  // probably don't need this anymore since we're using context??
+  useEffect(() => {
+    if (questionID) setButtonOperation('Update Question')
+  }, [open])
 
   return (
     <Dialog open={open} fullScreen PaperProps={{ component: 'form', onSubmit: submitForm }}>

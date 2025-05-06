@@ -248,8 +248,16 @@ export const deleteLesson = async (lessonID: number) => {
 export const getLessonTopics = async (className: string) => {
   const { graphData } = await getKnowledgeGraphData(className)
   console.log('graphData: ', graphData)
+  if (!graphData || !('react_flow_data' in graphData)) {
+    console.error('Invalid graphData structure')
+    return { success: false, topics: [] }
+  }
   const { react_flow_data } = graphData
-  const { reactFlowNodes } = react_flow_data[0]
+  interface ReactFlowData {
+    reactFlowNodes: { data: { label: string } }[]
+  }
+
+  const { reactFlowNodes } = react_flow_data[0] as unknown as ReactFlowData
 
   const nodes = reactFlowNodes.map(node => {
     const {
