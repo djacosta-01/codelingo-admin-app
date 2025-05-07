@@ -70,7 +70,7 @@ export const getLessonQuestions = async (
 }
 
 // TODO: add question to class question bank
-export async function createNewQuestion(lessonName: string, className: string,  questionData: Question) {
+export async function createNewQuestion(lessonName: string, className: string | undefined,  questionData: Question) {
   const supabase = createClient()
 
   const {
@@ -164,7 +164,7 @@ export async function createNewQuestion(lessonName: string, className: string,  
   const { data: classID, error: classIDError } = await supabase
     .from('classes')
     .select('class_id')
-    .eq('name', className)
+    .eq('name', className!)
     .single()
 
   if (classIDError) {

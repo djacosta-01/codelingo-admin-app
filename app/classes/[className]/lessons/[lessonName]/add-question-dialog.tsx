@@ -65,7 +65,7 @@ const AddQuestionDialog = ({
       buttonOperation === 'Add Question'
       // TODO: REWORK THIS TO USE THE CLASSNAME PASSED IN AS A PROP, this is just for the demo
         ? await submitQuestion({ lessonName, className: 'Demo Class' })
-        : await submitQuestion({ questionID: questionID! }) // questionID guaranteed to be defined here
+        : await submitQuestion({ questionID: questionID!, className: 'Demo Class' }) // questionID guaranteed to be defined here
 
     if (!response.success) {
       setError(true)
