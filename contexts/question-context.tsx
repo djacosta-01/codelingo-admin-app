@@ -27,6 +27,7 @@ interface QuestionContextType {
     lessonName,
     questionID,
   }: {
+    className: string
     lessonName?: string
     questionID?: number
   }) => Promise<{ success: boolean; error?: string | PostgrestError }>
@@ -80,6 +81,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
     lessonName,
     questionID,
   }: {
+    className?: string
     lessonName?: string
     questionID?: number
   }) => {
