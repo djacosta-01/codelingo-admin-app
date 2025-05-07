@@ -76,6 +76,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
   }
 
   const submitQuestion = async ({
+    className, 
     lessonName,
     questionID,
   }: {
@@ -83,7 +84,7 @@ export const QuestionContextProvider = ({ children }: { children: React.ReactNod
     questionID?: number
   }) => {
     if (lessonName) {
-      return await createNewQuestion(lessonName!, {
+      return await createNewQuestion(lessonName!, className, {
         questionType,
         prompt: questionPrompt,
         snippet: questionSnippet,

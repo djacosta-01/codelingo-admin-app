@@ -146,16 +146,17 @@ const MultipleChoiceQuestion = () => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   const fetchLessonTopics = async () => {
-  //     const response = await getLessonTopics('className')
-  //     if (response.success) {
-  //       const { topics } = response
-  //       setQuestionOptions(topics ?? [])
-  //     }
-  //   }
-  //   fetchLessonTopics()
-  // }, [])
+  useEffect(() => {
+    const fetchLessonTopics = async () => {
+      // TODO: REWORK THIS PLZ, this is just to get it working for the demo
+      const response = await getLessonTopics('Demo Class')
+      if (response.success) {
+        const { topics } = response
+        setQuestionTopics(topics ?? [])
+      }
+    }
+    fetchLessonTopics()
+  }, [])
 
   return (
     <>

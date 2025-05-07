@@ -70,7 +70,7 @@ export const getLessonQuestions = async (
 }
 
 // TODO: add question to class question bank
-export async function createNewQuestion(lessonName: string, questionData: Question) {
+export async function createNewQuestion(lessonName: string, className: string,  questionData: Question) {
   const supabase = createClient()
 
   const {
@@ -159,6 +159,32 @@ export async function createNewQuestion(lessonName: string, questionData: Questi
   // theoretically, the largest question id should be the one we just inserted
   const questionID = questionIDs.map(id => id.question_id).sort((a, b) => b - a)[0]
 
+  // link the question to the class
+  // const cleanedClassName = className.replace(/%20/g, ' ')
+  const { data: classID, error: classIDError } = await supabase
+    .from('classes')
+    .select('class_id')
+    .eq('name', className)
+    .single()
+
+  if (classIDError) {
+    console.error('Error fetching class ID: ', classIDError)
+    return { success: false, error: classIDError }
+  }
+
+  const { error: classQuestionBankError } = await supabase.from('class_question_bank').insert({
+    class_id: classID.class_id,
+    owner_id: user.id,
+    question_id: questionID,
+  })
+
+  if (classQuestionBankError) {
+    console.error('Error linking question to class: ', classQuestionBankError)
+    return { success: false, error: classQuestionBankError }
+  }
+
+
+  // link the question to the lesson
   const cleanedLessonName = lessonName.replace(/%20/g, ' ')
   const { data: lessonID, error: lessonIDError } = await supabase
     .from('lessons')
